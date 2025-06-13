@@ -1,0 +1,52 @@
+server.host: "0.0.0.0"
+server.port: 1337
+opensearch.hosts:
+  - https://indexer01.siem.sec.local:9200
+  - https://indexer02.siem.sec.local:9200
+  - https://indexer03.siem.sec.local:9200
+  - https://indexer04.siem.sec.local:9200
+
+server.maxPayloadBytes: 864000000
+savedObjects.maxImportPayloadBytes: 204857600
+
+opensearch.ssl.verificationMode: certificate
+
+opensearch.requestHeadersAllowlist: ["securitytenant","Authorization"]
+
+opensearch_security.auth.type: "saml"
+server.xsrf.allowlist: ["/_opendistro/_security/saml/acs", "/_opendistro/_security/saml/logout", "/_opendistro/_security/saml/acs/idpinitiated"]
+
+opensearch_security.multitenancy.enabled: false
+opensearch_security.readonly_mode.roles: ["kibana_read_only"]
+
+server.ssl.enabled: true
+server.ssl.key: "/etc/wazuh-dashboard/certs/dashboard-key.pem"
+server.ssl.certificate: "/etc/wazuh-dashboard/certs/dashboard.pem"
+opensearch.ssl.certificateAuthorities: ["/etc/wazuh-dashboard/certs/root-ca.pem"]
+
+uiSettings.overrides.defaultRoute: /app/wz-home
+logging.dest: "/var/log/kibana/kibana.log"
+
+#logging.verbose: true
+
+opensearch.requestTimeout: 86400000
+opensearch_security.cookie.ttl: 86400000
+opensearch_security.session.ttl: 86400000
+opensearch_security.session.keepalive: true
+
+opensearchDashboards.branding:
+  applicationTitle: "wazuh.blog"
+
+map.regionmap:
+  includeOpenSearchMapsService: false
+  layers:
+     - name: "World (offline)"
+       url: "/world.geojson"
+       attribution: "https://exploratory.io/maps"
+       fields:
+          - name: "ISO_A2"
+            description: "Country Code"
+          - name: "WB_A2"
+            description: "Country Code2"
+          - name: "NAME"
+            description: "Country Name"

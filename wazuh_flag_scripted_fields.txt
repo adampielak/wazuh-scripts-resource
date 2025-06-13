@@ -1,4 +1,4 @@
-#Wazuh Dashboard GeoLocation Flags Scripted Fields
+##Wazuh Dashboard GeoLocation Flags Scripted Fields
 if (doc['GeoLocation.country_name'].value =='United Nations') return '🇺🇳';
 if (doc['GeoLocation.country_name'].value =='Angola') return '🇦🇴';
 if (doc['GeoLocation.country_name'].value =='Burkina Faso') return '🇧🇫';

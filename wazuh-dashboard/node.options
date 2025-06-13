@@ -1,0 +1,6 @@
+--max-old-space-size=8192
+--unhandled-rejections=warn
+--trace-warnings
+--trace-deprecation
+--optimize-for-size
+--stack-trace-limit=100
