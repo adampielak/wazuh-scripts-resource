@@ -1,0 +1,33 @@
+/system identity set name=MikroGW
+# remove old conf.
+:foreach i in=[/system logging find where action="tosyslog"] do={ /system logging remove $i }
+:if ([:len [/system logging action find where name="tosyslog"]] > 0) do={ /system logging action remove [find where name="tosyslog"] }
+# remote -> syslog server 10.39.58.66:514/UDP
+/system logging action add name=tosyslog target=remote remote=10.39.58.66 remote-port=514
+# set IP if more ISP
+/system logging action set tosyslog src-address=0.0.0.0
+
+# without debug
+/system logging add action=tosyslog topics=error
+/system logging add action=tosyslog topics=warning
+/system logging add action=tosyslog topics=critical
+/system logging add action=tosyslog topics=info
+
+/system logging add action=tosyslog topics=system
+/system logging add action=tosyslog topics=account
+/system logging add action=tosyslog topics=firewall
+/system logging add action=tosyslog topics=dhcp
+/system logging add action=tosyslog topics=pppoe,ppp
+/system logging add action=tosyslog topics=ipsec
+/system logging add action=tosyslog topics=wireless
+/system logging add action=tosyslog topics=interface
+/system logging add action=tosyslog topics=route
+
+# be caraful
+/system logging add action=tosyslog topics=debug
+
+# on microtik
+/log info "Hello from MikroTik to syslog"
+
+# on wazuh
+sudo tcpdump -i any -n udp port 514
