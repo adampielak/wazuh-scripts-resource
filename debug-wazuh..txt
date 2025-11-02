@@ -1,0 +1,8 @@
+TCPDump by DFN SOC - https://pad.zdv.net/s/IaD0YOFaU
+  
+  tcpdump -nA -v dst port 1514 | \
+  sed --unbuffered '/<[0-9][0-9]*>/!d;s/.*<[0-9][0-9]*>//
+
+  tcpdump -nA -v dst port 1514 | \
+  sed --unbuffered '/<[0-9][0-9]*>/!d;s/.*<[0-9][0-9]*>//' | \
+  pv -l -F "*** Elapsed time: %t, Current line rate: %r, Average line rate: %a ***"
