@@ -142,7 +142,7 @@ def generate_msg(alert, options):
     elif level > 11:
         severity = "high"
     elif level > 6:
-        severity = "info"
+        severity = "medium"
 
     created_at = alert.get("timestamp", datetime.now(timezone.utc).astimezone().isoformat())
     fingerprint = f"{agent_id}-{rule_id}"
