@@ -1,0 +1,41 @@
+{
+  "policy": {
+    "policy_id": "wazuh-statistics-retention-90d",
+    "description": "Wazuh statistics retention — delete after 90 days. Statistics indices are typically small; adjust min_index_age as needed.",
+    "default_state": "hot",
+    "states": [
+      {
+        "name": "hot",
+        "actions": [],
+        "transitions": [
+          {
+            "state_name": "delete",
+            "conditions": {
+              "min_index_age": "90d"
+            }
+          }
+        ]
+      },
+      {
+        "name": "delete",
+        "actions": [
+          {
+            "retry": {
+              "count": 3,
+              "backoff": "exponential",
+              "delay": "1m"
+            },
+            "delete": {}
+          }
+        ],
+        "transitions": []
+      }
+    ],
+    "ism_template": [
+      {
+        "index_patterns": ["wazuh-statistics-*"],
+        "priority": 100
+      }
+    ]
+  }
+}

@@ -59,7 +59,11 @@ misc/                 — debug one-liners, vendor-specific notes
 |------|-------------|
 | `opensearch.yml` | 4-node cluster config template |
 | `jvm.options` | JVM heap settings |
-| `wazuh-index_hot_warm_delete-policy.json` | ISM policy: hot (14d) → warm (replica 0) → delete (102d) |
+| `wazuh-index_hot_warm_delete-policy.json` | ISM policy: hot (14d) → warm (replica 0, warm-tier node) → delete (102d) — requires a dedicated warm node with `node.attr.temp: warm` |
+| `ism-wazuh-alerts-retention.json` | ISM policy: delete `wazuh-alerts-4.*` after 90 days |
+| `ism-security-auditlog-retention.json` | ISM policy: delete `security-auditlog-*` after 30 days |
+| `ism-wazuh-statistics-retention.json` | ISM policy: delete `wazuh-statistics-*` after 90 days |
+| `ism-wazuh-monitoring-retention.json` | ISM policy: delete `wazuh-monitoring-*` after 180 days |
 
 ### `wazuh-dashboard/`
 
@@ -112,6 +116,44 @@ Wazuh unsafe deserialization RCE — detection and PoC material.
 ```
 
 Exit codes for `wazuh-indexer-health.sh`: `0` = green, `1` = yellow, `2` = red or disk threshold exceeded.
+
+---
+
+## ISM policies — deploy
+
+All ISM policies under `wazuh-indexer/ism-*.json` follow the same pattern: `hot → delete` with configurable `min_index_age`. Adjust retention values at the top of each file before deploying.
+
+**Create a policy:**
+```bash
+curl -sk -u admin:<password> \
+  -XPUT "https://<indexer>:9200/_plugins/_ism/policies/<policy_id>" \
+  -H "Content-Type: application/json" \
+  -d @wazuh-indexer/ism-wazuh-alerts-retention.json
+```
+
+**Apply to existing indices** (ISM templates only attach to newly created indices automatically):
+```bash
+curl -sk -u admin:<password> \
+  -XPOST "https://<indexer>:9200/_plugins/_ism/change_policy/wazuh-alerts-4.*" \
+  -H "Content-Type: application/json" \
+  --data-raw '{"policy_id": "wazuh-alerts-retention-90d"}'
+```
+
+**Check policy status on an index:**
+```bash
+curl -sk -u admin:<password> \
+  "https://<indexer>:9200/_plugins/_ism/explain/<index-name>?pretty"
+```
+
+**Disk planning reference** (3-node cluster, no replicas on alerts):
+
+| Retention | ~15 GB/day ingest | Total data | Per-node estimate |
+|-----------|-------------------|------------|-------------------|
+| 30 days   | 450 GB            | 450 GB     | 150 GB            |
+| 60 days   | 900 GB            | 900 GB     | 300 GB            |
+| 90 days   | 1.35 TB           | 1.35 TB    | 450 GB            |
+
+OpenSearch default watermarks: low=85%, high=90%, flood=95%. Size your volumes accordingly.
 
 ---
 

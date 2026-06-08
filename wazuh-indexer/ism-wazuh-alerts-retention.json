@@ -1,0 +1,41 @@
+{
+  "policy": {
+    "policy_id": "wazuh-alerts-retention-90d",
+    "description": "Wazuh alerts retention — delete after 90 days. Adjust min_index_age and index_patterns to match your requirements.",
+    "default_state": "hot",
+    "states": [
+      {
+        "name": "hot",
+        "actions": [],
+        "transitions": [
+          {
+            "state_name": "delete",
+            "conditions": {
+              "min_index_age": "90d"
+            }
+          }
+        ]
+      },
+      {
+        "name": "delete",
+        "actions": [
+          {
+            "retry": {
+              "count": 3,
+              "backoff": "exponential",
+              "delay": "1m"
+            },
+            "delete": {}
+          }
+        ],
+        "transitions": []
+      }
+    ],
+    "ism_template": [
+      {
+        "index_patterns": ["wazuh-alerts-4.*"],
+        "priority": 100
+      }
+    ]
+  }
+}

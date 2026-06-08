@@ -1,0 +1,41 @@
+{
+  "policy": {
+    "policy_id": "wazuh-monitoring-retention-180d",
+    "description": "Wazuh monitoring retention — delete after 180 days. Monitoring indices are monthly and small; 180d provides long-term agent availability trends.",
+    "default_state": "hot",
+    "states": [
+      {
+        "name": "hot",
+        "actions": [],
+        "transitions": [
+          {
+            "state_name": "delete",
+            "conditions": {
+              "min_index_age": "180d"
+            }
+          }
+        ]
+      },
+      {
+        "name": "delete",
+        "actions": [
+          {
+            "retry": {
+              "count": 3,
+              "backoff": "exponential",
+              "delay": "1m"
+            },
+            "delete": {}
+          }
+        ],
+        "transitions": []
+      }
+    ],
+    "ism_template": [
+      {
+        "index_patterns": ["wazuh-monitoring-*"],
+        "priority": 100
+      }
+    ]
+  }
+}

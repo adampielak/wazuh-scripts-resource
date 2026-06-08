@@ -1,0 +1,41 @@
+{
+  "policy": {
+    "policy_id": "security-auditlog-retention-30d",
+    "description": "OpenSearch security audit log retention — delete after 30 days. Adjust min_index_age to match your compliance requirements.",
+    "default_state": "hot",
+    "states": [
+      {
+        "name": "hot",
+        "actions": [],
+        "transitions": [
+          {
+            "state_name": "delete",
+            "conditions": {
+              "min_index_age": "30d"
+            }
+          }
+        ]
+      },
+      {
+        "name": "delete",
+        "actions": [
+          {
+            "retry": {
+              "count": 3,
+              "backoff": "exponential",
+              "delay": "1m"
+            },
+            "delete": {}
+          }
+        ],
+        "transitions": []
+      }
+    ],
+    "ism_template": [
+      {
+        "index_patterns": ["security-auditlog-*"],
+        "priority": 100
+      }
+    ]
+  }
+}
