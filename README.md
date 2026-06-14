@@ -86,7 +86,7 @@ misc/                 — debug one-liners, vendor-specific notes
 
 ### `wazuh.blog/`
 
-Custom Wazuh rules and decoders extracted from blog articles. All files are validated against Wazuh XML specifications.
+Custom Wazuh rules, decoders, integrations, and automation scripts extracted from blog articles. All XML files are validated against Wazuh specifications.
 
 **Rules by platform:**
 - `rules/linux/` — 42 rules (tetragon, AppArmor, credential access, persistence, resource monitoring)
@@ -106,6 +106,12 @@ Custom Wazuh rules and decoders extracted from blog articles. All files are vali
 - `decoders/kubernetes/` — 11 decoders (API server, kubelet)
 - `decoders/cloud/` — 41 decoders (AWS, Azure, GCP, SaaS)
 - `decoders/dns/` — 53 decoders (DNS protocols, query types)
+
+**Integrations by platform:**
+- `integrations/linux/`, `integrations/windows/`, `integrations/macos/`, `integrations/kubernetes/`, `integrations/cloud/`, `integrations/dns/`, `integrations/mongodb/`, `integrations/cross-platform/` — Wazuh integration configuration files for external platforms and services
+
+**Automation scripts by platform:**
+- `scripts/linux/`, `scripts/windows/`, `scripts/macos/`, `scripts/kubernetes/`, `scripts/cloud/`, `scripts/dns/`, `scripts/mongodb/`, `scripts/cross-platform/` — Bash scripts for deployment, configuration, and automation tasks based on blog tutorials
 
 ### `CVE-2025-24016/`
 
