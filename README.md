@@ -84,6 +84,29 @@ misc/                 — debug one-liners, vendor-specific notes
 | `pipeline.json` | Ingest pipeline definition |
 | `wazuh-template.json` | Index template for wazuh-alerts |
 
+### `wazuh.blog/`
+
+Custom Wazuh rules and decoders extracted from blog articles. All files are validated against Wazuh XML specifications.
+
+**Rules by platform:**
+- `rules/linux/` — 42 rules (tetragon, AppArmor, credential access, persistence, resource monitoring)
+- `rules/windows/` — 81 rules (ransomware protection, FIM, event log monitoring)
+- `rules/cross-platform/` — 750 rules (web attacks, cloud, Kubernetes, malware detection)
+- `rules/macos/` — 13 rules (system monitoring)
+- `rules/kubernetes/` — 51 rules (cluster security)
+- `rules/cloud/` — 36 rules (cloud platform alerts)
+- `rules/dns/` — 15 rules (DNS monitoring)
+- `rules/mongodb/` — 23 rules (database security)
+
+**Decoders by platform:**
+- `decoders/linux/` — 15 decoders (tetragon, health metrics)
+- `decoders/windows/` — 3 decoders (ransomware, FIM)
+- `decoders/cross-platform/` — 338 decoders (vault audit, sysmon, cloud logs)
+- `decoders/macos/` — 27 decoders (system events)
+- `decoders/kubernetes/` — 11 decoders (API server, kubelet)
+- `decoders/cloud/` — 41 decoders (AWS, Azure, GCP, SaaS)
+- `decoders/dns/` — 53 decoders (DNS protocols, query types)
+
 ### `CVE-2025-24016/`
 
 Wazuh unsafe deserialization RCE — detection and PoC material.
