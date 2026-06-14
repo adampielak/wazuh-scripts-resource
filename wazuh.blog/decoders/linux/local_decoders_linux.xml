@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Source: https://wazuh.com/blog/security-observability-on-linux-with-wazuh-and-tetragon/ | Article: Security observability on Linux with Wazuh and Tetragon -->
+<decoder name="tetragon">
+  <program_name>^tetragon-events</program_name>
+</decoder>
+
+<decoder name="tetragon-args">
+  <parent>tetragon</parent>
+  <regex type="pcre2">process_kprobe.*args.*"family":"([\w\s]+)"</regex>
+  <order>family</order>
+</decoder>
+
+<decoder name="tetragon-args">
+  <parent>tetragon</parent>
+  <regex>process_kprobe\.*args\.*"saddr":"(\d+.\d+.\d+.\d+)"</regex>
+  <order>srcip</order>
+</decoder>
+
+<decoder name="tetragon-args">
+  <parent>tetragon</parent>
+  <regex>process_kprobe\.*args\.*"sport":(\d+)</regex>
+  <order>srcport</order>
+</decoder>
+
+<decoder name="tetragon-args">
+  <parent>tetragon</parent>
+  <regex>process_kprobe\.*args\.*"daddr":"(\d+.\d+.\d+.\d+)"</regex>
+  <order>dstip</order>
+</decoder>
+
+<decoder name="tetragon-args">
+  <parent>tetragon</parent>
+  <regex>process_kprobe\.*args\.*"dport":(\d+)</regex>
+  <order>dstport</order>
+</decoder>
+
+<decoder name="tetragon-args">
+  <parent>tetragon</parent>
+  <plugin_decoder>JSON_Decoder</plugin_decoder>
+</decoder>
+<!-- Source: https://wazuh.com/blog/monitoring-linux-resource-usage/ | Article: Monitoring Linux resource usage with Wazuh -->
+<!-- CPU, memory, disk metric -->
+<decoder name="general_health_check">
+     <program_name>general_health_check</program_name>
+</decoder>
+
+<decoder name="general_health_check1">
+  <parent>general_health_check</parent>
+  <prematch>ossec: output: 'general_health_metrics':\.</prematch>
+  <regex offset="after_prematch">(\S+) (\S+) (\S+)</regex>
+  <order>cpu_usage_%, memory_usage_%, disk_usage_%</order>
+</decoder>
+
+<!-- load average metric -->
+<decoder name="load_average_check">
+     <program_name>load_average_check</program_name>
+</decoder>
+
+<decoder name="load_average_check1">
+  <parent>load_average_check</parent>
+  <prematch>ossec: output: 'load_average_metrics':\.</prematch>
+  <regex offset="after_prematch">(\S+), (\S+), (\S+)</regex>
+  <order>1min_loadAverage, 5mins_loadAverage, 15mins_loadAverage</order>
+</decoder>
+
+<!-- Memory metric -->
+<decoder name="memory_check">
+     <program_name>memory_check</program_name>
+</decoder>
+
+<decoder name="memory_check1">
+  <parent>memory_check</parent>
+  <prematch>ossec: output: 'memory_metrics':\.</prematch>
+  <regex offset="after_prematch">(\S+) (\S+)</regex>
+  <order>memory_used_bytes, memory_available_bytes</order>
+</decoder>
+
+<!-- Disk metric -->
+<decoder name="disk_check">
+     <program_name>disk_check</program_name>
+</decoder>
+
+<decoder name="disk_check1">
+  <parent>disk_check</parent>
+  <prematch>ossec: output: 'disk_metrics':\.</prematch>
+  <regex offset="after_prematch">(\S+) (\S+)</regex>
+  <order>disk_used_bytes, disk_free_bytes</order>
+</decoder>

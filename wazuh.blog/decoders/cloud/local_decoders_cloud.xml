@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Source: https://wazuh.com/blog/monitoring-rapid-scada-with-wazuh/ | Article: Monitoring Rapid SCADA with Wazuh -->
+<decoder name="rapid-scada-ip">
+  <parent>windows-date-format</parent>
+  <use_own_name>true</use_own_name>
+  <prematch offset="after_parent" type="pcre2">^\[.+\]\[.+\$\]\[\w\w\w\] .+, IP .+</prematch>
+  <regex offset="after_parent" type="pcre2">^\[(.+)\]\[.+\$\]\[(\w\w\w)\] (.+, IP) (\d+\.\d+\.\d+\.\d+|\S+)</regex>
+  <order>hostname, status, message, srcip</order>
+</decoder>
+
+<decoder name="rapid-scada-no-ip">
+  <parent>windows-date-format</parent>
+  <use_own_name>true</use_own_name>
+  <prematch offset="after_parent" type="pcre2">^\[.+\]\[.+\$\]\[\w\w\w\]</prematch>
+  <regex offset="after_parent" type="pcre2">^\[(.+)\]\[.+\$\]\[(\w\w\w)\] (.+)</regex>
+  <order>hostname, status, message</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/integrating-imperva-cloud-web-application-firewall-cwaf/ | Article: Integrating Imperva cloud web application firewall (CWAF) with Wazuh -->
+<decoder name="imperva-waf">
+  <prematch>CEF:0\|Incapsula\|SIEMIntegration</prematch>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>\|SIEMIntegration\|\.\|\.\|(\.+)\|</regex>
+  <order>waf.event</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>\|\.\|\.\|\.+\|(\d+)\|\sfileId=</regex>
+  <order>waf.eventcode</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>fileId=(\.+)\s</regex>
+  <order>waf.fileID</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>sourceServiceName=(\.+)\ssiteid=</regex>
+  <order>waf.sourceServiceName</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>siteid=(\.+)\suid=</regex>
+  <order>waf.siteid</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>requestClientApplication=(\.+)\sdeviceFacility=</regex>
+  <order>waf.requestClientApplication</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>deviceFacility=(\.+)\scs2=</regex>
+  <order>waf.deviceFacility</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>cs2=(\.+)\scs2Lable=</regex>
+  <order>waf.javascript.support</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>cs3=(\.+)\scs3Label=</regex>
+  <order>waf.co.support</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>cs1=(\.+)\scs1Label=</regex>
+  <order>waf.cap.support</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>cs4=(\.+)\scs4Lable=</regex>
+  <order>cs4</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>cs5=(\.+)\scs5Lable=</regex>
+  <order>waf.clappsig</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>dproc=(\.+)\scs6=</regex>
+  <order>waf.browser.type</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>cs6=(\.+)\scs6Lable=</regex>
+  <order>waf.clapp</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>ccode=(\.+)\s</regex>
+  <order>waf.country.code</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>cicode=(\.+)\scs7=</regex>
+  <order>waf.city.code</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>cs7=(\.+)\scs7Label=</regex>
+  <order>waf.latitude</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>cs8=(\.+)\scs8Label=</regex>
+  <order>waf.longitude</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>customer=(\.+)\sstart=</regex>
+  <order>waf.customer</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>start=(\.+)\srequest=</regex>
+  <order>waf.start</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>request=(\.+)\s</regex>
+  <order>waf.request</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>ref=(\.+)\srequestMethod=</regex>
+  <order>waf.ref</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>requestMethod=(\.+)\s</regex>
+  <order>waf.requestMethod</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>cn1=(\.+)\s</regex>
+  <order>waf.http.code</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>app=(\.+)\sact=</regex>
+  <order>waf.app</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>act=(\.+)\sdeviceExternalId=</regex>
+  <order>waf.act</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>deviceExternalId=(\.+)\spt=</regex>
+  <order>waf.deviceExternalId</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>cpt=(\.+)\ssrc=</regex>
+  <order>waf.cpt</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>src=(\.+)\s=ver</regex>
+  <order>waf.src</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>ver=(\.+)\send=</regex>
+  <order>waf.ver</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>fileType=(\.+)\sfilePermission=</regex>
+  <order>waf.fileType</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>filePermission=(\.+)\scs9=</regex>
+  <order>waf.filePermission</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>cs9=(\.+)\scs9Label=</regex>
+  <order>waf.rulename</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>xff=(\.*)\s</regex>
+  <order>waf.xff</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>sip=(\.*)\s</regex>
+  <order>waf.sip</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>spt=(\.*)\s</regex>
+  <order>waf.spt</order>
+</decoder>
+
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>
+  <regex>cs11=(\.*)\s</regex>
+  <order>waf.rule.info</order>
+</decoder>
+ 
+<decoder name="imperva_fields">
+  <parent>imperva-waf</parent>   <regex>cs11=[{"api_specification_violation_type":"(\w+)"</regex>
+  <order>waf.rule.violation</order>
+</decoder>

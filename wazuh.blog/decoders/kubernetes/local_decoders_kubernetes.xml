@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Source: https://wazuh.com/blog/container-image-security-with-wazuh-and-trivy/ | Article: Container image security with Wazuh and Trivy -->
+<decoder name="trivy-decoder">
+  <prematch>^Trivy:</prematch>
+</decoder>
+
+<decoder name="trivy-decoder-fields">
+  <parent>trivy-decoder</parent>
+  <regex offset="after_parent">"(\.+)","(\.+)","(\.+)","(\.+)","(\.+)","(\.+)"</regex>
+  <order>image, package, version, vulnerability_id, severity, description</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/docker-container-security-monitoring/ | Article: Docker container security monitoring with Wazuh -->
+<!-- Decoder for container resources information. -->
+<decoder name="docker-container-resource">
+  <program_name>^docker-container-resource</program_name>
+</decoder>
+
+<decoder name="docker-container-resource-child">
+  <parent>docker-container-resource</parent>
+  <prematch>ossec: output: 'docker container stats':</prematch>
+  <regex>(\S+) (\S+) (\S+) (\S+) / (\S+) (\S+) (\S+) / (\S+)</regex>
+  <order>container_id, container_name, container_cpu_usage, container_memory_usage, container_memory_limit, container_memory_perc, container_network_rx, container_network_tx</order>
+</decoder>
+
+<!-- Decoder for container health information. -->
+<decoder name="docker-container-health">
+  <program_name>^docker-container-health</program_name>
+</decoder>
+
+<decoder name="docker-container-health-child">
+  <parent>docker-container-health</parent>
+  <prematch>ossec: output: 'docker container ps':</prematch>
+  <regex offset="after_prematch" type="pcre2">(\S+) (\S+) (.*?) \((.*?)\)</regex>
+  <order>container_image, container_name, container_uptime, container_health_status</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/monitoring-docker-container-logs/ | Article: Monitoring Docker container logs with Wazuh -->
+<decoder name="docker_log_decoder">
+  <program_name>^docker</program_name>
+</decoder>
+
+<decoder name="docker_log_decoder_2">
+  <parent>docker_log_decoder</parent>
+  <regex offset="after_parent">(\d*.\d*.\d*.\d*)</regex>
+  <order>srcip</order>
+</decoder>
+
+<decoder name="docker_log_decoder_2">
+  <parent>docker_log_decoder</parent>
+  <regex offset="after_parent">(\d*/\w*/\d*)</regex>
+  <order>date</order>
+</decoder>
+
+<decoder name="docker_log_decoder_2">
+  <parent>docker_log_decoder</parent>
+  <regex offset="after_parent">(\d*:\d*:\d*)</regex>
+  <order>time</order>
+</decoder>
+
+<decoder name="docker_log_decoder_2">
+  <parent>docker_log_decoder</parent>
+  <regex offset="after_parent">("\w*\s/\s\w*/\d.\d"\s\d*)</regex>
+  <order>web_action</order>
+</decoder>

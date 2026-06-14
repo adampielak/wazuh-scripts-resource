@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Group: mongodb -->
+<group name="wazuh_blog_custom,">
+<!-- Source: https://wazuh.com/blog/monitoring-mongodb-atlas-with-wazuh/ | Article: Monitoring MongoDB Atlas with Wazuh -->
+
+  <rule id="250000" level="1">
+    <if_sid>80200</if_sid>
+    <field name="aws.service.name">mongodb</field>
+    <description>MongoDB Atlas logs grouped.</description>
+  </rule>
+  
+  <rule id="250001" level="1">
+    <field name="links">cloud.mongodb.com/api/atlas</field>
+    <description>MongoDB Atlas logs grouped.</description>
+  </rule>
+
+
+
+  <rule id="250002" level="10" frequency="3" timeframe="120">
+    <if_matched_sid>100600</if_matched_sid>
+    <field name="aws.log">"codeName":"Unauthorized"</field>
+    <description>MongoDB Atlas: Multiple attempts to run unauthorized activity.</description>
+  </rule>
+
+  <rule id="250003" level="10" frequency="3" timeframe="120">
+    <if_matched_sid>100600</if_matched_sid>
+    <field name="aws.log">Failed to authenticate</field>
+    <field name="aws.log">!mms-automation</field>
+    <description>MongoDB Atlas: Multiple failed authentication attempts.</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+  </rule>
+  
+
+
+
+  <rule id="250004" level="15">
+    <if_sid>250000</if_sid>
+    <field name="aws.log">"msg":"dropDatabase"</field>
+    <description>MongoDB Atlas: database dropped.</description>
+    <mitre>
+      <id>T1485</id>
+    </mitre>
+  </rule>
+
+  <rule id="250005" level="14">
+    <if_sid>250000</if_sid>
+    <field name="aws.log">"dropCollection"</field>
+    <description>MongoDB Atlas: Collection dropped.</description>
+    <mitre>
+      <id>T1485</id>
+    </mitre>
+  </rule>
+
+
+
+
+  <rule id="250006" level="8">
+    <if_sid>250001</if_sid>
+    <field name="eventTypeName">MONGODB_USER_ADDED</field>
+    <description>MongoDB Atlas: New database user created.</description>
+    <mitre>
+      <id>T1136</id>
+    </mitre>
+  </rule>
+  
+  <rule id="250007" level="8">
+    <if_sid>250001</if_sid>
+    <field name="eventTypeName">NETWORK_PERMISSION_ENTRY_ADDED</field>
+    <description>MongoDB Atlas: New network $(whitelistEntry) added to IP access list.</description>
+    <mitre>
+      <id>T1562</id>
+    </mitre>
+  </rule>
+  
+  <rule id="250008" level="8">
+    <if_sid>250001</if_sid>
+    <field name="eventTypeName">NETWORK_PERMISSION_ENTRY_REMOVED</field>
+    <description>MongoDB Atlas: IP access list removed/modified.</description>
+    <mitre>
+      <id>T1562</id>
+    </mitre>
+  </rule>
+  
+  <rule id="250009" level="8">
+    <if_sid>250001</if_sid>
+    <field name="eventTypeName">SERVICE_ACCOUNT_CREATED</field>
+    <description>MongoDB Atlas: Service account $(clientId) created.</description>
+    <mitre>
+      <id>T1562</id>
+    </mitre>
+  </rule>
+  
+  <rule id="250010" level="8">
+    <if_sid>250001</if_sid>
+    <field name="eventTypeName">SERVICE_ACCOUNT_ADDED_TO_GROUP</field>
+    <description>MongoDB Atlas: Service account $(clientId) added to group $(groupId).</description>
+    <mitre>
+      <id>T1562</id>
+    </mitre>
+  </rule>
+<!-- Source: https://wazuh.com/blog/monitoring-mongodb-database/ | Article: Monitoring MongoDB database using Wazuh -->
+
+
+<!-- This rule detects when a user authenticates to a database -->
+  <rule id="250011" level="1">
+    <field name="atype" type="pcre2">authenticate</field>
+    <field name="result" type="pcre2">^0$</field>
+    <description>The user $(param.user) has successfully authenticated into the $(param.db) database.</description>
+  </rule>
+
+  <rule id="250012" level="9" frequency="3" timeframe="60">
+    <if_matched_sid>100091</if_matched_sid>
+    <description>The user $(param.user) has successfully authenticated to the $(param.db) database.</description>
+    <mitre>
+      <id>T1556</id>
+    </mitre>
+  </rule>
+
+<!-- This rule will detect when a user authentication failure occurs -->
+  <rule id="250013" level="9">
+    <field name="atype" type="pcre2">authenticate</field>
+    <field name="result" type="pcre2">(?!0\b)\d+</field>
+    <description>Authentication attempt failure from a user named $(param.user) to the $(param.db) database.</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+  </rule>
+
+<!-- This rule detects when a database is created.-->
+  <rule id="250014" level="4">
+    <field name="atype" type="pcre2">authCheck</field>
+    <field name="param.command" type="pcre2">listCollections</field>
+    <field name="result" type="pcre2">^0$</field>
+    <description>A database name $(param.args.$db) has been created.</description>
+    <mitre>
+      <id>T1565.001</id>
+    </mitre>
+  </rule>
+
+<!-- This rule detects when a collection is created.-->
+  <rule id="250015" level="4">
+    <field name="atype" type="pcre2">authCheck</field>
+    <field name="param.command" type="pcre2">^create$</field>
+    <field name="result" type="pcre2">^0$</field>
+    <description>A collection name $(param.args.create), has been created in the $(param.args.$db) database.</description>
+    <mitre>
+      <id>T1485</id>
+    </mitre>
+   </rule>
+
+<!-- This rule detects when a document is being added to a
+collection "C" in the CRUD framework -->
+   <rule id="250016" level="4">
+     <field name="atype" type="pcre2">authCheck</field>
+     <field name="param.command" type="pcre2">^insert$</field>
+     <field name="result" type="pcre2">^0$</field>
+     <description>A document has been added to the $(param.args.insert) collection in the $(param.args.$db)
+database.</description>
+     <mitre>
+       <id>T1565</id>
+     </mitre>
+   </rule>
+
+<!-- This rule detects when a document is being read from your collection. "R" in the CRUD framework -->
+    <rule id="250017" level="4">
+      <field name="atype" type="pcre2">authCheck</field>
+      <field name="param.command" type="pcre2">^find$</field>
+      <field name="result" type="pcre2">^0$</field>
+      <description>A document has been read from the $(param.args.find) collection in the $(param.args.$db)
+database.</description>
+    </rule>
+
+
+<!-- This rule detects when an update is being made to the
+collection of the database or a database. "U" in the CRUD
+framework -->
+    <rule id="250018" level="4">
+      <field name="atype" type="pcre2">authCheck</field>
+      <field name="param.command" type="pcre2">^update$</field>
+      <field name="result" type="pcre2">^0$</field>
+      <description>A document has been updated from the $(param.args.update) collection in the $(param.args.$db)
+database.</description>
+      <mitre>
+        <id>T1485</id>
+        <id>T1565</id>
+      </mitre>
+    </rule>
+
+<!-- This rule detects when a delete action is being made to
+the collection of the database. "D" in the CRUD framework -->
+    <rule id="250019" level="7">
+      <field name="atype" type="pcre2">authCheck</field>
+      <field name="param.command" type="pcre2">^delete$</field>
+      <field name="result" type="pcre2">^0$</field>
+      <description>A document has been deleted from the $(param.args.delete) collection in the $(param.args.$db)
+database.</description>
+      <mitre>
+        <id>T1485</id>
+      </mitre>
+    </rule>
+
+<!-- This rule detects when a collection is dropped from a
+database -->
+    <rule id="250020" level="7">
+      <field name="atype" type="pcre2">authCheck</field>
+     <field name="param.command" type="pcre2">^drop$</field>
+     <field name="result" type="pcre2">^0$</field>
+      <description>A collection name $(param.args.drop), has been dropped from the $(param.args.$db) database.</description>
+      <mitre>
+        <id>T1485</id>
+      </mitre>
+    </rule>
+
+<!-- This rule detects when a database is dropped or deleted -->
+    <rule id="250021" level="7">
+      <field name="atype" type="pcre2">authCheck</field>
+      <field name="param.command" type="pcre2">^dropDatabase$</field>
+      <field name="result" type="pcre2">^0$</field>
+      <description>A database name $(param.args.$db) has been deleted.</description>
+      <mitre>
+        <id>T1485</id>
+      </mitre>
+    </rule>
+
+<!-- This rule will detect when a user performs unauthorized CRUD  action -->
+  <rule id="250022" level="9">
+    <field name="atype" type="pcre2">authCheck</field>
+    <field name="param.command" type="pcre2">(listCollections|create|insert|find|update|delete|drop|dropDatabase|createUser)</field>
+    <field name="result" type="pcre2">(?!0\b)\d+</field>
+    <description>An unauthorized user with details $(users) performed a $(param.command) command on the $(param.args.$db) database</description>
+    <mitre>
+      <id>T1565</id>
+    </mitre>
+  </rule>
+</group>

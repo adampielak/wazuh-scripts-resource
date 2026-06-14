@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Group: macos -->
+<group name="wazuh_blog_custom,">
+<!-- Source: https://wazuh.com/blog/detecting-frigidstealer-malware-with-wazuh/ | Article: Detecting FrigidStealer malware with Wazuh -->
+
+
+<!-- Initial execution -->
+  <rule id="220000" level="11">
+    <decoded_as>macOS_ddaolimaki-daunito</decoded_as>
+    <match type="pcre2">(?i)app being registered is:(".*ddaolimaki-daunito")</match>
+    <description>Possible FrigidStealer malware detected at $(executable_path)</description>
+    <mitre>
+      <id>T1204</id>
+    </mitre>
+  </rule>
+
+<!-- DNS query -->
+  <rule id="220001" level="11" frequency="2" ignore="60">
+    <decoded_as>macOS_mDNSResponder</decoded_as>
+    <field name="program_type" type="pcre2">DNSServiceQueryRecord</field>
+    <field name="process_name" type="pcre2">ddaolimaki.*</field>
+    <description>FrigidStealer malware is making a suspicious DNS query to $(hash). Possible data exfiltration to C2 server.</description>
+    <mitre>
+      <id>T1105</id>
+      <id>T1041</id>
+      <id>T1071.004</id>
+    </mitre>
+  </rule>
+
+<!-- Data exfiltration -->
+  <rule id="220002" level="11">
+    <decoded_as>macOS_ddaolimaki-daunito</decoded_as>
+    <field name="executable_url" type="pcre2">.*Finder</field>
+    <field name="sender_identity" type="pcre2">.*</field>
+    <description>FrigidStealer malware (ddaolimaki-daunito) is attempting to use Apple Events, potentially for unauthorized inter-process communication or data exfiltration.</description>
+    <mitre>
+      <id>T1543</id>
+      <id>T1055</id>
+      <id>T1559</id>
+    </mitre>
+  </rule>
+
+<!-- Process termination -->
+  <rule id="220003" level="11">
+    <match type="pcre2">(?i)Removed job for.*ddaolimaki.*</match>
+    <description>FrigidStealer malware process terminated after data exfiltration.</description>
+    <mitre>
+      <id>T1489</id>
+    </mitre>
+  </rule>
+
+<!-- Persistence -->
+  <rule id="220004" level="11">
+    <decoded_as>macOS_launchservicesd</decoded_as>
+    <match type="pcre2">(?i)(?i)"LSBundlePath"="(.*Safari Updater.app)"</match>
+    <field name="application_type" type="pcre2">Foreground</field>
+    <field name="bundle_id" type="pcre2">com.wails.ddaolimaki-daunito</field>
+    <description>Possible FrigidStealer malware running in $(application_type)</description>
+    <mitre>
+      <id>T1541</id>
+    </mitre>
+  </rule>
+<!-- Source: https://wazuh.com/blog/monitoring-macos-resources/ | Article: Monitoring macOS resources with Wazuh -->
+
+
+<!-- High memory usage -->
+<rule id="220005" level="12">
+  <decoded_as>memory_health</decoded_as>
+  <field type="pcre2" name="memory_usage_%">^(0*[8-9]\d|0*[1-9]\d{2,})</field>
+  <description>Memory usage is high: $(memory_usage_%)%</description>
+  <options>no_full_log</options>
+</rule>
+
+<!-- High CPU usage -->
+<rule id="220006" level="12">
+  <decoded_as>CPU_health</decoded_as>
+  <field type="pcre2" name="cpu_usage_%">^(0*[8-9]\d|0*[1-9]\d{2,})</field>
+  <description>CPU usage is high: $(cpu_usage_%)%</description>
+  <options>no_full_log</options>
+</rule>
+
+<!-- High disk usage -->
+<rule id="220007" level="12">
+  <decoded_as>disk_health</decoded_as>
+  <field type="pcre2" name="disk_usage_%">^(0*[7-9]\d|0*[1-9]\d{2,})</field>
+  <description>Disk space is running low: $(disk_usage_%)%</description>
+  <options>no_full_log</options>
+</rule>
+
+<!-- CPU usage check -->
+<rule id="220008" level="3">
+  <decoded_as>cpu_usage_check</decoded_as>
+  <description>CPU usage metrics: $(totalCPU_used_%) of CPU is in use</description>
+</rule>
+    
+<!-- Load average check -->
+<rule id="220009" level="3">
+  <decoded_as>load_average_check</decoded_as>
+  <description>Load average metrics: $(1min_loadAverage) for last 1 minute</description>
+</rule>
+
+<!-- Memory check -->
+<rule id="220010" level="3">
+  <decoded_as>memory_check</decoded_as>
+  <description>Memory metrics: $(memory_used_bytes) of memory is in use</description>
+</rule>
+
+<!-- Disk check -->
+<rule id="220011" level="3">
+  <decoded_as>disk_check</decoded_as>
+  <description>Disk metrics: $(disk_used) of storage is in use</description>
+</rule>
+
+<!-- Network check -->
+<rule id="220012" level="3">
+  <decoded_as>network_check</decoded_as>
+  <description>Network metrics: $(network_in) inbound | $(network_out) outbound</description>
+</rule>
+</group>

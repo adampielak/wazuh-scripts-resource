@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Group: linux -->
+<group name="wazuh_blog_custom,">
+<!-- Source: https://wazuh.com/blog/security-observability-on-linux-with-wazuh-and-tetragon/ | Article: Security observability on Linux with Wazuh and Tetragon -->
+
+  <rule id="200000" level="1">
+    <decoded_as>tetragon</decoded_as>
+    <description>Tetragon events grouped.</description>
+  </rule>
+
+  <rule id="200001" level="5">
+    <if_sid>200000</if_sid>
+    <field name="process_exec.process.exec_id">\.*</field>
+    <description>The process "$(process_exec.process.binary)" has been executed.</description>
+    <mitre>
+      <id>T1059</id>
+    </mitre>
+    process_exec,
+  </rule>
+
+  <rule id="200002" level="5">
+    <if_sid>200000</if_sid>
+    <field name="process_exit.process.exec_id">\.*</field>
+    <description>The process "$(process_exit.process.binary)" has exited.</description>
+    <mitre>
+      <id>T1489</id>
+    </mitre>
+    process_exit,
+  </rule>
+
+  <rule id="200003" level="5">
+    <if_sid>200000</if_sid>
+    <field name="process_kprobe.process.exec_id">\.*</field>
+    <description>Kernel event detected.</description>
+    <mitre>
+      <id>T1547.006</id>
+    </mitre>
+    process_kprobe,
+  </rule>
+<!-- Source: https://wazuh.com/blog/security-observability-on-linux-with-wazuh-and-tetragon/ | Article: Security observability on Linux with Wazuh and Tetragon -->
+
+  <rule id="200004" level="9">
+    <if_sid>110003</if_sid>
+    <field name="family">AF_INET|AF_INET6</field>
+    <description>Outbound connection to "$(dstip)" on port "$(dstport)" detected.</description>
+    <mitre>
+      <id>T1049</id>
+      <id>T1041</id>
+    </mitre>
+  </rule>
+<!-- Source: https://wazuh.com/blog/enhancing-linux-security-with-apparmor-and-wazuh/ | Article: Enhancing Linux security with AppArmor and Wazuh -->
+
+  <rule id="200005" level="3">
+    <if_sid>554</if_sid>
+    <field name="file">/etc/apparmor.d/</field>
+    <description>AppArmor profile added: $(file)</description>
+  </rule>
+
+
+
+  <rule id="200006" level="5">
+    <if_sid>550</if_sid>
+    <field name="file">/etc/apparmor.d/</field>
+    <description>AppArmor profile modified: $(file)</description>
+    <mitre>
+      <id>T1562.001</id>
+    </mitre>
+  </rule>
+
+
+
+  <rule id="200007" level="7">
+    <if_sid>553</if_sid>
+    <field name="file">/etc/apparmor.d/</field>
+    <description>AppArmor profile deleted: $(file)</description>
+    <mitre>
+      <id>T1562.001</id>
+    </mitre>
+  </rule>
+<!-- Source: https://wazuh.com/blog/hunting-for-linux-credential-access/ | Article: Hunting for Linux credential access attacks with Wazuh -->
+
+<!--Detect access to offline password storing files-->
+  <rule id="200008" level="7">
+    <if_sid>80700</if_sid>
+    <list field="audit.key" lookup="match_key_value" check_value="passwd">etc/lists/audit-keys</list>
+    <description>File access - The file $(audit.file.name) was accessed</description>
+    audit_command,
+    <mitre>
+      <id>T1003.008</id>
+    </mitre>
+  </rule>
+
+  <rule id="200009" level="10">
+    <if_sid>80700</if_sid>
+    <list field="audit.key" lookup="match_key_value" check_value="shadow">etc/lists/audit-keys</list>
+    <description>Possible adversary activity - $(audit.file.name) was accessed</description>
+    audit_command,
+    <mitre>
+      <id>T1003.008</id>
+    </mitre>
+  </rule>
+
+<!--Detecting suspicious activities related to unsecured credentials -->
+  <rule id="200010" level="0">
+    <if_sid>80700</if_sid>
+    <list field="audit.key" lookup="match_key_value" check_value="ssh">etc/lists/audit-keys</list>
+    <description>Possible adversary activity - $(audit.file.name) was accessed</description>
+    audit_command,
+  </rule>
+
+  <rule id="200011" level="0">
+    <if_sid>80700</if_sid>
+    <list field="audit.key" lookup="match_key_value" check_value="history">etc/lists/audit-keys</list>
+    <description>Possible adversary activity - $(audit.file.name) was accessed</description>
+    audit_command,
+  </rule>
+
+  <rule id="200012" level="0">
+    <if_sid>80700</if_sid>
+    <field name="audit.exe" type="pcre2">/usr/bin/*grep</field>
+    <field name="audit.execve.a2">cred|password|login</field>
+    <description>Possible adversary activity - $(audit.file.name) was accessed</description>
+    audit_command,
+  </rule>
+
+  <rule id="200013" level="10">
+    <if_sid>200010,200011,200012</if_sid>
+    <description>Possible adversary activity - searching for previously used credentials in system files</description>
+    audit_command,
+    <mitre>
+      <id>T1552.001</id>
+    </mitre>
+  </rule>
+<!-- Source: https://wazuh.com/blog/monitoring-linux-resource-usage/ | Article: Monitoring Linux resource usage with Wazuh -->
+
+
+<!-- CPU, Memory and Disk usage -->
+<rule id="200014" level="3">
+  <decoded_as>general_health_check</decoded_as>
+  <description>CPU | MEMORY | DISK usage metrics</description>
+</rule>
+
+<!-- High memory usage -->
+<rule id="200015" level="12">
+  <if_sid>200014</if_sid>
+  <field name="memory_usage_%" type="pcre2">^[8-9]\d|100</field>
+  <description>Memory usage is high: $(memory_usage_%)%</description>
+  <options>no_full_log</options>
+</rule>
+
+<!-- High CPU usage -->
+<rule id="200016" level="12">
+  <if_sid>200014</if_sid>
+  <field name="cpu_usage_%" type="pcre2">^[8-9]\d|100</field>
+  <description>CPU usage is high: $(cpu_usage_%)%</description>
+  <options>no_full_log</options>
+</rule>
+
+<!-- High disk usage -->
+<rule id="200017" level="12">
+  <if_sid>200014</if_sid>
+  <field name="disk_usage_%" type="pcre2">[7-9]\d|100</field>
+  <description>Disk space is running low: $(disk_usage_%)%</description>
+  <options>no_full_log</options>
+</rule>
+<!-- Load average check -->
+<rule id="200018" level="3">
+  <decoded_as>load_average_check</decoded_as>
+  <description>load average metrics</description>
+</rule>
+
+<!-- memory check -->
+<rule id="200019" level="3">
+  <decoded_as>memory_check</decoded_as>
+  <description>Memory metrics</description>
+</rule>
+
+<!-- Disk check -->
+<rule id="200020" level="3">
+  <decoded_as>disk_check</decoded_as>
+  <description>Disk metrics</description>
+</rule>
+<!-- Source: https://wazuh.com/blog/detecting-common-linux-persistence/ | Article: Detecting common Linux persistence techniques with Wazuh -->
+
+  <rule id="200021" level="10">
+    <if_sid>554</if_sid>
+    <field name="file" type="pcre2">\/authorized_keys$</field>
+    <description>SSH authorized_keys file "$(file)" has been added</description>
+    <mitre>
+      <id>T1098.004</id>
+    </mitre>
+  </rule>
+  
+  <rule id="200022" level="10">
+    <if_sid>550</if_sid>
+    <field name="file" type="pcre2">\/authorized_keys$</field>
+    <description>SSH authorized_keys file "$(file)" has been modified</description>
+    <mitre>
+      <id>T1098.004</id>
+    </mitre>
+  </rule>
+
+  <rule id="200023" level="10">
+    <if_sid>550</if_sid>
+    <field name="file" type="pcre2">\/sshd_config$</field>
+    <description>SSH config file "$(file)" has been modified</description>
+    <mitre>
+      <id>T1098.004</id>
+    </mitre>
+  </rule>
+<!-- Source: https://wazuh.com/blog/detecting-common-linux-persistence/ | Article: Detecting common Linux persistence techniques with Wazuh -->
+
+  <rule id="200024" level="10">
+    <if_sid>80700</if_sid>
+    <field name="audit.key">possible_rcscript_attack</field>
+    <description>[RC script "$(audit.file.name)" has been added, modified, or deleted]: Possible RC scripts persistence attack</description>
+    <mitre>
+      <id>T1037.004</id>
+    </mitre>
+  </rule>
+
+  <rule id="200025" level="10">
+    <if_sid>530</if_sid>
+    <match>'ppid of rc_local': 1$</match>
+    <description>[PPID of rc-local.service is 1]: Possible RC scripts persistence attack</description>
+    <mitre>
+      <id>T1037.004</id>
+    </mitre>
+  </rule>
+
+  <rule id="200026" level="10">
+    <if_sid>530</if_sid>
+    <regex type="pcre2">'state of rc_local service': (?!inactive$)</regex>
+    <description>[rc-local.service is not inactive]: Possible RC scripts persistence attack</description>
+    <mitre>
+      <id>T1037.004</id>
+    </mitre>
+  </rule>
+<!-- Source: https://wazuh.com/blog/detecting-common-linux-persistence/ | Article: Detecting common Linux persistence techniques with Wazuh -->
+
+  <rule id="200027" level="10">
+    <if_sid>550</if_sid>
+    <field name="file" type="pcre2">\/etc\/passwd$|\/etc\/shadow$|\/etc\/gshadow$|\/etc\/group$|\/etc\/login.defs$</field>
+    <description>[File "$(file)" has been modified]: Possible local account manipulation</description>
+    <mitre>
+      <id>T1136.001</id>
+      <id>T1078.003</id>
+    </mitre>
+  </rule>
+<!-- Source: https://wazuh.com/blog/detecting-common-linux-persistence/ | Article: Detecting common Linux persistence techniques with Wazuh -->
+
+  <rule id="200028" level="10">
+    <if_sid>554</if_sid>
+    <field name="file" type="pcre2">\/etc\/profile$|\/etc/profile.d\/|\/etc\/bash.bashrc$|\/etc\/bash.bash_logout$|.bash_profile$|.bash_login$|.profile$|.bash_profile$|.bashrc$|.bash_logout$</field>
+    <description>Unix shell config "$(file)" has been added</description>
+    <mitre>
+      <id>T1546.004</id>
+    </mitre>
+  </rule>
+  
+  <rule id="200029" level="10">
+    <if_sid>550</if_sid>
+    <field name="file" type="pcre2">\/etc\/profile$|\/etc/profile.d\/|\/etc\/bash.bashrc$|\/etc\/bash.bash_logout$|.bash_profile$|.bash_login$|.profile$|.bash_profile$|.bashrc$|.bash_logout$</field>
+    <description>Unix shell config "$(file)" has been modified</description>
+    <mitre>
+      <id>T1546.004</id>
+    </mitre>
+  </rule>
+<!-- Source: https://wazuh.com/blog/detecting-common-linux-persistence/ | Article: Detecting common Linux persistence techniques with Wazuh -->
+
+  <rule id="200030" level="10">
+    <if_sid>80700</if_sid>
+    <field name="audit.key">possible_preload_hijack</field>
+    <description>[Config file "ld.so.preload" has been added, modified, or deleted]: Possible dynamic linker hijacking</description>
+    <mitre>
+  	<id>T1574.006</id>
+    </mitre>
+  </rule>
+
+  <rule id="200031" level="10">
+    <if_sid>530</if_sid>
+    <match>'check for LD_PRELOAD envar'</match>
+    <description>[LD_PRELOAD envar has been set]: Possible dynamic linker hijacking</description>
+    <mitre>
+      <id>T1574.006</id>
+    </mitre>
+  </rule>
+<!-- Source: https://wazuh.com/blog/detecting-common-linux-persistence/ | Article: Detecting common Linux persistence techniques with Wazuh -->
+
+  <rule id="200032" level="12">
+    <if_sid>554</if_sid>
+    <field name="file" type="pcre2">\/systemd\/system\/.*\.timer$|\/systemd\/system\/.*\.service$</field>
+    <description>[Systemd "$(file)" has been added]: Possible task/job scheduling</description>
+    <mitre>
+      <id>T1053.006</id>
+    </mitre>
+  </rule>
+  
+  <rule id="200033" level="12">
+    <if_sid>550</if_sid>
+    <field name="file" type="pcre2">\/systemd\/system\/.*\.timer$|\/systemd\/system\/.*\.service$</field>
+    <description>[Systemd "$(file)" has been modified]: Possible task/job scheduling</description>
+    <mitre>
+      <id>T1053.006</id>
+    </mitre>
+  </rule>
+<!-- Source: https://wazuh.com/blog/detecting-illegitimate-crypto-miners/ | Article: Detecting illegitimate crypto miners on Linux endpoints -->
+
+
+  <rule id="200034" level="10">
+    <if_sid>554</if_sid>
+    <field name="file"  type="pcre2">\/authorized_keys$</field>
+    <regex type="pcre2">added</regex>
+    <description>SSH authorized_keys file "$(file)" has been added.</description>
+    <mitre>
+      <id>T1098.004</id>
+    </mitre>
+  </rule>
+  
+  <rule id="200035" level="10">
+    <if_sid>550</if_sid>
+    <field name="file"  type="pcre2">\/authorized_keys$</field>
+    <regex type="pcre2">modified</regex>
+    <description>SSH authorized_keys file "$(file)" has been modified.</description>
+    <mitre>
+      <id>T1098.004</id>
+    </mitre>
+  </rule>
+<!-- Source: https://wazuh.com/blog/detecting-illegitimate-crypto-miners/ | Article: Detecting illegitimate crypto miners on Linux endpoints -->
+<!-- Cron messages -->
+
+  <rule id="200036" level="0">
+    <program_name>crond|crontab</program_name>
+    <description>Crontab rule group.</description>
+  </rule>
+
+  <rule id="200037" level="0">
+    <if_sid>200036</if_sid>
+    <match>^unable to exec</match>
+    <description>Wrong crond configuration.</description>
+  </rule>
+
+  <rule id="200038" level="5">
+    <if_sid>200036</if_sid>
+    <match>BEGIN EDIT</match>
+    <description>Crontab opened for editing.</description>
+  </rule>
+
+  <rule id="200039" level="5">
+    <if_sid>200036</if_sid>
+    <match>REPLACE</match>
+    <description>Crontab entry changed.</description>
+    pci_dss_10.2.7,pci_dss_10.6.1,gpg13_4.13,gdpr_IV_35.7.d,hipaa_164.312.b,nist_800_53_AU.14,nist_800_53_AU.6,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,
+  </rule>
+
+  <rule id="200040" level="8">
+    <if_sid>200039</if_sid>
+    <match>REPLACE (root)</match>
+    <description>Root's crontab entry changed.</description>
+    <mitre>
+      <id>T1053.003</id>
+    </mitre>
+    pci_dss_10.2.7,pci_dss_10.6.1,pci_dss_10.2.2,gpg13_4.13,gdpr_IV_35.7.d,gdpr_IV_32.2,hipaa_164.312.b,nist_800_53_AU.14,nist_800_53_AU.6,nist_800_53_AC.6,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,
+  </rule>
+
+ <!-- SYSLOG,CRON -->
+<!-- Source: https://wazuh.com/blog/detecting-illegitimate-crypto-miners/ | Article: Detecting illegitimate crypto miners on Linux endpoints -->
+<rule id="200041" level="12">
+  <if_sid>550,554</if_sid>
+  <field name="file" type="pcre2">^\/var\/spool\/cron\/crontabs</field>
+  <description>Cron job has been modified for user "$(uname)". The following modification was made: "$(changed_content)"</description>
+  <mitre>
+    <id>T1053.003</id>
+  </mitre>
+</rule>
+<!-- Source: https://wazuh.com/blog/detecting-illegitimate-crypto-miners/ | Article: Detecting illegitimate crypto miners on Linux endpoints -->
+<integration>
+  <name>virustotal</name>
+  <api_key>API_KEY</api_key> <!-- Replace with your VirusTotal API key -->
+  syscheck
+  <alert_format>json</alert_format>
+</integration>
+<!-- Source: https://wazuh.com/blog/detecting-illegitimate-crypto-miners/ | Article: Detecting illegitimate crypto miners on Linux endpoints -->
+<rule id="200042" level="12" ignore="600">
+  <if_sid>530</if_sid>
+  <match>ossec: output: 'top cpu usage</match>
+  <regex type="pcre2">9\d%|100%</regex>
+  <description>CPU usage higher than 90%.</description>
+  <mitre>
+    <id>T1496</id>
+  </mitre>
+</rule>
+</group>

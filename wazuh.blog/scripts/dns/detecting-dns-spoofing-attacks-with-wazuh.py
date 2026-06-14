@@ -1,0 +1,2 @@
+<!-- Source: https://wazuh.com/blog/detecting-dns-spoofing-attacks-with-wazuh/ | Article: Detecting DNS spoofing attacks with Wazuh -->
+$ python3 -c "import scapy; print('Scapy version:', scapy.__version__)"

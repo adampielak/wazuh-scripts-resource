@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Group: kubernetes -->
+<group name="wazuh_blog_custom,">
+<!-- Source: https://wazuh.com/blog/detecting-kubernetes-attacks-with-wazuh-2/ | Article: Detecting Kubernetes attacks with Wazuh -->
+
+  <rule id="230000" level="0">
+    <field name="apiVersion">audit</field>
+    <description>Kubernetes audit log.</description>
+  </rule>
+
+  <rule id="230001" level="10">
+    <if_sid>230000</if_sid>
+    <regex type="pcre2">requestURI":"\/api\/v1\/secrets(?:\?[^"]*)?"\s*,\s*"verb"\s*:\s*"list"</regex>
+    <description>Potential credential access activity detected: cluster-wide enumeration of Kubernetes secrets.</description>
+    <mitre>
+      <id>T1552</id>
+    </mitre>
+  </rule>
+
+  <rule id="230002" level="10">
+    <if_sid>230000</if_sid>
+    <regex type="pcre2">requestURI":"\/api\/v1\/namespaces\/[^"\/]+\/pods\/[^"\/]+\/exec\?[^"]*%2Fvar%2Frun%2Fsecrets%2Fkubernetes\.io%2Fserviceaccount%2Ftoken[^"]*"\s*,\s*"verb"\s*:\s*"create"</regex>
+    <description>Potential credential access activity detected: pod exec request targeting Kubernetes service account token.</description>
+  </rule>
+
+  <rule id="230003" level="6">
+    <if_sid>230000</if_sid>
+    <regex type="pcre2">requestURI":"\/apis\/rbac\.authorization\.k8s\.io\/v1\/clusterroles(?:\?[^"]*)?"\s*,\s*"verb"\s*:\s*"create</regex>
+    <description>Kubernetes ClusterRole creation</description>
+    kubernetes,persistence,rbac_create_admin_clusterrole,
+    <mitre>
+      <id>T1098</id>
+    </mitre>
+  </rule>
+  
+  <rule id="230004" level="6">
+    <if_sid>230000</if_sid>
+    <regex type="pcre2">requestURI":"\/api\/v1\/namespaces\/[^"\/]+\/serviceaccounts(?:\?[^"]*)?"\s*,\s*"verb"\s*:\s*"create</regex>
+    <description>Kubernetes ServiceAccount creation</description>
+    kubernetes,persistence,rbac_create_admin_clusterrole,
+    <mitre>
+      <id>T1098</id>
+    </mitre>
+  </rule>
+  
+  <rule id="230005" level="6">
+    <if_sid>230000</if_sid>
+    <regex type="pcre2">requestURI":"\/apis\/rbac\.authorization\.k8s\.io\/v1\/clusterrolebindings(?:\?[^"]*)?"\s*,\s*"verb"\s*:\s*"create</regex>
+    <description>Kubernetes ClusterRoleBinding creation</description>
+    kubernetes,privilege_escalation,rbac_create_admin_clusterrole,
+    <mitre>
+      <id>T1098</id>
+    </mitre>
+  </rule>
+
+  <rule id="230006" level="12" timeframe="120" frequency="2">
+    <if_sid>230005</if_sid>
+    <if_matched_sid>110004</if_matched_sid>
+    <if_matched_sid>110005</if_matched_sid>
+    <description>Potential persistence and privilege escalation activity detected: Kubernetes ClusterRole, ServiceAccount, and ClusterRoleBinding created in close succession</description>
+    kubernetes,persistence,privilege_escalation,correlation,
+    <mitre>
+      <id>T1098</id>
+    </mitre>
+  </rule>
+
+  <rule id="230007" level="14">
+    <if_sid>230000</if_sid>
+    <field name="verb">create</field>
+    <field name="objectRef.resource">pods</field>
+    <regex type="pcre2">hostPath.*"path":"\/".*(mountPath":"\/host".*cat \/host\/etc\/passwd|cat \/host\/etc\/passwd.*mountPath":"\/host")</regex>
+    <description>Container breakout attempt detected: Kubernetes pod mounts the host root filesystem and accesses host files</description>
+    kubernetes,privilege_escalation,container_escape,hostpath,critical,
+    <mitre>
+      <id>T1611</id>
+    </mitre>
+  </rule>
+
+  <rule id="230008" level="14">
+    <if_sid>230000</if_sid>
+    <field name="objectRef.resource">nodes</field>
+    <field name="objectRef.subresource">proxy</field>
+    <field name="verb">get</field>
+    <field name="responseStatus.code">200</field>
+    <regex type="pcre2">system:serviceaccount.*$</regex>
+    <description>Possible Kubernetes privilege escalation through successful nodes/proxy access by a service account</description>
+    <mitre>
+      <id>T1068</id>
+    </mitre>
+    k8s_node_proxy_access,k8s_privilege_escalation,
+  </rule>
+
+  <rule id="230009" level="15">
+    <if_sid>230000</if_sid>
+    <field name="verb">create</field>
+    <field name="responseStatus.code">201</field>
+    <field name="requestObject.kind">Pod</field>
+    <regex type="pcre2">securityContext":\{"privileged":true\}</regex>
+    <description>Possible Kubernetes privilege escalation through successful creation of a privileged pod</description>
+    <mitre>
+      <id>T1611</id>
+    </mitre>
+    k8s_privileged_pod_creation,k8s_privilege_escalation,
+  </rule>
+
+  <!-- Stage 1: CSR created -->
+  <rule id="230010" level="8">
+    <if_sid>230000</if_sid>
+    <field name="objectRef.resource">certificatesigningrequests</field>
+    <field name="verb">create</field>
+    <field name="responseStatus.code">201</field>
+    <description>Kubernetes certificate signing request created for client certificate authentication</description>
+    <mitre>
+      <id>T1649</id>
+    </mitre>
+    k8s_csr_create,k8s_credential_access,
+  </rule>
+
+  <!-- Stage 2: Same CSR approved -->
+  <rule id="230011" level="10">
+    <if_sid>230000</if_sid>
+    <field name="objectRef.resource">certificatesigningrequests</field>
+    <field name="verb">update</field>
+    <field name="objectRef.subresource">approval</field>
+    <field name="responseStatus.code">200</field>
+    <description>Possible Kubernetes client certificate credential creation through successful CSR approval</description>
+    <mitre>
+      <id>T1649</id>
+    </mitre>
+    k8s_csr_approval,k8s_credential_access,k8s_persistence,
+  </rule>
+
+<!-- Stage 3:CSR status update by certificate controller -->
+  <rule id="230012" level="10">
+    <if_sid>230000</if_sid>
+    <field name="objectRef.resource">certificatesigningrequests</field>
+    <field name="verb">update</field>
+    <field name="objectRef.subresource">status</field>
+    <field name="responseStatus.code">200</field>
+    <field name="user.username" type="pcre2">^system:serviceaccount:.*:certificate-controller$</field>
+    <description>Kubernetes certificate signing request status updated by the certificate controller after approval</description>
+    <mitre>
+      <id>T1649</id>
+    </mitre>
+    k8s_csr_status_update,k8s_credential_access,
+  </rule>
+
+   <!-- Stage 4: CSR get -->
+  <rule id="230013" level="10">
+    <if_sid>230000</if_sid>
+    <field name="objectRef.resource">certificatesigningrequests</field>
+    <field name="verb">get</field>
+    <field name="responseStatus.code">200</field>
+    <description>Kubernetes certificate signing request retrieved after creation or approval</description>
+    <mitre>
+      <id>T1649</id>
+    </mitre>
+    k8s_csr_get,k8s_credential_access,
+  </rule>
+
+  <!-- Stage 5: Same CSR deleted shortly after approval -->
+  <rule id="230014" level="10">
+    <if_sid>230000</if_sid>
+    <field name="objectRef.resource">certificatesigningrequests</field>
+    <field name="verb">delete</field>
+    <field name="responseStatus.code">200</field>
+    <description>Kubernetes certificate signing request deleted after certificate issuance activity</description>
+    <mitre>
+      <id>T1649</id>
+    </mitre>
+    k8s_csr_abuse,k8s_privilege_escalation,k8s_persistence,
+  </rule>
+
+  <rule id="230015" level="14">
+    <if_sid>230000</if_sid>
+    <field name="objectRef.resource">serviceaccounts</field>
+    <field name="objectRef.subresource">token</field>
+    <field name="verb">create</field>
+    <field name="responseStatus.code">201</field>
+    <field name="objectRef.namespace">kube-system</field>
+    <field name="user.username" negate="yes">system:kube-controller-manager</field>
+    <field name="user.groups" type="pcre2" negate="yes">system:nodes</field>
+    <description>Possible Kubernetes persistence through successful creation of a long-lived service account token outside expected system activity</description>
+    <mitre>
+      <id>T1098</id>
+    </mitre>
+    k8s_long_lived_token,k8s_persistence,
+  </rule>
+<!-- Source: https://wazuh.com/blog/detecting-kubernetes-with-kubelinter-and-wazuh/ | Article: Detecting Kubernetes misconfigurations with KubeLinter and Wazuh -->
+
+  <!-- Parent rule: matches KubeLinter JSON findings -->
+  <rule id="230016" level="0">
+    <decoded_as>json</decoded_as>
+    <field name="integration">^kubelinter$</field>
+    <description>KubeLinter: Kubernetes misconfiguration finding detected.</description>
+  </rule>
+
+  <!-- Secret exposed as environment variable -->
+  <rule id="230017" level="12">
+    <if_sid>230016</if_sid>
+    <field name="check">^env-var-secret$</field>
+    <description>KubeLinter: $(kind) "$(name)" in namespace "$(namespace)" exposes a secret as a plain environment variable. Manifest: $(file).</description>
+    <mitre>
+      <id>T1552.007</id>
+    </mitre>
+  </rule>
+
+  <!-- Latest tag -->
+  <rule id="230018" level="7">
+    <if_sid>230016</if_sid>
+    <field name="check">^latest-tag$</field>
+    <description>KubeLinter: $(kind) "$(name)" in namespace "$(namespace)" uses an unpinned container image tag. Manifest: $(file).</description>
+    <mitre>
+      <id>T1204.003</id>
+    </mitre>
+  </rule>
+
+  <!-- Writable root filesystem -->
+  <rule id="230019" level="10">
+    <if_sid>230016</if_sid>
+    <field name="check">^no-read-only-root-fs$</field>
+    <description>KubeLinter: $(kind) "$(name)" in namespace "$(namespace)" has a container with a writable root filesystem. Manifest: $(file).</description>
+    <mitre>
+      <id>T1611</id>
+    </mitre>
+  </rule>
+
+  <!-- Privilege escalation allowed -->
+  <rule id="230020" level="13">
+    <if_sid>230016</if_sid>
+    <field name="check">^privilege-escalation-container$</field>
+    <description>KubeLinter: $(kind) "$(name)" in namespace "$(namespace)" allows privilege escalation. Manifest: $(file).</description>
+    <mitre>
+      <id>T1611</id>
+    </mitre>
+  </rule>
+
+  <!-- Privileged container -->
+  <rule id="230021" level="14">
+    <if_sid>230016</if_sid>
+    <field name="check">^privileged-container$</field>
+    <description>KubeLinter: $(kind) "$(name)" in namespace "$(namespace)" is running in privileged mode. Manifest: $(file).</description>
+    <mitre>
+      <id>T1611</id>
+    </mitre>
+  </rule>
+
+  <!-- Not running as non-root -->
+  <rule id="230022" level="10">
+    <if_sid>230016</if_sid>
+    <field name="check">^run-as-non-root$</field>
+    <description>KubeLinter: $(kind) "$(name)" in namespace "$(namespace)" is not set to run as a non-root user. Manifest: $(file).</description>
+    <mitre>
+      <id>T1611</id>
+    </mitre>
+  </rule>
+
+  <!-- No CPU requests -->
+  <rule id="230023" level="6">
+    <if_sid>230016</if_sid>
+    <field name="check">^unset-cpu-requirements$</field>
+    <description>KubeLinter: $(kind) "$(name)" in namespace "$(namespace)" has no CPU requests set. Manifest: $(file).</description>
+    <mitre>
+      <id>T1499</id>
+    </mitre>
+  </rule>
+
+  <!-- No memory limits -->
+  <rule id="230024" level="6">
+    <if_sid>230016</if_sid>
+    <field name="check">^unset-memory-requirements$</field>
+    <description>KubeLinter: $(kind) "$(name)" in namespace "$(namespace)" has no memory limits set. Manifest: $(file).</description>
+    <mitre>
+      <id>T1499</id>
+    </mitre>
+  </rule>
+<!-- Source: https://wazuh.com/blog/auditing-kubernetes-with-wazuh/ | Article: Auditing Kubernetes with Wazuh -->
+
+  <rule id="230025" level="0">
+    <location>k8s</location>
+    <field name="apiVersion">audit</field>
+    <description>Kubernetes audit log.</description>
+  </rule>
+
+  <rule id="230026" level="5">
+    <if_sid>230025</if_sid>
+    <regex type="pcre2">requestURI\":.+", \"verb\": \"create</regex>
+    <description>Kubernetes request to create resource</description>
+  </rule>
+
+  <rule id="230027" level="5">
+    <if_sid>230025</if_sid>
+    <regex type="pcre2">requestURI\":.+", \"verb\": \"delete</regex>
+    <description>Kubernetes request to delete resource</description>
+  </rule>
+
+  <rule id="230028" level="5">
+    <if_sid>230025</if_sid>
+    <regex type="pcre2">requestURI\":.+", \"verb\": \"patch</regex>
+    <description>Kubernetes request to patch resource</description>
+  </rule>
+
+  <rule id="230029" level="5">
+    <if_sid>230025</if_sid>
+    <regex type="pcre2">requestURI\":.+", \"verb\": \"update</regex>
+    <description>Kubernetes request to update resource</description>
+  </rule>
+<!-- Source: https://wazuh.com/blog/cloud-native-security-with-wazuh-and-falco/ | Article: Cloud native security with Wazuh and Falco -->
+
+  <rule id="230030" level="0">
+    <decoded_as>json</decoded_as>
+    <field name="output_fields.wazuh_integration">falco</field>
+    <description>Falco: run-time security logs.</description>
+    <options>no_full_log</options>
+  </rule>
+
+  <rule id="230031" level="4">
+    <if_sid>230030</if_sid>
+    <field name="priority">Info</field>
+    <description>"Falco Alert - " $(output)</description>
+    <options>no_full_log</options>
+  </rule>
+
+  <rule id="230032" level="6">
+    <if_sid>230030</if_sid>
+    <field name="priority">Notice</field>
+    <description>"Falco Alert - " $(output)</description>
+    <options>no_full_log</options>
+  </rule>
+
+  <rule id="230033" level="8">
+    <if_sid>230030</if_sid>
+    <field name="priority">Warning</field>
+    <description>"Falco Alert - " $(output)</description>
+    <options>no_full_log</options>
+  </rule>
+
+  <rule id="230034" level="10">
+    <if_sid>230030</if_sid>
+    <field name="priority">Error</field>
+    <description>"Falco Alert - " $(output)</description>
+    <options>no_full_log</options>
+  </rule>
+
+  <rule id="230035" level="12">
+    <if_sid>230030</if_sid>
+    <field name="priority">Critical</field>
+    <description>"Falco Alert - " $(output)</description>
+    <options>no_full_log</options>
+  </rule>
+
+  <rule id="230036" level="14">
+    <if_sid>230030</if_sid>
+    <field name="priority">Alert</field>
+    <description>"Falco Alert - " $(output)</description>
+    <options>no_full_log</options>
+  </rule>
+
+  <rule id="230037" level="16">
+    <if_sid>230030</if_sid>
+    <field name="priority">Emergency</field>
+    <description>"Falco Alert - " $(output)</description>
+    <options>no_full_log</options>
+  </rule>
+<!-- Source: https://wazuh.com/blog/container-image-security-with-wazuh-and-trivy/ | Article: Container image security with Wazuh and Trivy -->
+
+  <!-- Parent Rule for Trivy alerts -->
+  <rule id="230038" level="0">
+	<decoded_as>trivy-decoder</decoded_as>
+	<description>Trivy alert detected.</description>
+  </rule>
+
+  <!-- This rule detects a critical severity vulnerability in a container image -->
+  <rule id="230039" level="14">
+	<if_sid>230038</if_sid>
+	<field name="severity">CRITICAL</field>
+	<description>Trivy alert [CRITICAL]: Vulnerabilty '$(vulnerability_id)' detected in package '$(package)' version '$(version)' on container image '$(image)'.</description>
+  </rule>
+
+  <!-- This rule detects a high severity vulnerability in a container image -->
+  <rule id="230040" level="12">
+	<if_sid>230038</if_sid>
+	<field name="severity">HIGH</field>
+	<description>Trivy alert [HIGH]: Vulnerabilty '$(vulnerability_id)' detected in package '$(package)' version '$(version)' on container image '$(image)'.</description>
+  </rule>
+
+  <!-- This rule detects a medium severity vulnerability in a container image -->
+  <rule id="230041" level="7">
+	<if_sid>230038</if_sid>
+	<field name="severity">MEDIUM</field>
+	<description>Trivy alert [MEDIUM]: Vulnerabilty '$(vulnerability_id)' detected in package '$(package)' version '$(version)' on container image '$(image)'.</description>
+  </rule>
+
+  <!-- This rule detects a low severity vulnerability in a container image -->
+  <rule id="230042" level="4">
+	<if_sid>230038</if_sid>
+	<field name="severity">LOW</field>
+	<description>Trivy alert [LOW]: Vulnerabilty '$(vulnerability_id)' detected in package '$(package)' version '$(version)' on container image '$(image)'.</description>
+  </rule>
+
+  <!-- This rule detects an unknown severity vulnerability in a container image -->
+  <rule id="230043" level="7">
+	<if_sid>230038</if_sid>
+	<field name="severity">UNKNOWN</field>
+	<description>Trivy alert [UNKNOWN]: Vulnerabilty '$(vulnerability_id)' detected in package '$(package)' version '$(version)' on container image '$(image)'.</description>
+  </rule>
+<!-- Source: https://wazuh.com/blog/docker-container-security-monitoring/ | Article: Docker container security monitoring with Wazuh -->
+
+  <!-- Rule for container resources information. -->
+  <rule id="230044" level="5">
+    <decoded_as>docker-container-resource</decoded_as>
+    <description>Docker: Container $(container_name) Resources</description>
+    container_resource,
+  </rule>
+  
+  <!-- Rule to trigger when container CPU and memory usage are above 80%. -->
+  <rule id="230045" level="12">
+    <if_sid>230044</if_sid>
+    <field name="container_cpu_usage" type="pcre2">^(0*[8-9]\d|0*[1-9]\d{2,})</field>
+    <field name="container_memory_perc" type="pcre2">^(0*[8-9]\d|0*[1-9]\d{2,})</field>
+    <description>Docker: Container $(container_name) CPU usage ($(container_cpu_usage)) and memory usage ($(container_memory_perc)) is over 80%</description>
+    container_resource,
+  </rule>
+
+  <!-- Rule to trigger when container CPU usage is above 80%. -->
+  <rule id="230046" level="12">
+    <if_sid>230044</if_sid>
+    <field name="container_cpu_usage" type="pcre2">^(0*[8-9]\d|0*[1-9]\d{2,})</field>
+    <description>Docker: Container $(container_name) CPU usage ($(container_cpu_usage)) is over 80%</description>
+    container_resource,
+  </rule>  
+  
+  <!-- Rule to trigger when container memory usage is above 80%. -->
+  <rule id="230047" level="12">
+    <if_sid>230044</if_sid>
+    <field name="container_memory_perc" type="pcre2">^(0*[8-9]\d|0*[1-9]\d{2,})</field>
+    <description>Docker: Container $(container_name) memory usage ($(container_memory_perc)) is over 80%</description>
+    container_resource,
+  </rule>
+
+  <!-- Rule for container health information. -->
+  <rule id="230048" level="5">
+    <decoded_as>docker-container-health</decoded_as>
+    <description>Docker: Container $(container_name) is $(container_health_status)</description>
+    container_health,
+  </rule>
+   
+  <!-- Rule to trigger when a container is unhealthy. -->
+  <rule id="230049" level="12">
+    <if_sid>230048</if_sid>
+    <field name="container_health_status">^unhealthy$</field>
+    <description>Docker: Container $(container_name) is $(container_health_status)</description>
+    container_health,
+  </rule>
+<!-- Source: https://wazuh.com/blog/monitoring-docker-container-logs/ | Article: Monitoring Docker container logs with Wazuh -->
+
+  <rule id="230050" level="5">
+    <field name="web_action">"GET / HTTP/1.1" 200</field>
+    <description>Docker Container: Successful Web GET request on Container: $(program_name) from $(srcip)</description> <mitre>
+      <id>T1016.001</id>
+    </mitre>
+    docker-log-rule,
+  </rule>
+</group>

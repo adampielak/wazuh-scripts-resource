@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Group: dns -->
+<group name="wazuh_blog_custom,">
+<!-- Source: https://wazuh.com/blog/detecting-dns-spoofing-attacks-with-wazuh/ | Article: Detecting DNS spoofing attacks with Wazuh -->
+
+  <rule id="260000" level="0">
+    <decoded_as>json</decoded_as>
+    <description>Zeek alerts</description>
+  </rule>
+
+  <rule id="260001" level="5">
+    <if_sid>260000</if_sid>
+    <field name="dnsquery">\w+.</field>
+    <dstport type="pcre2">^53$</dstport>
+    <field name="resolved_by">\d+.\d+.\d+.\d+</field>
+    <description>Zeek: DNS Query $(dnsquery) attempted from source ip $(srcip) source port $(srcport) resolved to IP(s) $(resolved_by)</description>
+  </rule>
+
+
+
+
+
+
+<!-- Base rule - only real DNS events (child of your existing 100901) -->
+  <rule id="260002" level="2">
+    <if_sid>260001</if_sid>
+    <description>Zeek: DNS transaction analyzed</description>
+  </rule>
+
+  <!-- 1. Conflicting answers for the same query -->
+  <rule id="260003" level="10" frequency="3" timeframe="60">
+    <if_matched_sid>101000</if_matched_sid>
+    <same_field>dnsquery</same_field>
+    <different_field>resolved_by</different_field>
+    <description>Zeek: DNS Cache Poisoning - Conflicting answers for $(dnsquery) (real vs spoofed)</description>
+  </rule>
+
+
+<!-- 2. Low TTL from unexpected resolver (DNS Spoofing) -->
+  <rule id="260004" level="9">
+    <if_sid>260002</if_sid>
+    <field name="time_to_live" type="pcre2">\[?(?:[0-5]?[0-9])\]?</field>   <!-- Any TTL with 1 or 2 digits (≤99) -->
+    <list field="dstip" lookup="not_address_match_key">etc/lists/Allowed_dnsresolvers</list>
+    <description>Zeek: Possible DNS Spoofing - Low TTL ($(time_to_live)) from unexpected resolver ($(dstip)) for $(dnsquery)</description>
+    <mitre>
+      <id>T1565.002</id>
+    </mitre>
+  </rule>
+
+
+<!-- 3. Authoritative Answer (AA=true) from untrusted source -->
+  <rule id="260005" level="8">
+    <if_sid>260002</if_sid>
+    <field name="authoritative_answer">true</field>
+    <list field="dstip" lookup="not_address_match_key">etc/lists/Allowed_dnsresolvers</list>
+    <description>Zeek: Suspicious Authoritative Answer (AA=true) from untrusted IP ($(dstip)) for $(dnsquery)</description>
+  </rule>
+
+
+<!-- 4. Alert when /etc/hosts is modified -->
+  <rule id="260006" level="6">
+    <if_sid>550</if_sid>      
+    <field name="file">^/etc/hosts$</field>
+    <description>informational: /etc/hosts file was modified - Possible DNS spoofing or local redirection</description>
+    <mitre>
+      <id>T1565.002</id>  
+      <id>T1070.004</id>   
+    </mitre>
+  </rule>
+<!-- Source: https://wazuh.com/blog/detecting-dns-tunneling-attacks-with-wazuh/ | Article: Detecting DNS tunneling attacks with Wazuh -->
+
+
+  <!--BASE RULE. Matches all logs processed by the 'dns_monitor' decoder.-->
+  <rule id="260007" level="0">
+    <decoded_as>dns_monitor</decoded_as>
+    <description>DNS Monitor Base Event</description>
+  </rule>
+
+  <!--CONDITION 1: ENCODED QUERY (High Entropy Approximation). Detects long alphanumeric strings typical of Base64/Base32 within the query.-->
+  <rule id="260008" level="7">
+    <if_sid>260007</if_sid>
+    <field name="dns_query" type="pcre2">\b(?=[a-z0-9]*[0-9])(?=[a-z0-9]*[a-z])[a-z0-9]{10,}\b</field>
+    <description>DNS Query: ($(dns_query)) contains encoded string - [High Entropy]</description>
+  </rule>
+
+  <!-- CONDITION 2: DEEP SUBDOMAIN. Detects 2 or more subdomain levels (e.g., a.b.c.example.com).-->
+  <rule id="260009" level="7">
+    <if_sid>260007</if_sid>
+    <field name="dns_query" type="pcre2">^.+\..+\..+\..+</field>
+    <description>DNS Query: ($(dns_query)) contains deep subdomain structure - [Depth >= 2 subdomains]</description>
+  </rule>
+
+  <!--CONDITION 3: SUSPICIOUS TYPE. Detects TXT or NULL record types often used for tunneling.-->
+  <rule id="260010" level="7">
+    <if_sid>260007</if_sid>
+    <field name="dns_type" type="pcre2">TXT|NULL</field>
+    <description>DNS Query: ($(dns_query)) uses suspicious record type - [$(dns_type)]</description>
+  </rule>
+ 
+  <!-- COMBINATION RULES (2 or More Conditions)   -->
+
+  <!-- COMBINATION 1: Encoded + Suspicious Type -->
+  <rule id="260011" level="12">
+    <if_sid>260007</if_sid>
+    <field name="dns_query" type="pcre2">\b(?=[a-z0-9]*[0-9])(?=[a-z0-9]*[a-z])[a-z0-9]{10,}\b</field>
+    <field name="dns_type" type="pcre2">TXT|NULL</field>
+    <description>Suspicious DNS Query: ($(dns_query)) - [Encoded + $(dns_type) record type] - DNS Tunneling suspected!</description>
+  </rule>
+
+  <!-- COMBINATION 2: Deep Subdomain + Suspicious Type -->
+  <rule id="260012" level="12">
+    <if_sid>260007</if_sid>
+    <field name="dns_query" type="pcre2">^.+\..+\..+\..+</field>
+    <field name="dns_type" type="pcre2">TXT|NULL</field>
+    <description>Suspicious DNS Query: ($(dns_query)) - [Deep Subdomain + $(dns_type) record type] - DNS Tunneling suspected!</description>
+  </rule>
+
+  <!-- COMBINATION 3: Encoded + Deep Subdomain -->
+  <rule id="260013" level="12">
+    <if_sid>260007</if_sid>
+    <field name="dns_query" type="pcre2">\b(?=[a-z0-9]*[0-9])(?=[a-z0-9]*[a-z])[a-z0-9]{10,}\b</field>
+    <field name="dns_query" type="pcre2">^.+\..+\..+\..+</field>
+    <description>Suspicious DNS Query: ($(dns_query)) - [Encoded + Deep Subdomain] - DNS Tunneling suspected!</description>
+  </rule>
+
+  <!-- COMBINATION 4: All 3 Conditions (Encoded + Deep Subdomain + Suspicious Type) -->
+  <rule id="260014" level="15">
+    <if_sid>260007</if_sid>
+    <field name="dns_query" type="pcre2">[A-Za-z0-9]{16,}</field>
+    <field name="dns_query" type="pcre2">^.+\..+\..+\..+</field>
+    <field name="dns_type" type="pcre2">TXT|NULL</field>
+    <description>CRITICAL: Suspicious DNS Query: ($(dns_query))  - [All Conditions Met] - High Confidence DNS Tunneling!</description>
+  </rule>
+</group>

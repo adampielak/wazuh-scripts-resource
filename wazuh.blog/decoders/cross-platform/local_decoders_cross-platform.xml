@@ -1,0 +1,2009 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Source: https://wazuh.com/blog/monitoring-hashicorp-vault-activities-with-wazuh/ | Article: Monitoring HashiCorp Vault activities with Wazuh -->
+<decoder name="vault-audit">
+    <prematch>^[vault audit]</prematch>
+    <plugin_decoder offset="after_prematch">JSON_Decoder</plugin_decoder>
+</decoder>
+
+<decoder name="vault">
+  <program_name>^vault$</program_name>
+</decoder>
+
+<decoder name="vault-fields">
+  <parent>vault</parent>
+  <regex type="pcre2">\[(\w+)\]\s+([\w\.-]+):\s+(.*)</regex>
+  <order>vault_level, vault_component, vault_message</order>
+</decoder>
+
+<decoder name="vault-fields">
+  <parent>vault</parent>
+  <regex type="pcre2">from ([\d\.]+):(\d+)</regex>
+  <order>srcip, srcport</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/monitoring-hashicorp-vault-activities-with-wazuh/ | Article: Monitoring HashiCorp Vault activities with Wazuh -->
+<decoder name="vault-seal">
+  <program_name>^vault-seal$</program_name>
+</decoder>
+
+<decoder name="vault-seal-fields">
+  <parent>vault-seal</parent>
+  <regex type="pcre2">(\w+)\s+-\s+(\w.+)</regex>
+  <order>vault_seal_level, vault_seal_message</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/detecting-and-responding-to-greenblood-ransomware-with-wazuh/ | Article: Detecting and responding to GreenBlood ransomware with Wazuh -->
+<decoder name="yara_decoder">
+    <prematch>wazuh-yara:</prematch>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/detecting-and-responding-to-cephalus-ransomware-with-wazuh/ | Article: Detecting and responding to Cephalus ransomware with Wazuh -->
+<decoder name="yara_decoder">
+    <prematch>wazuh-yara:</prematch>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/detecting-and-responding-to-funklocker-ransomware-with-wazuh/ | Article: Detecting and responding to Funklocker ransomware with Wazuh -->
+<decoder name="yara_decoder">
+    <prematch>wazuh-yara:</prematch>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/detecting-koske-malware-with-wazuh/ | Article: Detecting Koske malware with Wazuh -->
+<decoder name="sysmon-linux">
+  <program_name>sysmon</program_name>
+</decoder>
+
+<!-- system -->
+<!-- EventID -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pEventID\p(\d+)\p/EventID\p</regex>
+  <order>system.eventId</order>
+</decoder>
+
+<!-- keywords -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pKeywords\p(\.+)\p/Keywords\p</regex>
+  <order>system.keywords</order>
+</decoder>
+
+<!-- level -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pLevel\p(\d+)\p/Level\p</regex>
+  <order>system.level</order>
+</decoder>
+
+<!-- channel -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pChannel\p(\.+)\p/Channel\p</regex>
+  <order>system.channel</order>
+</decoder>
+
+<!-- opcode -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pOpcode\p(\d+)\p/Opcode\p</regex>
+  <order>system.opcode</order>
+</decoder>
+
+<!-- version -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pVersion\p(\d+)\p/Version\p</regex>
+  <order>system.version</order>
+</decoder>
+
+<!-- systemTime -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pTimeCreated SystemTime="(\d+-\d+-\d+T\d+:\d+:\d+.\d+\w)"</regex>
+  <order>system.systemTime</order>
+</decoder>
+
+<!-- eventRecordID -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pEventRecordID\p(\d+)\p/EventRecordID\p</regex>
+  <order>system.eventRecordID</order>
+</decoder>
+
+<!-- threadID -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">"\sThreadID="(\d+)"/\p</regex>
+  <order>system.threadID</order>
+</decoder>
+
+<!-- computer -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pComputer\p(\.+)\p/Computer\p</regex>
+  <order>system.computer</order>
+</decoder>
+
+<!-- task -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pTask\p(\d+)\p/Task\p</regex>
+  <order>system.task</order>
+</decoder>
+
+<!-- processID -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pExecution\sProcessID="(\d+)"</regex>
+  <order>system.processID</order>
+</decoder>
+
+<!-- eventdata -->
+<!-- originalFileName -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="OriginalFileName"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.originalFileName</order>
+</decoder>
+
+<!-- image -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="Image"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.image</order>
+</decoder>
+
+<!-- product -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="Product"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.product</order>
+</decoder>
+
+<!-- parentProcessGuid -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="ParentProcessGuid"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.parentProcessGuid</order>
+</decoder>
+
+<!-- description -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="Description"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.description</order>
+</decoder>
+
+<!-- logonGuid -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="LogonGuid"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.logonGuid</order>
+</decoder>
+
+<!-- parentCommandLine -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="ParentCommandLine"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.parentCommandLine</order>
+</decoder>
+
+<!-- processGuid -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="ProcessGuid"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.processGuid</order>
+</decoder>
+
+<!-- logonId -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="LogonId"\p(\d+)\p/Data\p</regex>
+  <order>eventdata.logonId</order>
+</decoder>
+
+<!-- parentProcessId -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="ParentProcessId"\p(\d+)\p/Data\p</regex>
+  <order>eventdata.parentProcessId</order>
+</decoder>
+
+<!-- processId -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="ProcessId"\p(\d+)\p/Data\p</regex>
+  <order>eventdata.processId</order>
+</decoder>
+
+<!-- currentDirectory -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="CurrentDirectory"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.currentDirectory</order>
+</decoder>
+
+<!-- utcTime -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="UtcTime"\p(\d+-\d+-\d+T\d+:\d+:\d+.\d+\w)\p/Data\p</regex>
+  <order>eventdata.utcTime</order>
+</decoder>
+
+<!-- hashes -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="Hashes"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.hashes</order>
+</decoder>
+
+<!-- parentImage -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="ParentImage"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.parentImage</order>
+</decoder>
+
+<!-- ruleName -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="RuleName"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.ruleName</order>
+</decoder>
+
+<!-- company -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="Company"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.company</order>
+</decoder>
+
+<!-- commandLine -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="CommandLine"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.commandLine</order>
+</decoder>
+
+<!-- integrityLevel -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="IntegrityLevel"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.integrityLevel</order>
+</decoder>
+
+<!-- fileVersion -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="FileVersion"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.fileVersion</order>
+</decoder>
+
+<!-- user -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="User"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.user</order>
+</decoder>
+
+<!-- terminalSessionId -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="TerminalSessionId"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.terminalSessionId</order>
+</decoder>
+
+<!-- parentUser -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="ParentUser"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.parentUser</order>
+</decoder>
+
+
+<!-- event 3 specials -->
+<!-- protocol -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="Protocol"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.protocol</order>
+</decoder>
+
+<!-- initiated -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="Initiated"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.initiated</order>
+</decoder>
+
+<!-- sourceIsIpv6 -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="SourceIsIpv6"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.sourceIsIpv6</order>
+</decoder>
+
+<!-- sourceIp -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="SourceIp"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.sourceIp</order>
+</decoder>
+
+<!-- sourceHostname -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="SourceHostname"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.sourceHostname</order>
+</decoder>
+
+<!-- sourcePort -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="SourcePort"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.sourcePort</order>
+</decoder>
+
+<!-- sourcePortName -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="SourcePortName"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.sourcePortName</order>
+</decoder>
+
+<!-- destinationIsIpv6 -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="DestinationIsIpv6"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.destinationIsIpv6</order>
+</decoder>
+
+<!-- destinationIp -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="DestinationIp"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.DestinationIp</order>
+</decoder>
+
+<!-- DestinationHostname -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="DestinationHostname"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.destinationHostname</order>
+</decoder>
+
+<!-- destinationPort -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="DestinationPort"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.destinationPort</order>
+</decoder>
+
+<!-- destinationPortName -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="DestinationPortName"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.destinationPortName</order>
+</decoder>
+
+<!-- event 4 specials -->
+<!-- state -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="State"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.state</order>
+</decoder>
+
+<!-- version -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="Version"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.version</order>
+</decoder>
+
+<!-- schemaVersion -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="SchemaVersion"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.schemaVersion</order>
+</decoder>
+
+<!-- event 9 specials -->
+<!-- device -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="Device"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.device</order>
+</decoder>
+
+<!-- event 11 specials -->
+<!-- targetFilename -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="TargetFilename"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.targetFilename</order>
+</decoder>
+
+<!-- creationUtcTime -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="CreationUtcTime"\p(\d+-\d+-\d+T\d+:\d+:\d+.\d+\w)\p/Data\p</regex>
+  <order>eventdata.creationUtcTime</order>
+</decoder>
+
+<!-- event 16 specials -->
+<!-- configuration -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="Configuration"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.configuration</order>
+</decoder>
+
+<!-- configurationFileHash -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="ConfigurationFileHash"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.configurationFileHash</order>
+</decoder>
+
+
+<!-- event 23 specials -->
+<!-- isExecutable -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="IsExecutable"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.isExecutable</order>
+</decoder>
+
+<!-- archived -->
+<decoder name="sysmon-linux-child">
+  <parent>sysmon-linux</parent>
+  <regex offset="after_parent">\pData Name="Archived"\p(\.+)\p/Data\p</regex>
+  <order>eventdata.archived</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/network-security-monitoring-with-wazuh-and-zeek/ | Article: Network security monitoring with Wazuh and Zeek -->
+<!-- DNS Query -->
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"ts":\d+</regex>
+  <order>timestamp</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"uid":"(\w+)"</regex>
+  <order>uid</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"id.orig_h":"(\d+.\d+.\d+.\d+)"</regex>
+  <order>srcip</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"id.orig_p":(\d+)</regex>​
+  <order>srcport</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"id.resp_h":"(\d+.\d+.\d+.\d+)"</regex>​
+  <order>dstip</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"id.resp_p":(\d+)</regex>
+  <order>dstport</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"proto":"(\w+)"</regex>​
+  <order>protocol</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"trans_id":(\d+)</regex>​
+  <order>DNS_transaction_id</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"query":"(\.+)"</regex>
+  <order>dnsquery</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"rcode_name":"(\w+)"</regex>​
+  <order>dns_response_code</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"AA":(\w+)</regex>​
+  <order>authoritative_answer</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"TC":(\w+)</regex>
+  <order>truncate_flag</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"RD":(\w+)</regex>
+  <order>recursion_desired_flag</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"RA":(\w+)</regex>
+  <order>recursion_avalable_flag</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"Z":(\d+)</regex>
+  <order>reserved_for_future_use</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"answers":(["\.+"])</regex>​
+  <order>resolved_by</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"TTLs":([\d+])</regex>​
+  <order>time_to_live</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"rejected":(\w+)</regex>
+  <order>query_rejected</order>
+</decoder>
+
+<!-- Additional DNS metadata -->
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"service":"(\w+)"</regex>
+  <order>application_layer_protocol</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"duration":(\d+.\d+)</regex>
+  <order>duration_of_the_connection</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"orig_bytes":(\d+)</regex>​
+  <order>byte_send_by_originator</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"resp_bytes":(\d+)</regex>​
+  <order>byte_sent_by_responder</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"conn_state":"(\w+)"</regex>
+  <order>connection_state</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"local_orig":(\w+)</regex>
+  <order>local_origin</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"local_resp":(\w+)</regex>
+  <order>local_response</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"missed_bytes":(\d+)</regex>
+  <order>missed_bytes_might_packet_loss</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"history":\w+</regex>
+  <order>history</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"orig_pkts":(\d+)</regex>
+  <order>packet_sent_by_origin</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"orig_ip_bytes":(\d+)</regex>
+  <order>ip_layer_bytes_from_origin</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"resp_pkts":(\d+)</regex>​
+  <order>packet_sent_by_responder</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"resp_ip_bytes":(\d+)</regex>
+  <order>ip_layer_bytes_sent_by_responder</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"ip_proto":(\d+)</regex>
+  <order>protocol_number_ip_header</order>
+</decoder>
+
+<!-- Software related -->
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"host":"(\d+.\d+.\d+.\d+)"</regex>
+  <order>host_ip</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"software_type":"(\.+)"</regex>
+  <order>software_type</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"name":"(\w+)"</regex>
+  <order>software_name</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"unparsed_version":"(\.+)"</regex>
+  <order>software_version</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"host_p":(\d+)</regex>
+  <order>host_port</order>
+</decoder>
+
+<!-- SSL/TLS Connection Decoders -->
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"version":"(\.+)"</regex>
+  <order>ssl_version</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"cipher":"(\.+)"</regex>
+  <order>ssl_cipher</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"curve":"(\.+)"</regex>
+  <order>ssl_curve</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"validation_status":"(\.+)"</regex>
+  <order>ssl_validation_status</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"server_name":"(\.+)"</regex>
+  <order>ssl_server_name</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"established":(\w+)</regex>
+  <order>ssl_established</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"resumed":(\w+)</regex>
+  <order>ssl_resumed</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"ssl_history":"(\.+)"</regex>
+  <order>ssl_history</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"cert_chain_fps":"(\.+)"</regex>
+  <order>ssl_cert_fingerprint</order>
+</decoder>
+
+<decoder name="zeek_decoder">
+  <parent>json</parent>
+  <regex>"next_protocol":"(\.+)"</regex>
+  <order>ssl_next_protocol</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/detecting-and-responding-to-apos-malware-with-wazuh/ | Article: Detecting and responding to Apos malware with Wazuh -->
+<decoder name="yara_decoder">
+    <prematch>wazuh-yara:</prematch>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/monitoring-mariadb-server-with-wazuh/ | Article: Monitoring MariaDB server with Wazuh -->
+<decoder name="mariadatabase-decoder">
+    <program_name>mariadb-server_auditing</program_name>
+</decoder>
+
+<decoder name="mariadatabase-syslog">
+    <parent>mariadatabase-decoder</parent>
+    <regex type="pcre2">^(\S+)\s+(\S+),([^,]*),([^,]*),(\d+),(\d+),([^,]*),([^,]*),(.*),(\d*)$</regex>
+    <order>mariadb.info,mariadb.serverhost,mariadb.username,mariadb.userhost,mariadb.connectionid,mariadb.queryid,mariadb.operation,mariadb.database,mariadb.object,mariadb.retcode</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/integrating-dependency-track-with-wazuh/ | Article: Integrating Dependency-Track with  Wazuh -->
+<decoder name="dependency_track">
+  <program_name>dependency_track</program_name>
+  <prematch>dependency_track: </prematch>
+  <plugin_decoder offset="after_prematch">JSON_Decoder</plugin_decoder>
+</decoder>
+<!-- Source: https://wazuh.com/blog/detecting-and-responding-mamona-ransomware-with-wazuh/ | Article: Detecting and responding Mamona ransomware with Wazuh -->
+<decoder name="yara_decoder">
+    <prematch>wazuh-yara:</prematch>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/detecting-doge-big-balls-ransomware-with-wazuh/ | Article: Detecting DOGE Big Balls ransomware with Wazuh -->
+<decoder name="yara_decoder">
+    <prematch>wazuh-yara:</prematch>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/detecting-medusa-ransomware-with-wazuh/ | Article: Detecting Medusa ransomware with Wazuh -->
+<decoder name="yara_decoder">
+    <prematch>wazuh-yara:</prematch>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/detecting-peaklight-malware-with-wazuh/ | Article: Detecting Peaklight malware with Wazuh -->
+<decoder name="yara_decoder">
+    <prematch>wazuh-yara:</prematch>
+</decoder>
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/detecting-lynx-ransomware-with-wazuh/ | Article: Detecting Lynx ransomware with Wazuh -->
+<decoder name="Wazuh_Ransomware">
+  <prematch>Wazuh_Ransomware_Protection:</prematch>
+</decoder>
+
+<decoder name="Wazuh_Ransomware_child">
+  <parent>Wazuh_Ransomware</parent>
+  <regex type="pcre2">Wazuh_Ransomware_Protection: (.*)</regex>
+  <order>rollback_status</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/detecting-brain-cipher-ransomware-with-wazuh/ | Article: Detecting Brain Cipher ransomware with Wazuh -->
+<decoder name="yara_decoder">
+    <prematch>wazuh-yara:</prematch>
+</decoder>
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/blx-stealer-detection-and-response-using-wazuh/ | Article: BLX stealer detection and response using Wazuh -->
+<!-- The decoders parse logs from the YARA scans -->
+<decoder name="yara_decoder">
+    <prematch>wazuh-yara:</prematch>
+</decoder>
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/detect-and-respond-to-blacksuit-ransomware-with-wazuh/ | Article: Detect and respond to BlackSuit ransomware with Wazuh -->
+<decoder name="yara_decoder">
+    <prematch>wazuh-yara:</prematch>
+</decoder>
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/integrating-bitdefender-gravityzone-with-wazuh/ | Article: Integrating Bitdefender GravityZone with Wazuh -->
+<decoder name="gravityzone">
+  <program_name>CEF</program_name>
+  <prematch>GravityZone</prematch>
+</decoder> 
+
+<decoder name="gravityzone_child">
+  <parent>gravityzone</parent>
+  <regex type="pcre2">.*(AntiMalware).*dvchost=(\S+) \S+ dvc=(\S+) \S+ BitdefenderGZMalwareType=(\S+) BitdefenderGZMalwareName=(.*) BitdefenderGZMalwareHash=(\S+) act=(\S+) filePath=(\S+) BitdefenderGZDetectionTime=(\S+).*BitdefenderGZCleanedMalwareCnt=(\d+) BitdefenderGZBlockedMalwareCnt=(\d+) BitdefenderGZDeletedMalwareCnt=(\d+) BitdefenderGZQuarantinedMalwareCnt=(\d+) BitdefenderGZIgnoredMalwareCnt=(\d+) BitdefenderGZPresentMalwareCnt=(\d+) suser=(\S+).*</regex>
+  <order>BitdefenderModule,DeviceHostName,DeviceIP,MalwareType,MalwareName,MalwareHash,Action,FilePath,DetectionTime,CleanedMalwareCount,BlockedMalwareCount,DeletedMalwareCount,QuarantinedMalwareCount,IgnoredMalwareCount,PresentMalwareCount,User</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/how-wazuh-detects-and-responds-to-mint-stealer/ | Article: How Wazuh detects and responds to Mint Stealer -->
+<!-- The decoders parse logs from the YARA scans -->
+<decoder name="yara_decoder">
+    <prematch>wazuh-yara:</prematch>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/daolpu-infostealer-detection-and-response-with-wazuh/ | Article: Daolpu infostealer detection and response with Wazuh -->
+<!-- The decoders parse logs from the YARA scans -->
+<decoder name="yara_decoder">
+    <prematch>wazuh-yara:</prematch>
+</decoder>
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/integrating-mimecast/ | Article: Integrating Mimecast with Wazuh -->
+<!--
+  Mimecast SIEM Logs
+-->
+
+<decoder name="mimecast">
+  <prematch type="pcre2">datetime=.*\|aCode=</prematch>
+</decoder>
+
+<decoder name="mimecast">
+  <prematch type="pcre2">datetime=.*\|acc=</prematch>
+</decoder>
+
+<decoder name="mimecast">
+  <prematch type="pcre2">datetime=.*Mimecast</prematch>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)datetime=(?:\\)?([^|]+)</regex>
+  <order>mimecast.datetime</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)aCode=(?:\\)?([^|]+)</regex>
+  <order>mimecast.aCode</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)acc=(?:\\)?([^|]+)</regex>
+  <order>mimecast.acc</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)IP=(?:\\)?([^|]+)</regex>
+  <order>mimecast.IP</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)RejType=(?:\\)?([^|]+)</regex>
+  <order>mimecast.RejType</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)Error=(?:\\)?([^|]+)</regex>
+  <order>mimecast.Error</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)RejCode=(?:\\)?([^|]+)</regex>
+  <order>mimecast.RejCode</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)Dir=(?:\\)?([^|]+)</regex>
+  <order>mimecast.Dir</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)headerFrom=(?:\\)?([^|]+)</regex>
+  <order>mimecast.headerFrom</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)Sender=(?:\\)?([^|]+)</regex>
+  <order>mimecast.Sender</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)Rcpt=(?:\\)?([^|]+)</regex>
+  <order>mimecast.Rcpt</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)Act=(?:\\)?([^|]+)</regex>
+  <order>mimecast.Act</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)RejInfo=(?:\\)?([^|]+)</regex>
+  <order>mimecast.RejInfo</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)TlsVer=(?:\\)?([^|]+)</regex>
+  <order>mimecast.TlsVer</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)Cphr=(?:\\)?([^|]+)</regex>
+  <order>mimecast.Cphr</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)Hld=(?:\\)?([^|]+)</regex>
+  <order>mimecast.Hld</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)AttSize=(?:\\)?([^|]+)</regex>
+  <order>mimecast.AttSize</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)IPNewDomain=(?:\\)?([^|]+)</regex>
+  <order>mimecast.IPNewDomain</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)IPReplyMismatch=(?:\\)?([^|]+)</regex>
+  <order>mimecast.IPReplyMismatch</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)AttCnt=(?:\\)?([^|]+)</regex>
+  <order>mimecast.AttCnt</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)IPInternalName=(?:\\)?([^|]+)</regex>
+  <order>mimecast.IPInternalName</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)AttNames=(?:\\)?([^|]+)</regex>
+  <order>mimecast.AttNames</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)MsgSize=(?:\\)?([^|]+)</regex>
+  <order>mimecast.MsgSize</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)MsgId=(?:\\)?([^|]+)</regex>
+  <order>mimecast.MsgId</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)IPThreadDict=(?:\\)?([^|]+)</regex>
+  <order>mimecast.IPThreadDict</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)IPSimilarDomain=(?:\\)?([^|]+)</regex>
+  <order>mimecast.IPSimilarDomain</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)Delivered=(?:\\)?([^|]+)</regex>
+  <order>mimecast.Delivered</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)Err=(?:\\)?([^|]+)</regex>
+  <order>mimecast.Err</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)ReceiptAck=(?:\\)?([^|]+)</regex>
+  <order>mimecast.ReceiptAck</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)Subject=(?:\\)?([^|]+)</regex>
+  <order>mimecast.Subject</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)Attempt=(?:\\)?([^|]+)</regex>
+  <order>mimecast.Attempt</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)Snt=(?:\\)?([^|]+)</regex>
+  <order>mimecast.Snt</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)UseTls=(?:\\)?([^|]+)</regex>
+  <order>mimecast.UseTls</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)MimecastIP=(?:\\)?([^|]+)</regex>
+  <order>mimecast.MimecastIP</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)fileName=(?:\\)?([^|]+)</regex>
+  <order>mimecast.fileName</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)sha256=(?:\\)?([^|]+)</regex>
+  <order>mimecast.sha256</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)Size=(?:\\)?([^|]+)</regex>
+  <order>mimecast.Size</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)Recipient=(?:\\)?([^|]+)</regex>
+  <order>mimecast.Recipient</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)SenderDomain=(?:\\)?([^|]+)</regex>
+  <order>mimecast.SenderDomain</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)fileExt=(?:\\)?([^|]+)</regex>
+  <order>mimecast.fileExt</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)Virus=(?:\\)?([^|]+)</regex>
+  <order>mimecast.Virus</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)sha1=(?:\\)?([^|]+)</regex>
+  <order>mimecast.sha1</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)SenderDomainInternal=(?:\\)?([^|]+)</regex>
+  <order>mimecast.SenderDomainInternal</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)fileMime=(?:\\)?([^|]+)</regex>
+  <order>mimecast.fileMime</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)CustomerIP=(?:\\)?([^|]+)</regex>
+  <order>mimecast.CustomerIP</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)Route=(?:\\)?([^|]+)</regex>
+  <order>mimecast.Route</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)md5=(?:\\)?([^|]+)</regex>
+  <order>mimecast.md5</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)SourceIP=(?:\\)?([^|]+)</regex>
+  <order>mimecast.SourceIP</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)UrlCategory=(?:\\)?([^|]+)</regex>
+  <order>mimecast.UrlCategory</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)ScanResultInfo=(?:\\)?([^|]+)</regex>
+  <order>mimecast.ScanResultInfo</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)URL=(?:\\)?([^|]+)</regex>
+  <order>mimecast.URL</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)Receipient=(?:\\)?([^|]+)</regex>
+  <order>mimecast.Receipient</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)Definition=(?:\\)?([^|]+)</regex>
+  <order>mimecast.Definition</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)Hits=(?:\\)?([^|]+)</regex>
+  <order>mimecast.Hits</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)Action=(?:\\)?([^|]+)</regex>
+  <order>mimecast.Action</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)TaggedExternal=(?:\\)?([^|]+)</regex>
+  <order>mimecast.TaggedExternal</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)TaggedMalicious=(?:\\)?([^|]+)</regex>
+  <order>mimecast.TaggedMalicious</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)InternalName=(?:\\)?([^|]+)</regex>
+  <order>mimecast.InternalName</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)CustomName=(?:\\)?([^|]+)</regex>
+  <order>mimecast.CustomName</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)NewDomain=(?:\\)?([^|]+)</regex>
+  <order>mimecast.NewDomain</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)SimilarInternalDomain=(?:\\)?([^|]+)</regex>
+  <order>mimecast.SimilarInternalDomain</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)SimilarCustomExternalDomain=(?:\\)?([^|]+)</regex>
+  <order>mimecast.SimilarCustomExternalDomain</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)SimilarMimecastExternalDomain=(?:\\)?([^|]+)</regex>
+  <order>mimecast.SimilarMimecastExternalDomain</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)ReplyMismatch=(?:\\)?([^|]+)</regex>
+  <order>mimecast.ReplyMismatch</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)ThreatDictionary=(?:\\)?([^|]+)</regex>
+  <order>mimecast.ThreatDictionary</order>
+</decoder>
+
+<decoder name="mimecast-siem-logs">
+  <parent>mimecast</parent>
+  <regex type="pcre2">(?i)reason=(?:\\)?([^|]+)</regex>
+  <order>mimecast.reason</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/kuiper-ransomware/ | Article: Kuiper ransomware detection and response with Wazuh -->
+<decoder name="yara_decoder">
+    <prematch>wazuh-yara:</prematch>
+</decoder>
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/monitoring-postgresql/ | Article: Monitoring PostgreSQL database with Wazuh -->
+<decoder name="postgresql">
+  <prematch type="pcre2">(?i)statement:</prematch>
+</decoder>
+<decoder name="postgresql_child">
+  <parent>postgresql</parent>
+  <regex type="pcre2">(?i)\d+-\d+-\d+\s+\d+:\d+:\d+.\d+\s+\S+\s+\[\d+\]\s+(\S+\s*\S+)@\S+\s+LOG:\s+statement:\s+create\s+database\s+([^"\s;]+)</regex>
+  <order>db_user,database</order>
+</decoder>
+<decoder name="postgresql_child">
+  <parent>postgresql</parent>
+  <regex type="pcre2">(?i)\d+-\d+-\d+\s+\d+:\d+:\d+.\d+\s+\S+\s+\[\d+\]\s+(\S+\s*\S+)@\S+\s+LOG:\s+statement:\s+create\s+database\s+"([^;]+)"</regex>
+  <order>db_user,database</order>
+</decoder>
+<decoder name="postgresql_child">
+  <parent>postgresql</parent>
+  <regex type="pcre2">(?i)\d+-\d+-\d+\s+\d+:\d+:\d+.\d+\s+\S+\s+\[\d+\]\s+(\S+\s*\S*)@\S+\s+LOG:\s+statement:\s+drop\s+database\s+([^"\s;]+)</regex>
+  <order>db_user,database</order>
+</decoder>
+<decoder name="postgresql_child">
+  <parent>postgresql</parent>
+  <regex type="pcre2">(?i)\d+-\d+-\d+\s+\d+:\d+:\d+.\d+\s+\S+\s+\[\d+\]\s+(\S+\s*\S*)@\S+\s+LOG:\s+statement:\s+drop\s+database\s+"([^;]+)"</regex>
+  <order>db_user,database</order>
+</decoder>
+<decoder name="postgresql_child">
+  <parent>postgresql</parent>
+  <regex type="pcre2">(?i)\d+-\d+-\d+\s+\d+:\d+:\d+.\d+\s+\S+\s+\[\d+\]\s+(\S+\s*\S*)@\S+\s+LOG:\s+statement:\s+create\s+table\s+([^"\s;]+)</regex>
+  <order>db_user,db_table</order>
+</decoder>
+<decoder name="postgresql_child">
+  <parent>postgresql</parent>
+  <regex type="pcre2">(?i)\d+-\d+-\d+\s+\d+:\d+:\d+.\d+\s+\S+\s+\[\d+\]\s+(\S+\s*\S*)@\S+\s+LOG:\s+statement:\s+create\s+table\s+"([^;]+)"</regex>
+       <order>db_user,db_table</order>
+</decoder>
+<decoder name="postgresql_child">
+  <parent>postgresql</parent>
+  <regex type="pcre2">(?i)\d+-\d+-\d+\s+\d+:\d+:\d+.\d+\s+\S+\s+\[\d+\]\s+(\S+\s*\S*)@\S+\s+LOG:\s+statement:\s+drop\s+table\s+([^"\s;]+)</regex>
+  <order>db_user,db_table</order>
+</decoder>
+<decoder name="postgresql_child">
+  <parent>postgresql</parent>
+  <regex type="pcre2">(?i)\d+-\d+-\d+\s+\d+:\d+:\d+.\d+\s+\S+\s+\[\d+\]\s+(\S+\s*\S*)@\S+\s+LOG:\s+statement:\s+drop\s+table\s+"([^;]+)"</regex>
+  <order>db_user,db_table</order>
+</decoder>
+<decoder name="postgresql_child">
+  <parent>postgresql</parent>
+  <regex type="pcre2">(?i)\d+-\d+-\d+\s+\d+:\d+:\d+.\d+\s+\S+\s+\[\d+\]\s+(\S+\s*\S*)@\S+\s+LOG:\s+statement:\s+insert\s+into\s+([^"\s;]+)</regex>
+       <order>db_user,db_table</order>
+</decoder>
+<decoder name="postgresql_child">
+  <parent>postgresql</parent>
+  <regex type="pcre2">(?i)\d+-\d+-\d+\s+\d+:\d+:\d+.\d+\s+\S+\s+\[\d+\]\s+(\S+\s*\S*)@\S+\s+LOG:\s+statement:\s+insert\s+into\s+"([^;]+)"</regex>
+  <order>db_user,db_table</order>
+</decoder>
+<decoder name="postgresql_child">
+  <parent>postgresql</parent>
+  <regex type="pcre2">(?i)\d+-\d+-\d+\s+\d+:\d+:\d+.\d+\s+\S+\s+\[\d+\]\s+(\S+\s*\S*)@\S+\s+LOG:\s+statement:\s+update\s+([^"\s;]+)</regex>
+  <order>db_user,db_table</order>
+</decoder>
+<decoder name="postgresql_child">
+  <parent>postgresql</parent>
+  <regex type="pcre2">(?i)\d+-\d+-\d+\s+\d+:\d+:\d+.\d+\s+\S+\s+\[\d+\]\s+(\S+\s*\S*)@\S+\s+LOG:\s+statement:\s+update\s+"([^;]+)"</regex>
+  <order>db_user,db_table</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/integrating-sentinelone/ | Article: Integrating SentinelOne XDR with Wazuh -->
+<decoder name="sentinelone">
+    <prematch>sentinel -  CEF:\d\|SentinelOne\|</prematch>
+</decoder>
+
+<decoder name="sentinelone">
+    <parent>sentinelone</parent>
+    <regex>\|SentinelOne\|\w+\|\S+\|\d+\|(\.*) -</regex>
+    <order>log_message1</order>
+</decoder>
+
+<decoder name="sentinelone">
+    <parent>sentinelone</parent>
+    <regex>\|SentinelOne\|\w+\|\S+\|\d+\|(\.*)\|\d+</regex>
+    <order>log_message2</order>
+</decoder>
+
+<decoder name="sentinelone">
+    <parent>sentinelone</parent>
+    <regex>\|SentinelOne\|\w+\|\S+\|\d+\|\.* machine (\.*)\|\d+</regex>
+    <order>endpoint</order>
+</decoder>
+
+<decoder name="sentinelone">
+    <parent>sentinelone</parent>
+    <regex>osName=(\w*)\s</regex>
+    <order>operating_system</order>
+</decoder>
+
+<decoder name="sentinelone">
+    <parent>sentinelone</parent>
+    <regex>fileHash=(\S+)\s</regex>
+    <order>file_hash</order>
+</decoder>
+
+<decoder name="sentinelone">
+    <parent>sentinelone</parent>
+    <regex>filePath=(\S+)\s</regex>
+    <order>file_path</order>
+</decoder>
+
+<decoder name="sentinelone">
+    <parent>sentinelone</parent>
+    <regex>activityID=(\S+)</regex>
+    <order>activity_id</order>
+</decoder>
+
+<decoder name="sentinelone">
+  <parent>sentinelone</parent>
+  <regex>suser=(\S+)</regex>
+  <order>suser</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/monitoring-network-devices/ | Article: Monitoring network devices with Wazuh -->
+<decoder name="mikrotik">
+  <prematch>^RouterOS7.1-logs: </prematch>
+</decoder>
+
+<decoder name="mikrotik1">
+  <parent>mikrotik</parent>
+  <regex type="pcre2">\S+ (\w+ \d+ \d+:\d+:\d+) MikroTik user (\S+) (.*?) from (\d+.\d+.\d+.\d+) via (\w+)</regex>
+  <order>logtimestamp, logged_user, action, ip_address, protocol</order>
+</decoder>
+
+<decoder name="mikrotik1">
+  <parent>mikrotik</parent>
+  <regex type="pcre2">\S+ (\w+ \d+ \d+:\d+:\d+) MikroTik dhcp-client on (\S+) (.*?) address (\d+.\d+.\d+.\d+)</regex>
+  <order>logtimestamp, interface, action, ip_address</order>
+</decoder>
+
+<decoder name="mikrotik1">
+  <parent>mikrotik</parent>
+  <regex type="pcre2">\S+ (\w+ \d+ \d+:\d+:\d+) MikroTik router (\S+)</regex>
+  <order>logtimestamp, action</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/meduza-stealer/ | Article: Meduza Stealer detection and mitigation with Wazuh -->
+<decoder name="yara_decoder">
+    <prematch>wazuh-yara:</prematch>
+</decoder>
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/blackbit-ransomware/ | Article: Blackbit ransomware detection with Wazuh -->
+<decoder name="yara_decoder">
+    <prematch>wazuh-yara:</prematch>
+</decoder>
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/detecting-njrat/ | Article: Detecting njRAT malware with Wazuh -->
+<decoder name="yara_decoder">
+    <prematch>wazuh-yara:</prematch>
+</decoder>
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/limerat-detection/ | Article: LimeRAT detection and response with Wazuh -->
+<decoder name="yara_decoder">
+    <prematch>wazuh-yara:</prematch>
+</decoder>
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/building-ioc-files/ | Article: Building IoC files for threat intelligence with Wazuh XDR -->
+<decoder name="ioc_builder">
+  <prematch>^\w\w\w\s\w+\s+\d+\s\d\d:\d\d:\d\d\s+\d+\s\S+\sioc-data:</prematch>
+  <regex offset="after_prematch">^(\S+)\|(\S+)\|(\S+)</regex>
+  <order>ioc_not_found, ioc, ioc_file</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/monitoring-vmware-esxi/ | Article: Monitoring VMware ESXi with Wazuh -->
+<decoder name="vmware-esxi">
+  <prematch>^vmware-esxi: </prematch>
+</decoder>
+
+<decoder name="esxi-syslog">
+  <parent>vmware-esxi</parent>
+  <regex type="pcre2">\S+ (\d+-\d+-\d+T\d+:\d+:\d+.\d+Z) (\S+) (\S+)\[(\d+)]:</regex>
+  <order>logtimestamp, esxi_host, process_name, process_id</order>
+</decoder>
+
+<decoder name="esxi-syslog">
+  <parent>vmware-esxi</parent>
+  <regex type="pcre2">\S+ (\d+-\d+-\d+T\d+:\d+:\d+.\d+Z) (\S+) (\S+):</regex>
+  <order>logtimestamp, esxi_host, process_name</order>
+</decoder>
+
+<decoder name="esxi-syslog">
+  <parent>vmware-esxi</parent>
+  <regex type="pcre2">\S+ (\w+\s\d+\s\d+:\d+\:\d+) (\S+) (\S+)\[(\d+)]:</regex>
+  <order>logtimestamp, esxi_host, process_name, process_id</order>
+</decoder>
+
+<decoder name="esxi-syslog">
+  <parent>vmware-esxi</parent>
+  <regex type="pcre2">\S+ (\w+\s\d+\s\d+:\d+\:\d+) (\S+) (\S+):</regex>
+  <order>logtimestamp, esxi_host, process_name</order>
+</decoder>
+
+<decoder name="esxi-syslog">
+  <parent>vmware-esxi</parent>
+  <regex type="pcre2">Event (\d+) : SSH session was opened for '(\w+)@(\S+)'</regex>
+  <order>event_id, user, srcip</order>
+</decoder>
+
+<decoder name="esxi-syslog">
+  <parent>vmware-esxi</parent>
+  <regex type="pcre2">Event (\d+) : SSH login has failed for '(\w+)@(\S+)'</regex>
+  <order>event_id, user, srcip</order>
+</decoder>
+
+<decoder name="esxi-syslog">
+  <parent>vmware-esxi</parent>
+  <regex type="pcre2">Event (\d+) : SSH session was closed for '(\w+)@(\S+)'</regex>
+  <order>event_id, user, srcip</order>
+</decoder>
+
+<decoder name="esxi-syslog">
+  <parent>vmware-esxi</parent>
+  <regex type="pcre2">Event (\d+) : (\S+) on  (\S+) in (\S+) is powered off</regex>
+  <order>event_id, vm, esxi_host, datacenter</order>
+</decoder>
+
+<decoder name="esxi-syslog">
+  <parent>vmware-esxi</parent>
+  <regex type="pcre2">Event (\d+) : (\S+) on (\S+) in (\S+) has powered on</regex>
+  <order>event_id, vm, esxi_host, datacenter</order>
+</decoder>
+
+<decoder name="esxi-syslog">
+  <parent>vmware-esxi</parent>
+  <regex type="pcre2">Event (\d+) : User (\w+)@(\S+) logged in</regex>
+  <order>event_id, user, srcip</order>
+</decoder>
+
+<decoder name="esxi-syslog">
+  <parent>vmware-esxi</parent>
+  <regex type="pcre2">Event (\d+) : Cannot login (\w+)@(\S+)</regex>
+  <order>event_id, user, srcip</order>
+</decoder>
+
+<decoder name="esxi-syslog">
+  <parent>vmware-esxi</parent>
+  <regex type="pcre2">Event (\d+) : User (\w+)@(\S+) logged out</regex>
+  <order>event_id, user, srcip</order>
+</decoder>
+
+<decoder name="esxi-syslog">
+  <parent>vmware-esxi</parent>
+  <regex type="pcre2">: \[(\S+)]: (.+)$</regex>
+  <order>user, command</order>
+</decoder>
+
+<decoder name="esxi-syslog">
+  <parent>vmware-esxi</parent>
+  <regex type="pcre2">Event (\d+) : Guest OS shut down for (\S+) on (\S+) in (\S+)</regex>
+  <order>event_id, vm, esxi_host, datacenter</order>
+</decoder>
+
+<decoder name="esxi-syslog">
+  <parent>vmware-esxi</parent>
+  <regex type="pcre2">Event (\d+) : Guest OS reboot for (\S+) on (\S+) in (\S+)</regex>
+  <order>event_id, vm, esxi_host, datacenter</order>
+</decoder>
+
+<decoder name="esxi-syslog">
+  <parent>vmware-esxi</parent>
+  <regex type="pcre2">Event (\d+) : Created virtual machine (\S+) on (\S+)</regex>
+  <order>event_id, vm, esxi_host</order>
+</decoder>
+
+<decoder name="esxi-syslog">
+  <parent>vmware-esxi</parent>
+  <regex type="pcre2">Event (\d+) : Removed (\S+) on (\S+) from (\S+)</regex>
+  <order>event_id, vm, esxi_host, datacenter</order>
+</decoder>
+
+<decoder name="esxi-syslog">
+  <parent>vmware-esxi</parent>
+  <regex type="pcre2">Event (\d+) : Registered (\S+) on (\S+) in (\S+)</regex>
+  <order>event_id, vm, esxi_host, datacenter</order>
+</decoder>
+
+<decoder name="esxi-syslog">
+  <parent>vmware-esxi</parent>
+  <regex type="pcre2">Event (\d+) : File upload to path '\[(.+)' was initiated</regex>
+  <order>event_id, path</order>
+</decoder>
+
+<decoder name="esxi-syslog">
+  <parent>vmware-esxi</parent>
+  <regex type="pcre2">Event (\d+) : Deletion of file or directory (.+) from (\S+) was initiated</regex>
+  <order>event_id, path, disk</order>
+</decoder>
+
+<decoder name="esxi-syslog">
+  <parent>vmware-esxi</parent>
+  <regex type="pcre2">Event (\d+) : Account (\S+) was created on host (\S+)</regex>
+  <order>event_id, user, esxi_host</order>
+</decoder>
+
+<decoder name="esxi-syslog">
+  <parent>vmware-esxi</parent>
+  <regex type="pcre2">Event (\d+) : Password was changed for account (\S+) on host (\S+)</regex>
+  <order>event_id, user, esxi_host</order>
+</decoder>
+
+<decoder name="esxi-syslog">
+  <parent>vmware-esxi</parent>
+  <regex type="pcre2">Event (\d+) : Account (\S+) was removed on host (\S+)</regex>
+  <order>event_id, user, esxi_host</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/monitoring-vmware-esxi/ | Article: Monitoring VMware ESXi with Wazuh -->
+<decoder name="yara_decoder">
+  <prematch>wazuh-yara:</prematch>
+</decoder>
+
+<decoder name="yara_decoder1">
+  <parent>yara_decoder</parent>
+  <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+  <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/detecting-sliver-c2/ | Article: Detecting Sliver C2 framework with Wazuh -->
+<decoder name="yara_decoder">
+  <prematch>wazuh-yara:</prematch>
+</decoder>
+
+<decoder name="yara_decoder1">
+  <parent>yara_decoder</parent>
+  <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+  <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/monitoring-remote-openvpn/ | Article: Monitoring remote OpenVPN connections with GeoIP and Wazuh XDR -->
+<decoder name="openvpnas_decoder">
+    <prematch type="pcre2">\[OVPN \d+\] </prematch>
+</decoder>
+
+<decoder name="openvpnas_decoder_child">
+    <parent>openvpnas_decoder</parent>
+    <regex type="pcre2">(\d\d\d\d-\d\d-\d\d\w\d\d:\d\d:\d\d.\d\d\d\d)</regex>
+    <order>timestamp</order>
+</decoder>
+
+<decoder name="openvpnas_decoder_child">
+    <parent>openvpnas_decoder</parent>
+    <regex type="pcre2">(\d+\.\d+\.\d+\.\d+):(\d+) \[(\S+)\]</regex>
+    <order>srcip, srcport, srcuser</order>
+</decoder>
+
+<decoder name="openvpnas_decoder_child">
+    <parent>openvpnas_decoder</parent>
+    <regex type="pcre2">Peer Connection (\w+) with \[(\w+)\]</regex>
+    <order>action, interface</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/web-shell-attack-detection/ | Article: Web shell attack detection with Wazuh -->
+<!-- Decoder for web shell network connection. -->
+<decoder name="network-traffic-child">
+  <parent>ossec</parent>
+  <prematch offset="after_parent">^output: 'webshell connections':</prematch>
+  <regex offset="after_prematch" type="pcre2">(\d+.\d+.\d+.\d+):(\d+)\|(\d+.\d+.\d+.\d+):(\d+)</regex>
+  <order>local_ip, local_port, foreign_ip, foreign_port</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/using-wazuh-to-detect-remcos/ | Article: Using Wazuh to detect Remcos RAT -->
+<!-- The decoders are used to parse logs from the YARA scans -->
+<decoder name="yara_decoder">
+    <prematch>wazuh-yara:</prematch>
+</decoder>
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/rapperbot-botnet/ | Article: RapperBot botnet detection and mitigation with Wazuh -->
+<decoder name="yara_decoder">
+    <prematch>wazuh-yara:</prematch>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Successfully removed threat: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/detecting-lockbit-3/ | Article: Detecting Lockbit 3.0 ransomware with Wazuh -->
+<decoder name="yara_decoder">
+    <prematch>wazuh-yara:</prematch>
+</decoder>
+
+<decoder name="yara_decoder1">
+    <parent>yara_decoder</parent>
+    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+    <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/creating-decoders-and-rules-from-scratch/ | Article: Creating decoders and rules from scratch -->
+<decoder name="fortigate-custom">
+  <prematch>^date=\d\d\d\d-\d\d-\d\d time=\d\d:\d\d:\d\d devname="\S+"</prematch>
+</decoder>
+<!-- Source: https://wazuh.com/blog/creating-decoders-and-rules-from-scratch/ | Article: Creating decoders and rules from scratch -->
+<decoder name="fortigate-custom1">
+  <parent>fortigate-custom</parent>
+  <regex>^date=(\d\d\d\d-\d\d-\d\d) time=(\d\d:\d\d:\d\d) devname="(\S+)"</regex>
+  <order>date, time, devname</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/creating-decoders-and-rules-from-scratch/ | Article: Creating decoders and rules from scratch -->
+<decoder name="fortigate-custom1">
+  <parent>fortigate-custom</parent>
+  <regex>devid="(\S+)" logid="(\S+)" type="(\S+) subtype="(\S+)"</regex>
+  <order>devid, logid, type, subtype</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/creating-decoders-and-rules-from-scratch/ | Article: Creating decoders and rules from scratch -->
+<decoder name="fortigate-custom1">
+  <parent>fortigate-custom</parent>
+  <regex>srcip="(\S+)"|srcip=(\S+) </regex>
+  <order>srcip</order>
+</decoder>
+
+<decoder name="fortigate-custom1">
+  <parent>fortigate-custom</parent>
+  <regex>dstip=(\S+) </regex>
+  <order>dstip</order>
+</decoder>
+
+<decoder name="fortigate-custom1">
+  <parent>fortigate-custom</parent>
+  <regex>action="(\S+)" </regex>
+  <order>action</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/how-to-forward-android-syslog/ | Article: How to forward Android syslog to Wazuh -->
+<decoder name="android_decoder_02">
+   <prematch>\.*Finsky</prematch>
+   <regex>\.*Successful (install) of (\.+) \.*</regex>
+   <order>action_name,package_name</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/sibling-decoders/ | Article: Sibling decoders: flexible extraction of information -->
+<decoder name="securityapp">
+  <program_name>securityapp</program_name>
+  <regex>(\w+): srcuser="(\.+)" action="(\.+)" dstusr="(\.+)"</regex>
+  <order>type,srcuser,action,dstuser</order>
+</decoder>
+<!-- Source: https://wazuh.com/blog/sibling-decoders/ | Article: Sibling decoders: flexible extraction of information -->
+<decoder name="securityapp">
+  <program_name>securityapp</program_name>
+</decoder>
+
+<decoder name="securityapp">
+  <parent>securityapp</parent>
+  <regex>^(\w+):</regex>
+  <order>type</order>
+</decoder>
+
+<decoder name="securityapp">
+  <parent>securityapp</parent>
+  <regex>srcuser="(\.+)"</regex>
+  <order>srcuser</order>
+</decoder>
+
+<decoder name="securityapp">
+  <parent>securityapp</parent>
+  <regex>action="(\.+)"</regex>
+  <order>action</order>
+</decoder>
+
+<decoder name="securityapp">
+  <parent>securityapp</parent>
+  <regex>dstusr="(\.+)"</regex>
+  <order>dstuser</order>
+</decoder>

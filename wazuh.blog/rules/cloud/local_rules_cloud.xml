@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Group: cloud -->
+<group name="wazuh_blog_custom,">
+<!-- Source: https://wazuh.com/blog/monitoring-snowflake-data-warehouse-with-wazuh/ | Article: Monitoring Snowflake data warehouse with Wazuh -->
+<!-- Rules to detect Snowflake events -->
+
+<!-- Snowflake logs group -->
+
+  <rule id="240000" level="0">
+    <decoded_as>json</decoded_as>
+    <field name="SOURCE">snowflake</field>
+    <description>Logs from Snowflake</description>
+  </rule>
+ 
+<!-- Rule to detect failed login attempts -->
+  <rule id="240001" level="10">
+    <if_sid>240000</if_sid>
+    <field name="EVENT_TYPE" type="pcre2">(?i)LOGIN</field>
+    <field name="IS_SUCCESS" type="pcre2">(?i)NO</field>
+    <description>Snowflake: Failed login attempt by $(USER_NAME)</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+  </rule>
+ 
+<!-- Rule to detect admins with no MFA configured --> 
+  <rule id="240002" level="10">
+    <if_sid>240000</if_sid>
+    <field name="TITLE">admin_no_mfa</field>
+    <description>Snowflake: The admin user $(LOGIN_NAME) does not have MFA configured</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+  </rule>
+
+<!-- Rule to detect network policy changes -->
+  <rule id="240003" level="10">
+    <if_sid>240000</if_sid>
+    <field name="TITLE">made the following Network Policy change</field>
+    <description>Snowflake: The user $(USER_NAME) performed the following network operation $(QUERY_TYPE)</description>
+  </rule>
+
+<!-- Rule to detect an admin role granted to a user --> 
+  <rule id="240004" level="10">
+    <if_sid>240000</if_sid>
+    <field name="TITLE" type="pcre2">granted the .* role on</field>
+    <description>Snowflake: Admin role granted to user</description>
+    <mitre>
+      <id>TA0004</id>
+    </mitre>
+  </rule>
+
+<!-- Rule to detect when a DB is modified -->  
+  <rule id="240005" level="10">
+    <if_sid>240000</if_sid>
+    <field name="TITLE" type="pcre2">executed DB query</field>
+    <description>Snowflake: The user $(USER_NAME) performed the action $(QUERY_TYPE) on a database</description>
+  </rule>
+
+<!-- Rule to detect when a Schema is modified -->  
+  <rule id="240006" level="10">
+    <if_sid>240000</if_sid>
+    <field name="TITLE" type="pcre2">executed schema query</field>
+    <description>Snowflake: The user $(USER_NAME) performed the action $(QUERY_TYPE) on a schema</description>
+  </rule>
+<!-- Source: https://wazuh.com/blog/monitoring-rapid-scada-with-wazuh/ | Article: Monitoring Rapid SCADA with Wazuh -->
+
+
+  <rule id="240007" level="0">
+    <if_sid>550</if_sid>
+    <field name="file">:\\Program Files\\SCADA\\\w+</field>
+    <description>Rapid SCADA: File modified.</description>
+  </rule>
+
+  <!-- Alert only when file content changes, not just metadata -->
+  <rule id="240008" level="7">
+    <if_sid>240007</if_sid>
+    <field name="file">:\\Program Files\\SCADA\\\w+</field>
+    <field name="changed_content" negate="yes">^No content changes were found for this file\.$</field>
+    <description>Rapid SCADA: File modified - $(file).</description>
+    <mitre>
+      <id>T1565.001</id>
+    </mitre>
+  </rule>
+
+  <rule id="240009" level="7">
+    <if_sid>553</if_sid>
+    <field name="file">:\\Program Files\\SCADA\\\w+</field>
+    <description>Rapid SCADA: File deleted - $(file).</description>
+    <mitre>
+      <id>T1070.004</id>
+      <id>T1485</id>
+    </mitre>
+  </rule>
+
+  <rule id="240010" level="7">
+    <if_sid>554</if_sid>
+    <field name="file">:\\Program Files\\SCADA\\\w+</field>
+    <description>Rapid SCADA: File added - $(file).</description>
+  </rule>
+
+  <rule id="240011" level="10">
+    <if_sid>240008</if_sid>
+    <field name="file">config\.xml$</field>
+    <description>Rapid SCADA: Configuration file modified - $(file).</description>
+    <mitre>
+      <id>T1565.001</id>
+    </mitre>
+  </rule>
+
+  <rule id="240012" level="10">
+    <if_sid>240009</if_sid>
+    <field name="file">config\.xml$</field>
+    <description>Rapid SCADA: Configuration file deleted - $(file).</description>
+    <mitre>
+      <id>T1070.004</id>
+      <id>T1485</id>
+    </mitre>
+  </rule>
+
+  <rule id="240013" level="10">
+    <if_sid>240010</if_sid>
+    <field name="file">config\.xml$</field>
+    <description>Rapid SCADA: Configuration file added - $(file).</description>
+  </rule>
+
+  <rule id="240014" level="10">
+    <if_sid>240008</if_sid>
+    <field name="file">user\.dat$|role\.dat$|roleref\.dat$</field>
+    <description>Rapid SCADA: User account manipulation - $(file) modified.</description>
+    <mitre>
+      <id>T1098</id>
+    </mitre>
+  </rule>
+
+  <rule id="240015" level="10">
+    <if_sid>240009</if_sid>
+    <field name="file">user\.dat$|role\.dat$|roleref\.dat$</field>
+    <description>Rapid SCADA: User account manipulation - $(file) deleted.</description>
+    <mitre>
+      <id>T1098</id>
+    </mitre>
+  </rule>
+
+  <rule id="240016" level="10">
+    <if_sid>240010</if_sid>
+    <field name="file">user\.dat$|role\.dat$|roleref\.dat$</field>
+    <description>Rapid SCADA: User account manipulation - $(file) created.</description>
+    <mitre>
+      <id>T1098</id>
+    </mitre>
+  </rule>
+<!-- Source: https://wazuh.com/blog/monitoring-rapid-scada-with-wazuh/ | Article: Monitoring Rapid SCADA with Wazuh -->
+
+
+  <rule id="240017" level="3">
+    <decoded_as>rapid-scada-no-ip</decoded_as>
+    <location type="pcre2">ScadaServer\.log$|ScadaAgent\.log$|ScadaWeb\.log$|ScadaComm\.log$</location>
+    <description>Rapid SCADA: $(status) - $(message).</description>
+  </rule>
+
+  <rule id="240018" level="5">
+    <if_sid>240017</if_sid>
+    <status>^ERR$</status>
+    <description>Rapid SCADA: $(status) - $(message).</description>
+  </rule>
+
+  <rule id="240019" level="3">
+    <decoded_as>rapid-scada-ip</decoded_as>
+    <location type="pcre2">ScadaServer\.log$|ScadaAgent\.log$|ScadaWeb\.log$|ScadaComm\.log$</location>
+    <description>Rapid SCADA: $(status) - $(message) $(srcip).</description>
+  </rule>
+
+  <rule id="240020" level="5">
+    <if_sid>240019</if_sid>
+    <status>^ERR$</status>
+    <description>Rapid SCADA: $(status) - $(message) $(srcip).</description>
+  </rule>
+
+  <rule id="240021" level="5">
+    <if_sid>240020</if_sid>
+    <field name="message">Unsuccessful login attempt for user</field>
+    <description>Rapid SCADA: $(status) - $(message) $(srcip).</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+  </rule>
+
+  <rule id="240022" level="10" frequency="8" timeframe="120">
+    <if_matched_sid>110065</if_matched_sid>
+    <same_source_ip />
+    <description>Rapid SCADA: Brute force (multiple failed logins).</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+  </rule>
+<!-- Source: https://wazuh.com/blog/integrating-imperva-cloud-web-application-firewall-cwaf/ | Article: Integrating Imperva cloud web application firewall (CWAF) with Wazuh -->
+
+
+     <!-- Imperva -->
+  <rule id="240023" level="2">
+    <decoded_as>imperva-waf</decoded_as>
+    <description>Imperva WAF learning log: $(waf.event)</description>
+  </rule>
+
+  <rule id="240024" level="9" ignore="60">
+    <if_sid>240023</if_sid>
+    <field name="waf.eventcode">^8$</field>
+    <field name="waf.event">^DDoS$</field>
+    <description>Imperva WAF: DDoS detected.</description>
+    <mitre>
+      <id>T1498</id>
+    </mitre>
+  </rule>
+
+  <rule id="240025" level="10">
+    <if_sid>240023</if_sid>
+    <field name="waf.eventcode">^10$</field>
+    <field name="waf.event">^RFI$</field>
+    <description>Imperva WAF: RFI detected.</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+  </rule>
+
+  <rule id="240026" level="4">
+    <if_sid>240023</if_sid>
+    <field name="waf.eventcode">^3$</field>
+    <field name="waf.event">^ACL (block country/IP/URL)$</field>
+    <description>Imperva WAF: ACL (block country/IP/URL) detected.</description>
+  </rule>
+
+  <rule id="240027" level="7">
+    <if_sid>240023</if_sid>
+    <field name="waf.eventcode">^4$</field>
+    <field name="waf.event">^Bot Access Control$</field>
+    <description>Rule Triggered: $(waf.rulename)</description>
+    <mitre>
+      <id>T1089</id>
+    </mitre>
+  </rule>
+
+  <rule id="240028" level="5">
+    <if_sid>240023</if_sid>
+    <field name="waf.eventcode">^3$</field>
+    <field name="waf.act" negate="yes">^REQ_BLOCKED_</field>
+    <field name="waf.event">Illegal Resource Access</field>
+    <description>$(waf.act) to $(waf.request)</description>
+    <mitre>
+      <id>T1199</id>
+    </mitre>
+  </rule>
+
+  <rule id="240029" level="5">
+    <if_sid>240023</if_sid>
+    <field name="waf.act" negate="yes">^REQ_BLOCKED</field>
+    <field name="waf.event">^Cross Site Scripting$</field>
+    <description>Imperva WAF: $(waf.event)</description>
+  </rule>
+
+  <rule id="240030" level="4" ignore="60">
+    <if_sid>240023</if_sid>
+    <field name="waf.act" negate="yes">^REQ_BLOCKED_SESSION$</field>
+    <field name="waf.event">^SQL Injection$</field>
+    <description>Imperva WAF: $(waf.event)</description>
+  </rule>
+
+  <rule id="240031" level="8" ignore="60">
+    <if_sid>240023</if_sid>
+    <field name="waf.eventcode">^9$</field>
+    <field name="waf.event">^Backdoor Protect$</field>
+    <description>Imperva WAF: $(waf.event)</description>
+  </rule>
+
+  <rule id="240032" level="2">
+    <if_sid>240023</if_sid>
+    <field name="waf.http.code">^200$|^304$|^302$|^301$</field>
+    <field name="waf.event">^API Specification Violation$</field>
+    <description>API Specification Violation detected by Incapsula - Http codes</description>
+  </rule>
+<!-- Source: https://wazuh.com/blog/cloud-security-posture-management/ | Article: Cloud Security Posture Management on Google Cloud Platform with Wazuh -->
+
+
+  <!-- Misconfiguration detection -->
+    <rule id="240033" level="10">
+        <if_sid>65000</if_sid>
+        <field name="gcp.finding.findingClass">MISCONFIGURATION</field>
+        <description>A $(gcp.finding.findingClass) with $(gcp.finding.severity) severity has been discovered on the GCP project $(gcp.resource.projectDisplayName). $(gcp.finding.description)</description>
+        <mitre>
+          <id>T1562</id>
+        </mitre>
+    </rule>
+    
+
+  <!-- Threat detection -->
+    <rule id="240034" level="10">
+        <if_sid>65000</if_sid>
+        <field name="gcp.finding.findingClass">THREAT</field>
+        <description>A $(gcp.finding.findingClass) with $(gcp.finding.severity) severity has been discovered on the GCP project $(gcp.resource.projectDisplayName). $(gcp.finding.category).</description>
+        <mitre>
+          <id>T1562</id>
+        </mitre>
+    </rule>
+<!-- Source: https://wazuh.com/blog/monitoring-aws-environments/ | Article: Monitoring AWS environments with Wazuh -->
+
+  <rule id="240035" level="4">
+    <if_sid>80301</if_sid>
+    <field name="aws.description">EC2 instance has an unprotected port which is being probed by a known malicious host.</field>
+    <description>Guard Duty custom rule: $(aws.description)</description>
+  </rule>
+</group>
