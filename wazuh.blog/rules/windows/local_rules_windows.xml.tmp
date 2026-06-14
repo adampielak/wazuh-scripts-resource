@@ -1,5 +1,5 @@
 <!-- Group: windows -->
-<group name="wazuh_blog_custom">
+<group name="wazuh_blog_custom,">
 <!-- Source: https://wazuh.com/blog/monitoring-hyper-v-with-wazuh/ | Article: Monitoring Hyper-V with Wazuh -->
 
 

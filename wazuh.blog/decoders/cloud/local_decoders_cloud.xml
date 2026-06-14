@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!-- Source: https://wazuh.com/blog/monitoring-rapid-scada-with-wazuh/ | Article: Monitoring Rapid SCADA with Wazuh -->
+<decoders>
 <decoder name="rapid-scada-ip">
   <parent>windows-date-format</parent>
   <use_own_name>true</use_own_name>
@@ -245,4 +245,4 @@
 <decoder name="imperva_fields">
   <parent>imperva-waf</parent>   <regex>cs11=[{"api_specification_violation_type":"(\w+)"</regex>
   <order>waf.rule.violation</order>
-</decoder>
+</decoder></decoders>

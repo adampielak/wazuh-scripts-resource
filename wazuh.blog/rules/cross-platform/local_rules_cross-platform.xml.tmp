@@ -1,5 +1,5 @@
 <!-- Group: cross-platform -->
-<group name="wazuh_blog_custom">
+<group name="wazuh_blog_custom,">
 <!-- Source: https://wazuh.com/blog/detecting-and-responding-to-bqtlock-ransomware-with-wazuh/ | Article: Detecting and responding to BQTLock ransomware with Wazuh -->
 
 
@@ -155,7 +155,19 @@
     <description>Blacklisted file hash in email from $(sender_email): $(data)</description>
   </rule>
 <!-- Source: https://wazuh.com/blog/detecting-phishing-attacks-with-wazuh-and-shuffle/ | Article: Detecting phishing attacks with Wazuh and Shuffle -->
+<integration>
+    <name>shuffle</name>
+    <hook_url><WEBHOOK_URI></hook_url>
+    phishing
+    <alert_format>json</alert_format>
+  </integration>
 <!-- Source: https://wazuh.com/blog/detecting-phishing-attacks-with-wazuh-and-shuffle/ | Article: Detecting phishing attacks with Wazuh and Shuffle -->
+<integration>
+    <name>slack</name>
+    <hook_url><SLACK_WEBHOOK_URL></hook_url>
+    <alert_format>json</alert_format>
+    phishing
+  </integration>
 <!-- Source: https://wazuh.com/blog/monitoring-hashicorp-vault-activities-with-wazuh/ | Article: Monitoring HashiCorp Vault activities with Wazuh -->
 
 
@@ -198,6 +210,7 @@
     <if_sid>270017</if_sid>
     <match>vault is sealed|marked as sealed</match>
     <description>[Vault operational] Critical: Vault has been sealed.</description>
+    service_availability,
   </rule>
 
   <!-- Info: Vault unsealed - the service is now accessible. -->
@@ -205,6 +218,7 @@
     <if_sid>270017</if_sid>
     <match>vault is unsealed</match>
     <description>[Vault operational] Info: Vault has been unsealed.</description>
+    service_availability,
   </rule>
 
   <!-- Critical: Audit device failure - this might result in a service unavailability -->
@@ -1245,6 +1259,7 @@
     <mitre>
       <id>T1204</id>
     </mitre>
+    sysmon_event
   </rule>
 
 <!-- EventID = 1 -->
@@ -1256,6 +1271,7 @@
     <mitre>
       <id>T1204</id>
     </mitre>
+    sysmon_event1
   </rule>
 
 <!-- EventID = 3 -->
@@ -1264,6 +1280,7 @@
     <field name="system.eventId">^3$</field>
     <options>no_full_log</options>
  <description>Sysmon - Event 3: Network connection by $(eventdata.image)</description>
+    sysmon_event3
   </rule>
 
 <!-- EventID = 5 -->
@@ -1275,6 +1292,7 @@
     <mitre>
       <id>T1204</id>
     </mitre>
+    sysmon_event5
   </rule>
 
 <!-- EventID = 9 -->
@@ -1286,6 +1304,7 @@
     <mitre>
       <id>T1204</id>
     </mitre>
+    sysmon_event9
   </rule>
 
 <!-- EventID = 11 -->
@@ -1294,6 +1313,7 @@
     <field name="system.eventId">^11$</field>
     <options>no_full_log</options>
     <description>Sysmon - Event 11: FileCreate by $(eventdata.image)</description>
+    sysmon_event_11
    </rule>
 
 <!-- EventID = 16 -->
@@ -1305,6 +1325,7 @@
     <mitre>
       <id>T1562</id>
     </mitre>
+    sysmon_event_16
   </rule>
 
 <!-- EventID = 23 -->
@@ -1316,6 +1337,7 @@
     <mitre>
       <id>T1485</id>
     </mitre>
+    sysmon_event_23
   </rule>
 
 <!-- Overrides -->
@@ -1325,6 +1347,7 @@
     <field name="eventdata.image">wazuh-agentd$</field>
     <options>no_full_log</options>
     <description>Sysmon - Event 3: Network connection by $(eventdata.image)</description>
+    sysmon_event3
   </rule>
 
 <!-- EventID = 11. No alerts for events if Image = /var/ossec/bin/wazuh-agentd -->
@@ -1333,6 +1356,7 @@
     <field name="eventdata.image">wazuh-agentd$</field>
     <options>no_full_log</options>
     <description>Sysmon - Event 11: FileCreate by $(eventdata.image)</description>
+    sysmon_event_11
   </rule>
 
 <!-- EventID = 23. No alerts for events if Image = /var/ossec/bin/wazuh-agentd -->
@@ -1344,6 +1368,7 @@
     <mitre>
       <id>T1485</id>
     </mitre>
+    sysmon_event_23
   </rule>
 <!-- Source: https://wazuh.com/blog/detecting-koske-malware-with-wazuh/ | Article: Detecting Koske malware with Wazuh -->
 
@@ -1611,7 +1636,7 @@
     <description>ABR: Privilege elevation request.</description>
     <mitre>
       <id>T1548.002</id>
-    </mitre>
+    </mitre
   </rule>
 
 <!-- Detects multiple privilege elevation requests -->
@@ -1643,7 +1668,7 @@
     <description>ABR: $(win.eventdata.data)</description>
     <mitre>
       <id>T1098</id>
-    </mitre>
+    </mitre
   </rule>
 <!-- Source: https://wazuh.com/blog/detecting-defense-evasion-techniques-with-wazuh/ | Article: Detecting defense evasion techniques with Wazuh -->
 
@@ -1794,6 +1819,7 @@
     <if_sid>270187</if_sid>
     <field name="mariadb.operation" type="pcre2">FAILED_CONNECT</field>
     <description>"MariaDB audit -" Authentication failed: $(mariadb.username)@$(mariadb.userhost)</description>
+    authentication_failures,
     <mitre>
       <id>T1110.001</id>
     </mitre>
@@ -1805,6 +1831,7 @@
     <field name="mariadb.operation" type="pcre2">FAILED_CONNECT</field>
     <same_field>mariadb.userhost</same_field>
     <description>"MariaDB audit -" Possible brute force attack from $(mariadb.username)@$(mariadb.userhost)</description>
+    authentication_failures,
     <mitre>
       <id>T1110</id>
     </mitre>
@@ -2433,7 +2460,7 @@
     <regex type="pcre2" field="win.eventdata.commandLine">(?i)C:\\.*\\electronica-2024\.pdf</regex>
     <description>Suspicious execution: mshta.exe running electronica-2024.pdf detected.Potential Sosano malware activity detected.</description>
     <mitre>
-      <id>T1218.005</id> <!-- MITRE ATT&amp;CK: Mshta Abuse -->
+      <id>T1218.005</id> <!-- MITRE ATT&CK: Mshta Abuse -->
     </mitre>
   </rule>
 
@@ -2705,6 +2732,12 @@
     <description>Wazuh_Ransomware_Protection: Files restored successfully.</description>
   </rule>
 <!-- Source: https://wazuh.com/blog/integrating-wazuh-with-yeti-platform/ | Article: Integrating Wazuh with the Yeti platform -->
+<integration>
+  <name>custom-yeti.py</name>
+  <api_key><YETI_API_KEY></api_key>
+  syscheck,sshd
+  <alert_format>json</alert_format>
+</integration>
 <!-- Source: https://wazuh.com/blog/integrating-wazuh-with-yeti-platform/ | Article: Integrating Wazuh with the Yeti platform -->
 
     <rule id="270290" level="0">
@@ -2882,6 +2915,14 @@
       <description>Potential data breach detected for monitored email</description>
   </rule>
 <!-- Source: https://wazuh.com/blog/enhancing-threat-intelligence-with-wazuh-and-criminal-ip-integration/ | Article: Enhancing threat intelligence with Wazuh and Criminal IP integration -->
+<ossec_config>
+  <integration>
+    <name>custom-criminalip.py</name>
+    <api_key><CRIMINALIP_API_KEY></api_key> <!-- Replace with your Criminal IP API key -->
+    web, sshd, invalid_login, firewall, ids, system, database, application
+    <alert_format>json</alert_format>
+  </integration>
+</ossec_config>
 <!-- Source: https://wazuh.com/blog/enhancing-threat-intelligence-with-wazuh-and-criminal-ip-integration/ | Article: Enhancing threat intelligence with Wazuh and Criminal IP integration -->
 
 
@@ -3573,8 +3614,20 @@
     </mitre>
   </rule>
 <!-- Source: https://wazuh.com/blog/detecting-and-responding-to-latrodectus-malware-with-wazuh/ | Article: Detecting and responding to Latrodectus malware with Wazuh -->
+<ossec_config>
+  <integration>
+    <name>virustotal</name>
+    <api_key><API_KEY></api_key> <!-- Replace with your VirusTotal API key -->
+    <rule_id>554,550</rule_id>
+    <alert_format>json</alert_format>
+  </integration>
+</ossec_config>
 
+Note: Replace the <API_KEY> with your VirusTotal API key.
 
+Active response configuration
+Append the following configuration to the /var/ossec/etc/ossec.conf file:
+<ossec_config>
 
     <command>
         <name>remove-threat</name>
@@ -3589,6 +3642,7 @@
         <rules_id>87105</rules_id>
     </active-response>
 
+</ossec_config>
 Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to generate alerts when the active response module successfully removes the malicious files.
 
 
@@ -3835,12 +3889,43 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
   </rule>
 <!-- Source: https://wazuh.com/blog/achieving-cjis-compliance-with-wazuh/ | Article: Achieving CJIS compliance with Wazuh -->
 <!-- Integration with Slack -->
+<integration>
+  <name>slack</name>
+  <hook_url>https://hooks.slack.com/services/...</hook_url> <!-- Replace with your Slack hook URL -->
+  <level>10</level>
+  multiple_drops,authentication_failures
+  <alert_format>json</alert_format>
+  <options>{"pretext": "Custom Title"}</options> <!-- Replace with your custom JSON object -->
+</integration>
 
 <!-- Integration with VirusTotal -->
+<integration>
+  <name>virustotal</name>
+  <api_key>API_KEY</api_key> <!-- Replace with your VirusTotal API key -->
+  syscheck
+  <alert_format>json</alert_format>
+  <timeout>30</timeout>
+  <retries>5</retries>
+</integration>
 
 <!-- Integration with Maltiverse -->
+<integration>
+  <name>maltiverse</name>
+  <hook_url>https://api.maltiverse.com</hook_url>
+  <api_key>API_KEY</api_key> <!-- Replace with your Maltiverse API key -->
+  <alert_format>json</alert_format>
+</integration>
 
 <!--Custom external Integration -->
+<integration>
+  <name>custom-integration</name>
+  <hook_url>WEBHOOK</hook_url>
+  <level>10</level>
+  multiple_drops,authentication_failures
+  <api_key>APIKEY</api_key> <!-- Replace with your external service API key -->
+  <alert_format>json</alert_format>
+  <options>{"data": "Custom data"}</options> <!-- Replace with your custom JSON object -->
+</integration>
 <!-- Source: https://wazuh.com/blog/how-to-configure-rsyslog-client-to-send-events-to-wazuh/ | Article: How to configure Rsyslog client to send events to Wazuh -->
   
   <rule id="270406" level="5">
@@ -5151,6 +5236,14 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
      </mitre>
   </rule>
 <!-- Source: https://wazuh.com/blog/crosslock-ransomware/ | Article: CrossLock ransomware detection with Wazuh -->
+<ossec_config>
+  <integration>
+    <name>virustotal</name>
+    <api_key>API_KEY</api_key> <!-- Replace with your VirusTotal API key -->
+    syscheck
+    <alert_format>json</alert_format>
+  </integration>
+</ossec_config>
 <!-- Source: https://wazuh.com/blog/crosslock-ransomware/ | Article: CrossLock ransomware detection with Wazuh -->
 
   <rule id="270546" level="12">
@@ -5586,13 +5679,13 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
 
   <rule id="270599" level="7">
     <if_sid>550</if_sid>
-    <field name="file">C:\\Users\\&lt;USER_NAME&gt;\\Downloads</field>
-    <description>File modified in C:\Users\&lt;USER_NAME&gt;\Downloads directory.</description>
+    <field name="file">C:\\Users\\<USER_NAME>\\Downloads</field>
+    <description>File modified in C:\Users\<USER_NAME>\Downloads directory.</description>
   </rule>
   <rule id="270600" level="7">
     <if_sid>554</if_sid>
-    <field name="file">C:\\Users\\&lt;USER_NAME&gt;\\Downloads</field>
-    <description>File added to C:\Users\&lt;USER_NAME&gt;\Downloads  directory.</description>
+    <field name="file">C:\\Users\\<USER_NAME>\\Downloads</field>
+    <description>File added to C:\Users\<USER_NAME>\Downloads  directory.</description>
   </rule>
 
 
@@ -5737,6 +5830,12 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
     <description>$(parameters.program): Error removing threat $(parameters.alert.syscheck.path) whose MD5 hash appears in a malware blacklist.</description>
 </rule>
 <!-- Source: https://wazuh.com/blog/detecting-vidar/ | Article: Detecting Vidar infostealer with Wazuh -->
+<integration>
+  <name>virustotal</name>
+  <api_key>{VIRUSTOTAL_API_KEY}</api_key>
+  syscheck
+  <alert_format>json</alert_format>
+</integration>
 <!-- Source: https://wazuh.com/blog/detecting-vidar/ | Article: Detecting Vidar infostealer with Wazuh -->
 
 <!-- Vidar downloads malicious DLL files on victim endpoint -->
@@ -6649,6 +6748,7 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
       <id>T1043</id>
       <id>T1584.005</id>
     </mitre>
+    sysmon_event3
   </rule>
 
   <rule id="270715" level="12">
@@ -6659,6 +6759,7 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
       <id>T1584.005</id>
       <id>T1036.004</id>
     </mitre>
+    sysmon_event11
   </rule>
 
   <rule id="270716" level="12">
@@ -6669,6 +6770,7 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
       <id>T1036.004</id>
       <id>T1584.005</id>
     </mitre>
+    sysmon_event11
   </rule>
 
   <rule id="270717" level="12">
@@ -6689,6 +6791,7 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
     <mitre>
       <id>T1584.005</id>
     </mitre>
+    sysmon_event_1,
   </rule>
  
   <rule id="270719" level="12">
@@ -6698,6 +6801,7 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
     <mitre>
       <id>T1584.005</id>
     </mitre>
+    sysmon_event_11,
   </rule>
  
   <rule id="270720" level="12">
@@ -6706,6 +6810,7 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
     <mitre>
       <id>T1584.005</id>
     </mitre>
+    sysmon_event_11,
   </rule>
  
   <rule id="270721" level="7">
@@ -6716,6 +6821,7 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
       <id>T1036</id>
       <id>T1584.005</id>
     </mitre>
+    sysmon_event_1,
   </rule>
  
   <rule id="270722" level="7">
@@ -6726,6 +6832,7 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
       <id>T1036</id>
       <id>T1584.005</id>
     </mitre>
+    sysmon_event_1,
   </rule>
  
   <rule id="270723" level="7">
@@ -6737,6 +6844,7 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
       <id>T1036</id>
       <id>T1584.005</id>
     </mitre>
+    sysmon_event_1,
   </rule>
  
   <rule id="270724" level="7">
@@ -6746,6 +6854,7 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
     <mitre>
       <id>T1584.005</id>
     </mitre>
+    sysmon_event_3,
   </rule>
  
   <rule id="270725" level="12">
@@ -6756,6 +6865,7 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
       <id>T1547.001</id>
       <id>T1584.005</id>
     </mitre>
+    sysmon_event_1,
   </rule>
  
   <rule id="270726" level="12">
@@ -6766,6 +6876,7 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
       <id>T1547.001</id>
       <id>T1584.005</id>
     </mitre>
+    sysmon_event_12,
   </rule>
  
   <rule id="270727" level="12">
@@ -6776,6 +6887,7 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
       <id>1547.001</id>
       <id>T1584.005</id>
     </mitre>
+    sysmon_event_13,
   </rule>
  
   <rule id="270728" level="12">
@@ -6787,6 +6899,7 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
       <id>T1071.004</id>
       <id>T1584.005</id>
     </mitre>
+    sysmon_event_22,
   </rule>
  
   <rule id="270729" level="12">
@@ -6798,6 +6911,7 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
       <id>T1049</id>
       <id>T1584.005</id>
     </mitre>
+    sysmon_event_1,
   </rule>
 <!-- Source: https://wazuh.com/blog/detecting-spring4shell/ | Article: Detecting Spring4Shell (CVE-2022-22965) with Wazuh -->
 
@@ -6833,7 +6947,7 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
 
   <rule id="270733" level="12">
     <if_group>audit</if_group>
-    <regex type="pcre2">(?i)name="\/usr\/bin\/pkexec".*="root"|https:\/\/raw\.githubusercontent\.com.*PwnKit|pwnkit</regex>
+    <regex type="pcre2">(?i)name="\/usr\/bin\/pkexec".*="root"|https:\/\/raw\.githubusercontent\.com.*PwnKit|pwnkit</span></regex>
     <description>Possible attempt to exploit a local privilege escalation in polkit pkexec (CVE-2021-4034) via unsecure environment variable injection.</description>
     <mitre>
       <id>T1068</id>
@@ -6890,6 +7004,14 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
     attack
   </rule>
 <!-- Source: https://wazuh.com/blog/emotet-malware-detection/ | Article: Emotet malware detection with Wazuh -->
+<ossec_config>
+  <integration>
+    <name>virustotal</name>
+    <api_key>API_KEY</api_key> <!-- Replace with your VirusTotal API key -->
+    syscheck
+    <alert_format>json</alert_format>
+  </integration>
+</ossec_config>
 <!-- Source: https://wazuh.com/blog/emotet-malware-detection/ | Article: Emotet malware detection with Wazuh -->
 
   <rule id="270739" level="5">
@@ -6906,7 +7028,7 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
   <rule id="270740" level="12">
   <if_sid>270739</if_sid>
   <regex>-e PAA|-en PAA|-enc PAA|-enco PAA|-encod PAA|JABlAG4AdgA6AHUAcwBlAHIAcAByAG8AZgBpAGwAZQ|QAZQBuAHYAOgB1AHMAZQByAHAAcgBvAGYAaQBsAGUA|kAGUAbgB2ADoAdQBzAGUAcgBwAHIAbwBmAGkAbABlA|IgAoACcAKgAnACkAOwAkA|IAKAAnACoAJwApADsAJA|iACgAJwAqACcAKQA7ACQA</regex>
-  <description>ATT&amp;CK T1059: Powershell execution techniques seen with Emotet malware</description>
+  <description>ATT&CK T1059: Powershell execution techniques seen with Emotet malware</description>
   <mitre>
     <id>T1059</id>
   </mitre>
@@ -6916,12 +7038,14 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
     <rule id="270741" level="0">
         <location>command_ps-list</location>
         <description>List of running process.</description>
+        process_monitor,
     </rule>
 
     <rule id="270742" level="10">
         <if_sid>270741</if_sid>
         <match>eval(base64_decode</match>
         <description>Reverse shell detected.</description>
+        process_monitor,attacks
     </rule>
 <!-- Source: https://wazuh.com/blog/creating-decoders-and-rules-from-scratch/ | Article: Creating decoders and rules from scratch -->
 <rule id="270743" level="3">
@@ -6954,20 +7078,20 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
     <id>AH01618|AH01808|AH01790</id>
     <options>alert_by_email</options>
     <description>Apache: Attempt to login using a non-existent user.</description>
-    <group>invalid_login,pci_dss_11.4,pci_dss_10.2.4,pci_dss_10.2.5,gpg13_7.1,gdpr_IV_35.7.d,gdpr_IV_32.2</group>
+    invalid_login,pci_dss_11.4,pci_dss_10.2.4,pci_dss_10.2.5,gpg13_7.1,gdpr_IV_35.7.d,gdpr_IV_32.2,
 </rule>
 <!-- Source: https://wazuh.com/blog/how-to-send-email-notifications/ | Article: How to Send Email Notifications -->
 <rule id="270748" level="12" frequency="8" timeframe="120">
     <if_matched_sid>30310</if_matched_sid>
     <description>Multiple user authentication failures</description>
-    <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,gpg13_7.1,gdpr_IV_35.7.d,gdpr_IV_32.2,hipaa_164.312.b,nist_800_53_AU.3.1,nist_800_53_IA.10</group>
+    authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,gpg13_7.1,gdpr_IV_35.7.d,gdpr_IV_32.2,hipaa_164.312.b,nist_800_53_AU.3.1,nist_800_53_IA.10,
 </rule>
 <!-- Source: https://wazuh.com/blog/how-to-forward-android-syslog/ | Article: How to forward Android syslog to Wazuh -->
 <rule id="270749" level="5">
   <decoded_as>android_decoder_02</decoded_as>
   <description>App installed</description>
   <field name="action_name">install</field>
-  <group>android_install</group>
+  android_install,
 </rule>
 <!-- Source: https://wazuh.com/blog/using-osint-to-create-cdb-lists/ | Article: Using OSINT to create CDB lists and block malicious IPs -->
 

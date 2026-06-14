@@ -1,5 +1,4 @@
 <!-- Source: https://wazuh.com/blog/security-observability-on-linux-with-wazuh-and-tetragon/ | Article: Security observability on Linux with Wazuh and Tetragon -->
-<decoders>
 <decoder name="tetragon">
   <program_name>^tetragon-events</program_name>
 </decoder>
@@ -85,4 +84,4 @@
   <prematch>ossec: output: 'disk_metrics':\.</prematch>
   <regex offset="after_prematch">(\S+) (\S+)</regex>
   <order>disk_used_bytes, disk_free_bytes</order>
-</decoder></decoders>
+</decoder>

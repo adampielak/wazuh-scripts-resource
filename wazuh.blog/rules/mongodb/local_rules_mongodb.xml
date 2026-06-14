@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!-- Group: mongodb -->
-<group name="wazuh_blog_custom,">
+<group name="wazuh_blog_custom">
 <!-- Source: https://wazuh.com/blog/monitoring-mongodb-atlas-with-wazuh/ | Article: Monitoring MongoDB Atlas with Wazuh -->
 
   <rule id="250000" level="1">

@@ -1,5 +1,5 @@
 <!-- Group: macos -->
-<group name="wazuh_blog_custom">
+<group name="wazuh_blog_custom,">
 <!-- Source: https://wazuh.com/blog/detecting-frigidstealer-malware-with-wazuh/ | Article: Detecting FrigidStealer malware with Wazuh -->
 
 

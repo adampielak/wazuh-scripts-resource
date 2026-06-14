@@ -1,5 +1,4 @@
 <!-- Source: https://wazuh.com/blog/container-image-security-with-wazuh-and-trivy/ | Article: Container image security with Wazuh and Trivy -->
-<decoders>
 <decoder name="trivy-decoder">
   <prematch>^Trivy:</prematch>
 </decoder>
@@ -60,4 +59,4 @@
   <parent>docker_log_decoder</parent>
   <regex offset="after_parent">("\w*\s/\s\w*/\d.\d"\s\d*)</regex>
   <order>web_action</order>
-</decoder></decoders>
+</decoder>

@@ -1,5 +1,5 @@
 <!-- Group: linux -->
-<group name="wazuh_blog_custom">
+<group name="wazuh_blog_custom,">
 <!-- Source: https://wazuh.com/blog/security-observability-on-linux-with-wazuh-and-tetragon/ | Article: Security observability on Linux with Wazuh and Tetragon -->
 
   <rule id="200000" level="1">
@@ -14,6 +14,7 @@
     <mitre>
       <id>T1059</id>
     </mitre>
+    process_exec,
   </rule>
 
   <rule id="200002" level="5">
@@ -23,6 +24,7 @@
     <mitre>
       <id>T1489</id>
     </mitre>
+    process_exit,
   </rule>
 
   <rule id="200003" level="5">
@@ -32,6 +34,7 @@
     <mitre>
       <id>T1547.006</id>
     </mitre>
+    process_kprobe,
   </rule>
 <!-- Source: https://wazuh.com/blog/security-observability-on-linux-with-wazuh-and-tetragon/ | Article: Security observability on Linux with Wazuh and Tetragon -->
 
@@ -80,6 +83,7 @@
     <if_sid>80700</if_sid>
     <list field="audit.key" lookup="match_key_value" check_value="passwd">etc/lists/audit-keys</list>
     <description>File access - The file $(audit.file.name) was accessed</description>
+    audit_command,
     <mitre>
       <id>T1003.008</id>
     </mitre>
@@ -89,6 +93,7 @@
     <if_sid>80700</if_sid>
     <list field="audit.key" lookup="match_key_value" check_value="shadow">etc/lists/audit-keys</list>
     <description>Possible adversary activity - $(audit.file.name) was accessed</description>
+    audit_command,
     <mitre>
       <id>T1003.008</id>
     </mitre>
@@ -99,12 +104,14 @@
     <if_sid>80700</if_sid>
     <list field="audit.key" lookup="match_key_value" check_value="ssh">etc/lists/audit-keys</list>
     <description>Possible adversary activity - $(audit.file.name) was accessed</description>
+    audit_command,
   </rule>
 
   <rule id="200011" level="0">
     <if_sid>80700</if_sid>
     <list field="audit.key" lookup="match_key_value" check_value="history">etc/lists/audit-keys</list>
     <description>Possible adversary activity - $(audit.file.name) was accessed</description>
+    audit_command,
   </rule>
 
   <rule id="200012" level="0">
@@ -112,11 +119,13 @@
     <field name="audit.exe" type="pcre2">/usr/bin/*grep</field>
     <field name="audit.execve.a2">cred|password|login</field>
     <description>Possible adversary activity - $(audit.file.name) was accessed</description>
+    audit_command,
   </rule>
 
   <rule id="200013" level="10">
     <if_sid>200010,200011,200012</if_sid>
     <description>Possible adversary activity - searching for previously used credentials in system files</description>
+    audit_command,
     <mitre>
       <id>T1552.001</id>
     </mitre>
@@ -350,6 +359,7 @@
     <mitre>
       <id>T1053.003</id>
     </mitre>
+    pci_dss_10.2.7,pci_dss_10.6.1,pci_dss_10.2.2,gpg13_4.13,gdpr_IV_35.7.d,gdpr_IV_32.2,hipaa_164.312.b,nist_800_53_AU.14,nist_800_53_AU.6,nist_800_53_AC.6,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,
   </rule>
 
  <!-- SYSLOG,CRON -->
@@ -360,6 +370,23 @@
   <description>Cron job has been modified for user "$(uname)". The following modification was made: "$(changed_content)"</description>
   <mitre>
     <id>T1053.003</id>
+  </mitre>
+</rule>
+<!-- Source: https://wazuh.com/blog/detecting-illegitimate-crypto-miners/ | Article: Detecting illegitimate crypto miners on Linux endpoints -->
+<integration>
+  <name>virustotal</name>
+  <api_key>API_KEY</api_key> <!-- Replace with your VirusTotal API key -->
+  syscheck
+  <alert_format>json</alert_format>
+</integration>
+<!-- Source: https://wazuh.com/blog/detecting-illegitimate-crypto-miners/ | Article: Detecting illegitimate crypto miners on Linux endpoints -->
+<rule id="200042" level="12" ignore="600">
+  <if_sid>530</if_sid>
+  <match>ossec: output: 'top cpu usage</match>
+  <regex type="pcre2">9\d%|100%</regex>
+  <description>CPU usage higher than 90%.</description>
+  <mitre>
+    <id>T1496</id>
   </mitre>
 </rule>
 </group>

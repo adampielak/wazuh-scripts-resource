@@ -1,5 +1,4 @@
 <!-- Source: https://wazuh.com/blog/monitoring-hashicorp-vault-activities-with-wazuh/ | Article: Monitoring HashiCorp Vault activities with Wazuh -->
-<decoders>
 <decoder name="vault-audit">
     <prematch>^[vault audit]</prematch>
     <plugin_decoder offset="after_prematch">JSON_Decoder</plugin_decoder>
@@ -2006,4 +2005,4 @@
   <parent>securityapp</parent>
   <regex>dstusr="(\.+)"</regex>
   <order>dstuser</order>
-</decoder></decoders>
+</decoder>

@@ -1,5 +1,5 @@
 <!-- Group: kubernetes -->
-<group name="wazuh_blog_custom">
+<group name="wazuh_blog_custom,">
 <!-- Source: https://wazuh.com/blog/detecting-kubernetes-attacks-with-wazuh-2/ | Article: Detecting Kubernetes attacks with Wazuh -->
 
   <rule id="230000" level="0">
@@ -409,6 +409,7 @@
   <rule id="230044" level="5">
     <decoded_as>docker-container-resource</decoded_as>
     <description>Docker: Container $(container_name) Resources</description>
+    container_resource,
   </rule>
   
   <!-- Rule to trigger when container CPU and memory usage are above 80%. -->
@@ -417,6 +418,7 @@
     <field name="container_cpu_usage" type="pcre2">^(0*[8-9]\d|0*[1-9]\d{2,})</field>
     <field name="container_memory_perc" type="pcre2">^(0*[8-9]\d|0*[1-9]\d{2,})</field>
     <description>Docker: Container $(container_name) CPU usage ($(container_cpu_usage)) and memory usage ($(container_memory_perc)) is over 80%</description>
+    container_resource,
   </rule>
 
   <!-- Rule to trigger when container CPU usage is above 80%. -->
@@ -424,6 +426,7 @@
     <if_sid>230044</if_sid>
     <field name="container_cpu_usage" type="pcre2">^(0*[8-9]\d|0*[1-9]\d{2,})</field>
     <description>Docker: Container $(container_name) CPU usage ($(container_cpu_usage)) is over 80%</description>
+    container_resource,
   </rule>  
   
   <!-- Rule to trigger when container memory usage is above 80%. -->
@@ -431,12 +434,14 @@
     <if_sid>230044</if_sid>
     <field name="container_memory_perc" type="pcre2">^(0*[8-9]\d|0*[1-9]\d{2,})</field>
     <description>Docker: Container $(container_name) memory usage ($(container_memory_perc)) is over 80%</description>
+    container_resource,
   </rule>
 
   <!-- Rule for container health information. -->
   <rule id="230048" level="5">
     <decoded_as>docker-container-health</decoded_as>
     <description>Docker: Container $(container_name) is $(container_health_status)</description>
+    container_health,
   </rule>
    
   <!-- Rule to trigger when a container is unhealthy. -->
@@ -444,6 +449,7 @@
     <if_sid>230048</if_sid>
     <field name="container_health_status">^unhealthy$</field>
     <description>Docker: Container $(container_name) is $(container_health_status)</description>
+    container_health,
   </rule>
 <!-- Source: https://wazuh.com/blog/monitoring-docker-container-logs/ | Article: Monitoring Docker container logs with Wazuh -->
 
