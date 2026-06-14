@@ -19,6 +19,9 @@ wazuh-indexer/        — OpenSearch cluster config, ISM policies
 wazuh-dashboard/      — Dashboard config, scripted fields
 health/               — standalone health check scripts (agent + indexer)
 filebeat/             — Filebeat config and pipeline templates
+wazuh.blog/           — custom Wazuh rules and decoders from blog articles
+  rules/              — detection rules organized by platform
+  decoders/           — log decoders organized by platform
 CVE-2025-24016/       — CVE PoC material and detection rules
 misc/                 — debug one-liners, vendor-specific notes
 ```
