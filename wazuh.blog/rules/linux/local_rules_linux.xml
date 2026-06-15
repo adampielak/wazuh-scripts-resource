@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- Group: linux -->
-<group name="wazuh_blog_custom">
+<group name="wazuh_blog_custom,">
 <!-- Source: https://wazuh.com/blog/security-observability-on-linux-with-wazuh-and-tetragon/ | Article: Security observability on Linux with Wazuh and Tetragon -->
 
   <rule id="200000" level="1">
@@ -340,7 +341,6 @@
     <if_sid>200036</if_sid>
     <match>REPLACE</match>
     <description>Crontab entry changed.</description>
-    pci_dss_10.2.7,pci_dss_10.6.1,gpg13_4.13,gdpr_IV_35.7.d,hipaa_164.312.b,nist_800_53_AU.14,nist_800_53_AU.6,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,
   </rule>
 
   <rule id="200040" level="8">
@@ -360,6 +360,18 @@
   <description>Cron job has been modified for user "$(uname)". The following modification was made: "$(changed_content)"</description>
   <mitre>
     <id>T1053.003</id>
+  </mitre>
+</rule>
+<!-- Source: https://wazuh.com/blog/detecting-illegitimate-crypto-miners/ | Article: Detecting illegitimate crypto miners on Linux endpoints -->
+
+<!-- Source: https://wazuh.com/blog/detecting-illegitimate-crypto-miners/ | Article: Detecting illegitimate crypto miners on Linux endpoints -->
+<rule id="200042" level="12" ignore="600">
+  <if_sid>530</if_sid>
+  <match>ossec: output: 'top cpu usage</match>
+  <regex type="pcre2">9\d%|100%</regex>
+  <description>CPU usage higher than 90%.</description>
+  <mitre>
+    <id>T1496</id>
   </mitre>
 </rule>
 </group>

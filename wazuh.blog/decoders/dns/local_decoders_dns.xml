@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<decoder_group name="local">
 <!-- Source: https://wazuh.com/blog/detecting-dns-spoofing-attacks-with-wazuh/ | Article: Detecting DNS spoofing attacks with Wazuh -->
-<decoders>
 <!-- DNS Query -->
 <decoder name="zeek_decoder">
   <parent>json</parent>
@@ -21,13 +22,13 @@
 
 <decoder name="zeek_decoder">
   <parent>json</parent>
-  <regex>"id.orig_p":(\d+)</regex>​
+  <regex>"id.orig_p":(\d+)</regex>
   <order>srcport</order>
 </decoder>
 
 <decoder name="zeek_decoder">
   <parent>json</parent>
-  <regex>"id.resp_h":"(\d+.\d+.\d+.\d+)"</regex>​
+  <regex>"id.resp_h":"(\d+.\d+.\d+.\d+)"</regex>
   <order>dstip</order>
 </decoder>
 
@@ -39,13 +40,13 @@
 
 <decoder name="zeek_decoder">
   <parent>json</parent>
-  <regex>"proto":"(\w+)"</regex>​
+  <regex>"proto":"(\w+)"</regex>
   <order>protocol</order>
 </decoder>
 
 <decoder name="zeek_decoder">
   <parent>json</parent>
-  <regex>"trans_id":(\d+)</regex>​
+  <regex>"trans_id":(\d+)</regex>
   <order>DNS_transaction_id</order>
 </decoder>
 
@@ -57,13 +58,13 @@
 
 <decoder name="zeek_decoder">
   <parent>json</parent>
-  <regex>"rcode_name":"(\w+)"</regex>​
+  <regex>"rcode_name":"(\w+)"</regex>
   <order>dns_response_code</order>
 </decoder>
 
 <decoder name="zeek_decoder">
   <parent>json</parent>
-  <regex>"AA":(\w+)</regex>​
+  <regex>"AA":(\w+)</regex>
   <order>authoritative_answer</order>
 </decoder>
 
@@ -93,13 +94,13 @@
 
 <decoder name="zeek_decoder">
   <parent>json</parent>
-  <regex>"answers":(["\.+"])</regex>​
+  <regex>"answers":(["\.+"])</regex>
   <order>resolved_by</order>
 </decoder>
 
 <decoder name="zeek_decoder">
   <parent>json</parent>
-  <regex>"TTLs":([\d+])</regex>​
+  <regex>"TTLs":([\d+])</regex>
   <order>time_to_live</order>
 </decoder>
 
@@ -124,13 +125,13 @@
 
 <decoder name="zeek_decoder">
   <parent>json</parent>
-  <regex>"orig_bytes":(\d+)</regex>​
+  <regex>"orig_bytes":(\d+)</regex>
   <order>byte_send_by_originator</order>
 </decoder>
 
 <decoder name="zeek_decoder">
   <parent>json</parent>
-  <regex>"resp_bytes":(\d+)</regex>​
+  <regex>"resp_bytes":(\d+)</regex>
   <order>byte_sent_by_responder</order>
 </decoder>
 
@@ -178,7 +179,7 @@
 
 <decoder name="zeek_decoder">
   <parent>json</parent>
-  <regex>"resp_pkts":(\d+)</regex>​
+  <regex>"resp_pkts":(\d+)</regex>
   <order>packet_sent_by_responder</order>
 </decoder>
 
@@ -318,4 +319,5 @@
   <parent>dns_monitor</parent>
   <regex type="pcre2">SOA\s+([^\s]+)\s+([^\s]+)</regex>
   <order>dns_soa_primary, dns_soa_email</order>
-</decoder></decoders>
+</decoder>
+</decoder_group>

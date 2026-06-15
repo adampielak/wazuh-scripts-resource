@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- Group: kubernetes -->
-<group name="wazuh_blog_custom">
+<group name="wazuh_blog_custom,">
 <!-- Source: https://wazuh.com/blog/detecting-kubernetes-attacks-with-wazuh-2/ | Article: Detecting Kubernetes attacks with Wazuh -->
 
   <rule id="230000" level="0">
@@ -26,7 +27,6 @@
     <if_sid>230000</if_sid>
     <regex type="pcre2">requestURI":"\/apis\/rbac\.authorization\.k8s\.io\/v1\/clusterroles(?:\?[^"]*)?"\s*,\s*"verb"\s*:\s*"create</regex>
     <description>Kubernetes ClusterRole creation</description>
-    kubernetes,persistence,rbac_create_admin_clusterrole,
     <mitre>
       <id>T1098</id>
     </mitre>
@@ -36,7 +36,6 @@
     <if_sid>230000</if_sid>
     <regex type="pcre2">requestURI":"\/api\/v1\/namespaces\/[^"\/]+\/serviceaccounts(?:\?[^"]*)?"\s*,\s*"verb"\s*:\s*"create</regex>
     <description>Kubernetes ServiceAccount creation</description>
-    kubernetes,persistence,rbac_create_admin_clusterrole,
     <mitre>
       <id>T1098</id>
     </mitre>
@@ -46,7 +45,6 @@
     <if_sid>230000</if_sid>
     <regex type="pcre2">requestURI":"\/apis\/rbac\.authorization\.k8s\.io\/v1\/clusterrolebindings(?:\?[^"]*)?"\s*,\s*"verb"\s*:\s*"create</regex>
     <description>Kubernetes ClusterRoleBinding creation</description>
-    kubernetes,privilege_escalation,rbac_create_admin_clusterrole,
     <mitre>
       <id>T1098</id>
     </mitre>
@@ -57,7 +55,6 @@
     <if_matched_sid>110004</if_matched_sid>
     <if_matched_sid>110005</if_matched_sid>
     <description>Potential persistence and privilege escalation activity detected: Kubernetes ClusterRole, ServiceAccount, and ClusterRoleBinding created in close succession</description>
-    kubernetes,persistence,privilege_escalation,correlation,
     <mitre>
       <id>T1098</id>
     </mitre>
@@ -69,7 +66,6 @@
     <field name="objectRef.resource">pods</field>
     <regex type="pcre2">hostPath.*"path":"\/".*(mountPath":"\/host".*cat \/host\/etc\/passwd|cat \/host\/etc\/passwd.*mountPath":"\/host")</regex>
     <description>Container breakout attempt detected: Kubernetes pod mounts the host root filesystem and accesses host files</description>
-    kubernetes,privilege_escalation,container_escape,hostpath,critical,
     <mitre>
       <id>T1611</id>
     </mitre>
@@ -86,7 +82,6 @@
     <mitre>
       <id>T1068</id>
     </mitre>
-    k8s_node_proxy_access,k8s_privilege_escalation,
   </rule>
 
   <rule id="230009" level="15">
@@ -99,7 +94,6 @@
     <mitre>
       <id>T1611</id>
     </mitre>
-    k8s_privileged_pod_creation,k8s_privilege_escalation,
   </rule>
 
   <!-- Stage 1: CSR created -->
@@ -112,7 +106,6 @@
     <mitre>
       <id>T1649</id>
     </mitre>
-    k8s_csr_create,k8s_credential_access,
   </rule>
 
   <!-- Stage 2: Same CSR approved -->
@@ -126,7 +119,6 @@
     <mitre>
       <id>T1649</id>
     </mitre>
-    k8s_csr_approval,k8s_credential_access,k8s_persistence,
   </rule>
 
 <!-- Stage 3:CSR status update by certificate controller -->
@@ -141,7 +133,6 @@
     <mitre>
       <id>T1649</id>
     </mitre>
-    k8s_csr_status_update,k8s_credential_access,
   </rule>
 
    <!-- Stage 4: CSR get -->
@@ -154,7 +145,6 @@
     <mitre>
       <id>T1649</id>
     </mitre>
-    k8s_csr_get,k8s_credential_access,
   </rule>
 
   <!-- Stage 5: Same CSR deleted shortly after approval -->
@@ -167,7 +157,6 @@
     <mitre>
       <id>T1649</id>
     </mitre>
-    k8s_csr_abuse,k8s_privilege_escalation,k8s_persistence,
   </rule>
 
   <rule id="230015" level="14">
@@ -183,7 +172,6 @@
     <mitre>
       <id>T1098</id>
     </mitre>
-    k8s_long_lived_token,k8s_persistence,
   </rule>
 <!-- Source: https://wazuh.com/blog/detecting-kubernetes-with-kubelinter-and-wazuh/ | Article: Detecting Kubernetes misconfigurations with KubeLinter and Wazuh -->
 
@@ -452,6 +440,5 @@
     <description>Docker Container: Successful Web GET request on Container: $(program_name) from $(srcip)</description> <mitre>
       <id>T1016.001</id>
     </mitre>
-    docker-log-rule,
   </rule>
 </group>

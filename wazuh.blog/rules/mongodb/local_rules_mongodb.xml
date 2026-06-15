@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- Group: mongodb -->
-<group name="wazuh_blog_custom">
+<group name="wazuh_blog_custom,">
 <!-- Source: https://wazuh.com/blog/monitoring-mongodb-atlas-with-wazuh/ | Article: Monitoring MongoDB Atlas with Wazuh -->
 
   <rule id="250000" level="1">
@@ -149,8 +150,8 @@
     </mitre>
    </rule>
 
-<!-- This rule detects when a document is being added to a
-collection "C" in the CRUD framework -->
+<!-- This rule detects when a document is being added to a-->
+
    <rule id="250016" level="4">
      <field name="atype" type="pcre2">authCheck</field>
      <field name="param.command" type="pcre2">^insert$</field>
@@ -162,7 +163,7 @@ database.</description>
      </mitre>
    </rule>
 
-<!-- This rule detects when a document is being read from your collection. "R" in the CRUD framework -->
+<!-- This rule detects when a document is being read from your collection. "R" in the CRUD framework-->
     <rule id="250017" level="4">
       <field name="atype" type="pcre2">authCheck</field>
       <field name="param.command" type="pcre2">^find$</field>
@@ -172,9 +173,9 @@ database.</description>
     </rule>
 
 
-<!-- This rule detects when an update is being made to the
-collection of the database or a database. "U" in the CRUD
-framework -->
+<!-- This rule detects when an update is being made to the-->
+
+
     <rule id="250018" level="4">
       <field name="atype" type="pcre2">authCheck</field>
       <field name="param.command" type="pcre2">^update$</field>
@@ -187,8 +188,8 @@ database.</description>
       </mitre>
     </rule>
 
-<!-- This rule detects when a delete action is being made to
-the collection of the database. "D" in the CRUD framework -->
+<!-- This rule detects when a delete action is being made to-->
+
     <rule id="250019" level="7">
       <field name="atype" type="pcre2">authCheck</field>
       <field name="param.command" type="pcre2">^delete$</field>
@@ -199,38 +200,4 @@ database.</description>
         <id>T1485</id>
       </mitre>
     </rule>
-
-<!-- This rule detects when a collection is dropped from a
-database -->
-    <rule id="250020" level="7">
-      <field name="atype" type="pcre2">authCheck</field>
-     <field name="param.command" type="pcre2">^drop$</field>
-     <field name="result" type="pcre2">^0$</field>
-      <description>A collection name $(param.args.drop), has been dropped from the $(param.args.$db) database.</description>
-      <mitre>
-        <id>T1485</id>
-      </mitre>
-    </rule>
-
-<!-- This rule detects when a database is dropped or deleted -->
-    <rule id="250021" level="7">
-      <field name="atype" type="pcre2">authCheck</field>
-      <field name="param.command" type="pcre2">^dropDatabase$</field>
-      <field name="result" type="pcre2">^0$</field>
-      <description>A database name $(param.args.$db) has been deleted.</description>
-      <mitre>
-        <id>T1485</id>
-      </mitre>
-    </rule>
-
-<!-- This rule will detect when a user performs unauthorized CRUD  action -->
-  <rule id="250022" level="9">
-    <field name="atype" type="pcre2">authCheck</field>
-    <field name="param.command" type="pcre2">(listCollections|create|insert|find|update|delete|drop|dropDatabase|createUser)</field>
-    <field name="result" type="pcre2">(?!0\b)\d+</field>
-    <description>An unauthorized user with details $(users) performed a $(param.command) command on the $(param.args.$db) database</description>
-    <mitre>
-      <id>T1565</id>
-    </mitre>
-  </rule>
 </group>

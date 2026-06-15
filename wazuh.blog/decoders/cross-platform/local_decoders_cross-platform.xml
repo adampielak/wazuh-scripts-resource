@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<decoder_group name="local">
 <!-- Source: https://wazuh.com/blog/monitoring-hashicorp-vault-activities-with-wazuh/ | Article: Monitoring HashiCorp Vault activities with Wazuh -->
-<decoders>
 <decoder name="vault-audit">
     <prematch>^[vault audit]</prematch>
     <plugin_decoder offset="after_prematch">JSON_Decoder</plugin_decoder>
@@ -47,55 +48,23 @@
     <order>log_type, yara_rule, yara_scanned_file</order>
 </decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
+
 <!-- Source: https://wazuh.com/blog/detecting-and-responding-to-cephalus-ransomware-with-wazuh/ | Article: Detecting and responding to Cephalus ransomware with Wazuh -->
-<decoder name="yara_decoder">
-    <prematch>wazuh-yara:</prematch>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
+
+
+
+
 <!-- Source: https://wazuh.com/blog/detecting-and-responding-to-funklocker-ransomware-with-wazuh/ | Article: Detecting and responding to Funklocker ransomware with Wazuh -->
-<decoder name="yara_decoder">
-    <prematch>wazuh-yara:</prematch>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
+
+
+
+
 <!-- Source: https://wazuh.com/blog/detecting-koske-malware-with-wazuh/ | Article: Detecting Koske malware with Wazuh -->
 <decoder name="sysmon-linux">
   <program_name>sysmon</program_name>
@@ -531,13 +500,13 @@
 
 <decoder name="zeek_decoder">
   <parent>json</parent>
-  <regex>"id.orig_p":(\d+)</regex>​
+  <regex>"id.orig_p":(\d+)</regex>
   <order>srcport</order>
 </decoder>
 
 <decoder name="zeek_decoder">
   <parent>json</parent>
-  <regex>"id.resp_h":"(\d+.\d+.\d+.\d+)"</regex>​
+  <regex>"id.resp_h":"(\d+.\d+.\d+.\d+)"</regex>
   <order>dstip</order>
 </decoder>
 
@@ -549,13 +518,13 @@
 
 <decoder name="zeek_decoder">
   <parent>json</parent>
-  <regex>"proto":"(\w+)"</regex>​
+  <regex>"proto":"(\w+)"</regex>
   <order>protocol</order>
 </decoder>
 
 <decoder name="zeek_decoder">
   <parent>json</parent>
-  <regex>"trans_id":(\d+)</regex>​
+  <regex>"trans_id":(\d+)</regex>
   <order>DNS_transaction_id</order>
 </decoder>
 
@@ -567,13 +536,13 @@
 
 <decoder name="zeek_decoder">
   <parent>json</parent>
-  <regex>"rcode_name":"(\w+)"</regex>​
+  <regex>"rcode_name":"(\w+)"</regex>
   <order>dns_response_code</order>
 </decoder>
 
 <decoder name="zeek_decoder">
   <parent>json</parent>
-  <regex>"AA":(\w+)</regex>​
+  <regex>"AA":(\w+)</regex>
   <order>authoritative_answer</order>
 </decoder>
 
@@ -603,13 +572,13 @@
 
 <decoder name="zeek_decoder">
   <parent>json</parent>
-  <regex>"answers":(["\.+"])</regex>​
+  <regex>"answers":(["\.+"])</regex>
   <order>resolved_by</order>
 </decoder>
 
 <decoder name="zeek_decoder">
   <parent>json</parent>
-  <regex>"TTLs":([\d+])</regex>​
+  <regex>"TTLs":([\d+])</regex>
   <order>time_to_live</order>
 </decoder>
 
@@ -634,13 +603,13 @@
 
 <decoder name="zeek_decoder">
   <parent>json</parent>
-  <regex>"orig_bytes":(\d+)</regex>​
+  <regex>"orig_bytes":(\d+)</regex>
   <order>byte_send_by_originator</order>
 </decoder>
 
 <decoder name="zeek_decoder">
   <parent>json</parent>
-  <regex>"resp_bytes":(\d+)</regex>​
+  <regex>"resp_bytes":(\d+)</regex>
   <order>byte_sent_by_responder</order>
 </decoder>
 
@@ -688,7 +657,7 @@
 
 <decoder name="zeek_decoder">
   <parent>json</parent>
-  <regex>"resp_pkts":(\d+)</regex>​
+  <regex>"resp_pkts":(\d+)</regex>
   <order>packet_sent_by_responder</order>
 </decoder>
 
@@ -796,27 +765,13 @@
   <order>ssl_next_protocol</order>
 </decoder>
 <!-- Source: https://wazuh.com/blog/detecting-and-responding-to-apos-malware-with-wazuh/ | Article: Detecting and responding to Apos malware with Wazuh -->
-<decoder name="yara_decoder">
-    <prematch>wazuh-yara:</prematch>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
+
+
+
+
 <!-- Source: https://wazuh.com/blog/monitoring-mariadb-server-with-wazuh/ | Article: Monitoring MariaDB server with Wazuh -->
 <decoder name="mariadatabase-decoder">
     <program_name>mariadb-server_auditing</program_name>
@@ -834,92 +789,36 @@
   <plugin_decoder offset="after_prematch">JSON_Decoder</plugin_decoder>
 </decoder>
 <!-- Source: https://wazuh.com/blog/detecting-and-responding-mamona-ransomware-with-wazuh/ | Article: Detecting and responding Mamona ransomware with Wazuh -->
-<decoder name="yara_decoder">
-    <prematch>wazuh-yara:</prematch>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
+
+
+
+
 <!-- Source: https://wazuh.com/blog/detecting-doge-big-balls-ransomware-with-wazuh/ | Article: Detecting DOGE Big Balls ransomware with Wazuh -->
-<decoder name="yara_decoder">
-    <prematch>wazuh-yara:</prematch>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
+
+
+
+
 <!-- Source: https://wazuh.com/blog/detecting-medusa-ransomware-with-wazuh/ | Article: Detecting Medusa ransomware with Wazuh -->
-<decoder name="yara_decoder">
-    <prematch>wazuh-yara:</prematch>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
+
+
+
+
 <!-- Source: https://wazuh.com/blog/detecting-peaklight-malware-with-wazuh/ | Article: Detecting Peaklight malware with Wazuh -->
-<decoder name="yara_decoder">
-    <prematch>wazuh-yara:</prematch>
-</decoder>
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
+
+
+
+
 <!-- Source: https://wazuh.com/blog/detecting-lynx-ransomware-with-wazuh/ | Article: Detecting Lynx ransomware with Wazuh -->
 <decoder name="Wazuh_Ransomware">
   <prematch>Wazuh_Ransomware_Protection:</prematch>
@@ -931,69 +830,27 @@
   <order>rollback_status</order>
 </decoder>
 <!-- Source: https://wazuh.com/blog/detecting-brain-cipher-ransomware-with-wazuh/ | Article: Detecting Brain Cipher ransomware with Wazuh -->
-<decoder name="yara_decoder">
-    <prematch>wazuh-yara:</prematch>
-</decoder>
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
+
+
+
+
 <!-- Source: https://wazuh.com/blog/blx-stealer-detection-and-response-using-wazuh/ | Article: BLX stealer detection and response using Wazuh -->
 <!-- The decoders parse logs from the YARA scans -->
-<decoder name="yara_decoder">
-    <prematch>wazuh-yara:</prematch>
-</decoder>
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
+
+
+
+
 <!-- Source: https://wazuh.com/blog/detect-and-respond-to-blacksuit-ransomware-with-wazuh/ | Article: Detect and respond to BlackSuit ransomware with Wazuh -->
-<decoder name="yara_decoder">
-    <prematch>wazuh-yara:</prematch>
-</decoder>
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
+
+
+
+
 <!-- Source: https://wazuh.com/blog/integrating-bitdefender-gravityzone-with-wazuh/ | Article: Integrating Bitdefender GravityZone with Wazuh -->
 <decoder name="gravityzone">
   <program_name>CEF</program_name>
@@ -1007,37 +864,17 @@
 </decoder>
 <!-- Source: https://wazuh.com/blog/how-wazuh-detects-and-responds-to-mint-stealer/ | Article: How Wazuh detects and responds to Mint Stealer -->
 <!-- The decoders parse logs from the YARA scans -->
-<decoder name="yara_decoder">
-    <prematch>wazuh-yara:</prematch>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
+
+
+
 <!-- Source: https://wazuh.com/blog/daolpu-infostealer-detection-and-response-with-wazuh/ | Article: Daolpu infostealer detection and response with Wazuh -->
 <!-- The decoders parse logs from the YARA scans -->
-<decoder name="yara_decoder">
-    <prematch>wazuh-yara:</prematch>
-</decoder>
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
+
+
+
 <!-- Source: https://wazuh.com/blog/integrating-mimecast/ | Article: Integrating Mimecast with Wazuh -->
 <!--
   Mimecast SIEM Logs
@@ -1451,26 +1288,12 @@
   <order>mimecast.reason</order>
 </decoder>
 <!-- Source: https://wazuh.com/blog/kuiper-ransomware/ | Article: Kuiper ransomware detection and response with Wazuh -->
-<decoder name="yara_decoder">
-    <prematch>wazuh-yara:</prematch>
-</decoder>
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
+
+
+
+
 <!-- Source: https://wazuh.com/blog/monitoring-postgresql/ | Article: Monitoring PostgreSQL database with Wazuh -->
 <decoder name="postgresql">
   <prematch type="pcre2">(?i)statement:</prematch>
@@ -1610,89 +1433,33 @@
   <order>logtimestamp, action</order>
 </decoder>
 <!-- Source: https://wazuh.com/blog/meduza-stealer/ | Article: Meduza Stealer detection and mitigation with Wazuh -->
-<decoder name="yara_decoder">
-    <prematch>wazuh-yara:</prematch>
-</decoder>
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
+
+
+
+
 <!-- Source: https://wazuh.com/blog/blackbit-ransomware/ | Article: Blackbit ransomware detection with Wazuh -->
-<decoder name="yara_decoder">
-    <prematch>wazuh-yara:</prematch>
-</decoder>
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
+
+
+
+
 <!-- Source: https://wazuh.com/blog/detecting-njrat/ | Article: Detecting njRAT malware with Wazuh -->
-<decoder name="yara_decoder">
-    <prematch>wazuh-yara:</prematch>
-</decoder>
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
+
+
+
+
 <!-- Source: https://wazuh.com/blog/limerat-detection/ | Article: LimeRAT detection and response with Wazuh -->
-<decoder name="yara_decoder">
-    <prematch>wazuh-yara:</prematch>
-</decoder>
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Error removing threat: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
+
+
+
+
 <!-- Source: https://wazuh.com/blog/building-ioc-files/ | Article: Building IoC files for threat intelligence with Wazuh XDR -->
 <decoder name="ioc_builder">
   <prematch>^\w\w\w\s\w+\s+\d+\s\d\d:\d\d:\d\d\s+\d+\s\S+\sioc-data:</prematch>
@@ -1842,25 +1609,13 @@
   <order>event_id, user, esxi_host</order>
 </decoder>
 <!-- Source: https://wazuh.com/blog/monitoring-vmware-esxi/ | Article: Monitoring VMware ESXi with Wazuh -->
-<decoder name="yara_decoder">
-  <prematch>wazuh-yara:</prematch>
-</decoder>
 
-<decoder name="yara_decoder1">
-  <parent>yara_decoder</parent>
-  <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
-  <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
+
+
 <!-- Source: https://wazuh.com/blog/detecting-sliver-c2/ | Article: Detecting Sliver C2 framework with Wazuh -->
-<decoder name="yara_decoder">
-  <prematch>wazuh-yara:</prematch>
-</decoder>
 
-<decoder name="yara_decoder1">
-  <parent>yara_decoder</parent>
-  <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
-  <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
+
+
 <!-- Source: https://wazuh.com/blog/monitoring-remote-openvpn/ | Article: Monitoring remote OpenVPN connections with GeoIP and Wazuh XDR -->
 <decoder name="openvpnas_decoder">
     <prematch type="pcre2">\[OVPN \d+\] </prematch>
@@ -1893,46 +1648,20 @@
 </decoder>
 <!-- Source: https://wazuh.com/blog/using-wazuh-to-detect-remcos/ | Article: Using Wazuh to detect Remcos RAT -->
 <!-- The decoders are used to parse logs from the YARA scans -->
-<decoder name="yara_decoder">
-    <prematch>wazuh-yara:</prematch>
-</decoder>
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Successfully deleted: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
+
+
+
 <!-- Source: https://wazuh.com/blog/rapperbot-botnet/ | Article: RapperBot botnet detection and mitigation with Wazuh -->
-<decoder name="yara_decoder">
-    <prematch>wazuh-yara:</prematch>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Successfully removed threat: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
+
+
+
 <!-- Source: https://wazuh.com/blog/detecting-lockbit-3/ | Article: Detecting Lockbit 3.0 ransomware with Wazuh -->
-<decoder name="yara_decoder">
-    <prematch>wazuh-yara:</prematch>
-</decoder>
 
-<decoder name="yara_decoder1">
-    <parent>yara_decoder</parent>
-    <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
-    <order>log_type, yara_rule, yara_scanned_file</order>
-</decoder>
+
+
 <!-- Source: https://wazuh.com/blog/creating-decoders-and-rules-from-scratch/ | Article: Creating decoders and rules from scratch -->
 <decoder name="fortigate-custom">
   <prematch>^date=\d\d\d\d-\d\d-\d\d time=\d\d:\d\d:\d\d devname="\S+"</prematch>
@@ -1946,7 +1675,7 @@
 <!-- Source: https://wazuh.com/blog/creating-decoders-and-rules-from-scratch/ | Article: Creating decoders and rules from scratch -->
 <decoder name="fortigate-custom1">
   <parent>fortigate-custom</parent>
-  <regex>devid="(\S+)" logid="(\S+)" type="(\S+) subtype="(\S+)"</regex>
+  <regex>devid="(\S+)" logid="(\S+)" type="(\S+)" subtype="(\S+)"</regex>
   <order>devid, logid, type, subtype</order>
 </decoder>
 <!-- Source: https://wazuh.com/blog/creating-decoders-and-rules-from-scratch/ | Article: Creating decoders and rules from scratch -->
@@ -1974,15 +1703,9 @@
    <order>action_name,package_name</order>
 </decoder>
 <!-- Source: https://wazuh.com/blog/sibling-decoders/ | Article: Sibling decoders: flexible extraction of information -->
-<decoder name="securityapp">
-  <program_name>securityapp</program_name>
-  <regex>(\w+): srcuser="(\.+)" action="(\.+)" dstusr="(\.+)"</regex>
-  <order>type,srcuser,action,dstuser</order>
-</decoder>
+
 <!-- Source: https://wazuh.com/blog/sibling-decoders/ | Article: Sibling decoders: flexible extraction of information -->
-<decoder name="securityapp">
-  <program_name>securityapp</program_name>
-</decoder>
+
 
 <decoder name="securityapp">
   <parent>securityapp</parent>
@@ -2006,4 +1729,5 @@
   <parent>securityapp</parent>
   <regex>dstusr="(\.+)"</regex>
   <order>dstuser</order>
-</decoder></decoders>
+</decoder>
+</decoder_group>

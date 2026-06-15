@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- Group: windows -->
-<group name="wazuh_blog_custom">
+<group name="wazuh_blog_custom,">
 <!-- Source: https://wazuh.com/blog/monitoring-hyper-v-with-wazuh/ | Article: Monitoring Hyper-V with Wazuh -->
 
 
@@ -458,8 +459,8 @@
     <id>T1560</id>
   </mitre>
 </rule>
-<!-- This rule detects the creation of JSON files containing sensitive AD information
- obtained by the ingestor from the AD-->
+<!-- This rule detects the creation of JSON files containing sensitive AD information-->
+
 <rule id="210050" timeframe="2" frequency="2" level="7">
   <if_sid>61613</if_sid>
   <field name="win.eventdata.image" type="pcre2">\.exe</field>
@@ -492,7 +493,7 @@
     <id>T1087</id>
   </mitre>
 </rule>
-<!-- Source: https://wazuh.com/blog/detecting-windows-screensaver-persistence/ | Article: Detecting Windows Screensaver persistence attack with Wazuh -->
+<!-- Source: https://wazuh.com/blog/detecting-windows-screensaver-persistence/ | Article: Detecting Windows Screensaver persistence attack with Wazuh-->
 
  
 <rule id="210053" level="7">
@@ -514,7 +515,7 @@
   <id>T1546</id>
   </mitre>
 </rule>
-<!-- Source: https://wazuh.com/blog/monitoring-commonly-abused-windows-utilities/ | Article: Monitoring commonly abused Windows utilities -->
+<!-- Source: https://wazuh.com/blog/monitoring-commonly-abused-windows-utilities/ | Article: Monitoring commonly abused Windows utilities-->
 
   <rule id="210055" level="7">
     <if_sid>61603</if_sid>
@@ -542,7 +543,7 @@
       <id>T1016</id>
     </mitre>
   </rule>
-<!-- Source: https://wazuh.com/blog/monitoring-commonly-abused-windows-utilities/ | Article: Monitoring commonly abused Windows utilities -->
+<!-- Source: https://wazuh.com/blog/monitoring-commonly-abused-windows-utilities/ | Article: Monitoring commonly abused Windows utilities-->
 
   <rule id="210058" level="7">
     <if_sid>61603</if_sid>
@@ -570,7 +571,7 @@
       <id>T1490</id>
     </mitre>
   </rule>
-<!-- Source: https://wazuh.com/blog/monitoring-commonly-abused-windows-utilities/ | Article: Monitoring commonly abused Windows utilities -->
+<!-- Source: https://wazuh.com/blog/monitoring-commonly-abused-windows-utilities/ | Article: Monitoring commonly abused Windows utilities-->
 
   <rule id="210061" level="7">
     <if_sid>61603</if_sid>
@@ -589,7 +590,7 @@
       <id>T1490</id>
     </mitre>
   </rule>
-<!-- Source: https://wazuh.com/blog/monitoring-commonly-abused-windows-utilities/ | Article: Monitoring commonly abused Windows utilities -->
+<!-- Source: https://wazuh.com/blog/monitoring-commonly-abused-windows-utilities/ | Article: Monitoring commonly abused Windows utilities-->
 
   <rule id="210063" level="7">
     <if_sid>61603</if_sid>
@@ -599,7 +600,7 @@
       <id>T1564.001</id>
     </mitre>
   </rule>
-<!-- Source: https://wazuh.com/blog/monitoring-commonly-abused-windows-utilities/ | Article: Monitoring commonly abused Windows utilities -->
+<!-- Source: https://wazuh.com/blog/monitoring-commonly-abused-windows-utilities/ | Article: Monitoring commonly abused Windows utilities-->
 
   <rule id="210064" level="7">
     <if_sid>61603</if_sid>
@@ -627,7 +628,7 @@
       <id>T1053.005</id>
     </mitre>
   </rule>
-<!-- Source: https://wazuh.com/blog/monitoring-windows-task-scheduler/ | Article: Monitoring Windows task scheduler to detect attack persistence -->
+<!-- Source: https://wazuh.com/blog/monitoring-windows-task-scheduler/ | Article: Monitoring Windows task scheduler to detect attack persistence-->
 
  
   <rule id="210067" level="6">
@@ -645,7 +646,7 @@
     <field name="win.eventdata.targetObject" type="pcre2">^HKLM\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Schedule\\\\TaskCache\\\\Tree\\\\Microsoft\\\\Windows\\\\UpdateOrchestrator$</field>
     <description>Suppression rule for scheduled task created by update orchestrator</description>
   </rule>
-<!-- Source: https://wazuh.com/blog/monitoring-windows-task-scheduler/ | Article: Monitoring Windows task scheduler to detect attack persistence -->
+<!-- Source: https://wazuh.com/blog/monitoring-windows-task-scheduler/ | Article: Monitoring Windows task scheduler to detect attack persistence-->
 <rule id="210069" level="10">
     <decoded_as>json</decoded_as>
     <field name="ScheduledTaskAR.Arguments" type="pcre2" negate="yes">^null$</field>
@@ -671,7 +672,6 @@
  <if_group>sysmon_event1</if_group>
  <field name="sysmon.image">\\powershell.exe||\\.ps1||\\.ps2</field>
  <description>Sysmon - Event 1: Bad exe: $(sysmon.image)</description>
- sysmon_event1,powershell_execution,
  </rule>
 <!-- Source: https://wazuh.com/blog/report-windows-firewall-status/ | Article: Report Windows Firewall events through Event Channel -->
 <rule id="210072" level="0">

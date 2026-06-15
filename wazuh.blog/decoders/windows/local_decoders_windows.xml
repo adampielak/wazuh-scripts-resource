@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<decoder_group name="local">
 <!-- Source: https://wazuh.com/blog/ransomware-protection-on-windows-with-wazuh/ | Article: Ransomware protection on Windows with Wazuh -->
-<decoders>
 <decoder name="Wazuh_Ransomware">
   <prematch>Wazuh_Ransomware_Protection:</prematch>
 </decoder>
@@ -10,9 +11,6 @@
   <order>rollback_status</order>
 </decoder>
 <!-- Source: https://wazuh.com/blog/file-integrity-monitoring-windows-user-groups/ | Article: File Integrity Monitoring and Windows security policies -->
-2016 Apr 26 19:24:39 WinEvtLog: Security: AUDIT_SUCCESS(4663): Microsoft-Windows-Security-Auditing: (no user): no domain: WIN-UENN0U6R5SF: An attempt was made to access an object. Subject: Security ID: S-1-5-21-2910110503-590998239-2551655963-1006 Account Name: Jtest Account Domain: WIN-UENN0U6R5SF Logon ID: 0xef8f7ee Object: Object Server: Security Object Type: File Object Name: C:\tmp\bank_information.txt Handle ID: 0x134 Process Information: Process ID: 0x9bc Process Name: C:\Windows\System32\notepad.exe Access Request Information: Accesses: %%4416 Access Mask: 0x1
-
-Now that we have our log, we can start the process of building a decoder.
 
 
 <decoder name="windows-EvtLog-4663">
@@ -20,7 +18,8 @@ Now that we have our log, we can start the process of building a decoder.
  <type>windows</type>
  <parent>windows</parent>
  <regex offset="after_parent">^\.+: (\w+)\((\d+)\): (\.+): </regex>
- <regex>(\.+): \.+: (\S+): \.+: \.+: \.+: \.+: \.+: \.+: \.+: \.+: \.+: (\S+)</regex>
+ 
  <order>status, id, extra_data, user, system_name, url</order>
  <fts>name, location, user, system_name</fts>
-</decoder></decoders>
+</decoder>
+</decoder_group>

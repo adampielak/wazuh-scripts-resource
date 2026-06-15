@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<decoder_group name="local">
 <!-- Source: https://wazuh.com/blog/detecting-frigidstealer-malware-with-wazuh/ | Article: Detecting FrigidStealer malware with Wazuh -->
-<decoders>
 <decoder name="macOS_launchservicesd">
   <program_name>^launchservicesd</program_name>
 </decoder>
@@ -44,8 +45,12 @@
 
 <decoder name="macOS_ddaolimaki_daunito_child">
   <parent>macOS_ddaolimaki-daunito</parent>
-  <regex type="pcre2">\(RunningBoardServices\)\s*\[com\.apple\.runningboard:(\w+)\]\s*Identity resolved as app\&lt;application\.(com\.wails\.ddaolimaki-daunito)\.\d+\.\d+\((\d+)\)\></regex>
+  <regex type="pcre2">\(RunningBoardServices\)\s*\[com\.apple\.runningboard:(\w+)\]\s*Identity resolved as app&lt;application\.(com\.wails\.ddaolimaki-daunito)\.\d+\.\d+\((\d+)\)&gt;</regex>
   <order>subsystem_category,bundle_id,uid</order>
+</decoder>
+
+<decoder name="macOS_loginwindow">
+  <program_name>loginwindow</program_name>
 </decoder>
 
 <decoder name="macOS_loginwindow">
@@ -154,4 +159,5 @@
   <prematch>ossec: output: 'network_metrics':\.</prematch>
   <regex offset="after_prematch">(\S+) (\S+)</regex>
   <order>network_in, network_out</order>
-</decoder></decoders>
+</decoder>
+</decoder_group>

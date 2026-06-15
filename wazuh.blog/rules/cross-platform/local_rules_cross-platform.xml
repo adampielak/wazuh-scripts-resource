@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- Group: cross-platform -->
-<group name="wazuh_blog_custom">
+<group name="wazuh_blog_custom,">
 <!-- Source: https://wazuh.com/blog/detecting-and-responding-to-bqtlock-ransomware-with-wazuh/ | Article: Detecting and responding to BQTLock ransomware with Wazuh -->
 
 
@@ -155,7 +156,9 @@
     <description>Blacklisted file hash in email from $(sender_email): $(data)</description>
   </rule>
 <!-- Source: https://wazuh.com/blog/detecting-phishing-attacks-with-wazuh-and-shuffle/ | Article: Detecting phishing attacks with Wazuh and Shuffle -->
+
 <!-- Source: https://wazuh.com/blog/detecting-phishing-attacks-with-wazuh-and-shuffle/ | Article: Detecting phishing attacks with Wazuh and Shuffle -->
+
 <!-- Source: https://wazuh.com/blog/monitoring-hashicorp-vault-activities-with-wazuh/ | Article: Monitoring HashiCorp Vault activities with Wazuh -->
 
 
@@ -248,7 +251,6 @@
     <if_sid>270026</if_sid>
     <field name="auth.display_name">^root$</field>
     <description>[Vault audit] Root token used for $(request.operation) on $(request.path).</description>
-    pci_dss_10.2.2,
   </rule>
 
   <!-- Succesfull deletion -->
@@ -303,7 +305,6 @@
     <if_sid>270034</if_sid>
     <field name="vault_seal_level">SUCCESS</field>
     <description>Vault sealed by active response. Immediate investigation required.</description>
-    service_availability,active_response,
     <mitre>
       <id>T1537</id>
     </mitre>
@@ -314,14 +315,12 @@
     <if_sid>270034</if_sid>
     <field name="vault_seal_level">ERROR</field>
     <description>Active response failed to seal Vault. Manual intervention required.</description>
-    service_availability,active_response,
   </rule>
 
   <rule id="270037" level="3">
     <if_sid>270034</if_sid>
     <field name="vault_seal_level">INFO</field>
     <description>Vault Active Response: $(vault_seal_message)</description>
-    service_availability,active_response,
   </rule>
 <!-- Source: https://wazuh.com/blog/enriching-wazuh-vulnerability-detection-with-google-gemini-integration/ | Article: Enriching Wazuh vulnerability detection with Google Gemini integration -->
 
@@ -2705,6 +2704,7 @@
     <description>Wazuh_Ransomware_Protection: Files restored successfully.</description>
   </rule>
 <!-- Source: https://wazuh.com/blog/integrating-wazuh-with-yeti-platform/ | Article: Integrating Wazuh with the Yeti platform -->
+
 <!-- Source: https://wazuh.com/blog/integrating-wazuh-with-yeti-platform/ | Article: Integrating Wazuh with the Yeti platform -->
 
     <rule id="270290" level="0">
@@ -2718,7 +2718,6 @@
         <if_sid>270290</if_sid>
         <field name="yeti.info.source">AbuseCHMalwareBazaaar</field>
         <description>"Yeti Alert - " $(yeti.info.source) detected this file: $(yeti.source.file) </description>
-        pci_dss_10.6.1,pci_dss_11.4,gdpr_IV_35.7.d,
         <options>no_full_log</options>
         <mitre>
             <id>T1203</id>
@@ -2729,7 +2728,6 @@
         <if_sid>270290</if_sid>
         <field name="yeti.info.source">AlienVaultIPReputation</field>
         <description>"Yeti Alert - " $(yeti.info.source) detected IP address: $(yeti.source.src_ip) </description>
-        pci_dss_10.2.4,pci_dss_10.2.5,
         <options>no_full_log</options>
     </rule>
 
@@ -2882,6 +2880,7 @@
       <description>Potential data breach detected for monitored email</description>
   </rule>
 <!-- Source: https://wazuh.com/blog/enhancing-threat-intelligence-with-wazuh-and-criminal-ip-integration/ | Article: Enhancing threat intelligence with Wazuh and Criminal IP integration -->
+
 <!-- Source: https://wazuh.com/blog/enhancing-threat-intelligence-with-wazuh-and-criminal-ip-integration/ | Article: Enhancing threat intelligence with Wazuh and Criminal IP integration -->
 
 
@@ -2994,7 +2993,7 @@
     <description>IP address associated with scanner activity detected: $(criminalip.ip)</description>
   </rule>
 
-<!-- Mobile Network Detection Rule, This rule may cause high false positives and can be uncommented based on user preference 
+<!-- Mobile Network Detection Rule: may cause high false positives, uncomment based on user preference -->
 
   <rule id="270321" level="4">
     <if_sid>270309</if_sid>
@@ -3002,7 +3001,7 @@
     <description>IP address associated with a Mobile network detected: $(criminalip.ip)</description>
   </rule>
 
- -->
+
 
   <!-- Anonymous VPN Detection Rule -->
 
@@ -3576,20 +3575,11 @@
 
 
 
-    <command>
-        <name>remove-threat</name>
-        <executable>remove-threat.exe</executable>
-        <timeout_allowed>no</timeout_allowed>
-    </command>
 
-    <active-response>
-        <disabled>no</disabled>
-        <command>remove-threat</command>
-        <location>local</location>
-        <rules_id>87105</rules_id>
-    </active-response>
 
-Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to generate alerts when the active response module successfully removes the malicious files.
+
+
+
 
 
 <!-- VirusTotal detection rules -->
@@ -3836,11 +3826,15 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
 <!-- Source: https://wazuh.com/blog/achieving-cjis-compliance-with-wazuh/ | Article: Achieving CJIS compliance with Wazuh -->
 <!-- Integration with Slack -->
 
+
 <!-- Integration with VirusTotal -->
+
 
 <!-- Integration with Maltiverse -->
 
+
 <!--Custom external Integration -->
+
 <!-- Source: https://wazuh.com/blog/how-to-configure-rsyslog-client-to-send-events-to-wazuh/ | Article: How to configure Rsyslog client to send events to Wazuh -->
   
   <rule id="270406" level="5">
@@ -5151,6 +5145,7 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
      </mitre>
   </rule>
 <!-- Source: https://wazuh.com/blog/crosslock-ransomware/ | Article: CrossLock ransomware detection with Wazuh -->
+
 <!-- Source: https://wazuh.com/blog/crosslock-ransomware/ | Article: CrossLock ransomware detection with Wazuh -->
 
   <rule id="270546" level="12">
@@ -5586,13 +5581,13 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
 
   <rule id="270599" level="7">
     <if_sid>550</if_sid>
-    <field name="file">C:\\Users\\&lt;USER_NAME&gt;\\Downloads</field>
-    <description>File modified in C:\Users\&lt;USER_NAME&gt;\Downloads directory.</description>
+    <field name="file">C:\\Users\\%USER_NAME%\\Downloads</field>
+    <description>File modified in C:\Users\%USER_NAME%\Downloads directory.</description>
   </rule>
   <rule id="270600" level="7">
     <if_sid>554</if_sid>
-    <field name="file">C:\\Users\\&lt;USER_NAME&gt;\\Downloads</field>
-    <description>File added to C:\Users\&lt;USER_NAME&gt;\Downloads  directory.</description>
+    <field name="file">C:\\Users\\%USER_NAME%\\Downloads</field>
+    <description>File added to C:\Users\%USER_NAME%\Downloads  directory.</description>
   </rule>
 
 
@@ -5737,6 +5732,7 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
     <description>$(parameters.program): Error removing threat $(parameters.alert.syscheck.path) whose MD5 hash appears in a malware blacklist.</description>
 </rule>
 <!-- Source: https://wazuh.com/blog/detecting-vidar/ | Article: Detecting Vidar infostealer with Wazuh -->
+
 <!-- Source: https://wazuh.com/blog/detecting-vidar/ | Article: Detecting Vidar infostealer with Wazuh -->
 
 <!-- Vidar downloads malicious DLL files on victim endpoint -->
@@ -6878,7 +6874,6 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
     <field name="gcp.labels.authorization.k8s.io/decision">forbid</field>
     <description>GKE forbidden $(gcp.protoPayload.methodName) operation.</description>
     <options>no_full_log</options>
-    authentication_failure
   </rule>
 <!-- Source: https://wazuh.com/blog/monitoring-gke-audit-logs/ | Article: Monitoring GKE audit logs -->
 
@@ -6887,9 +6882,9 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
     <list field="gcp.protoPayload.requestMetadata.callerIp" lookup="address_match_key">etc/lists/blacklist-alienvault</list>
     <description>GKE request originated from malicious actor.</description>
     <options>no_full_log</options>
-    attack
   </rule>
 <!-- Source: https://wazuh.com/blog/emotet-malware-detection/ | Article: Emotet malware detection with Wazuh -->
+
 <!-- Source: https://wazuh.com/blog/emotet-malware-detection/ | Article: Emotet malware detection with Wazuh -->
 
   <rule id="270739" level="5">
@@ -6954,20 +6949,17 @@ Add the following rules to the /var/ossec/etc/rules/local_rules.xml file to gene
     <id>AH01618|AH01808|AH01790</id>
     <options>alert_by_email</options>
     <description>Apache: Attempt to login using a non-existent user.</description>
-    <group>invalid_login,pci_dss_11.4,pci_dss_10.2.4,pci_dss_10.2.5,gpg13_7.1,gdpr_IV_35.7.d,gdpr_IV_32.2</group>
 </rule>
 <!-- Source: https://wazuh.com/blog/how-to-send-email-notifications/ | Article: How to Send Email Notifications -->
 <rule id="270748" level="12" frequency="8" timeframe="120">
     <if_matched_sid>30310</if_matched_sid>
     <description>Multiple user authentication failures</description>
-    <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,gpg13_7.1,gdpr_IV_35.7.d,gdpr_IV_32.2,hipaa_164.312.b,nist_800_53_AU.3.1,nist_800_53_IA.10</group>
 </rule>
 <!-- Source: https://wazuh.com/blog/how-to-forward-android-syslog/ | Article: How to forward Android syslog to Wazuh -->
 <rule id="270749" level="5">
   <decoded_as>android_decoder_02</decoded_as>
   <description>App installed</description>
   <field name="action_name">install</field>
-  <group>android_install</group>
 </rule>
 <!-- Source: https://wazuh.com/blog/using-osint-to-create-cdb-lists/ | Article: Using OSINT to create CDB lists and block malicious IPs -->
 
