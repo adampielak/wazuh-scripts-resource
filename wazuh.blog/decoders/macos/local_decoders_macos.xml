@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<decoder_group name="local">
 <!-- Source: https://wazuh.com/blog/detecting-frigidstealer-malware-with-wazuh/ | Article: Detecting FrigidStealer malware with Wazuh -->
 <decoder name="macOS_launchservicesd">
   <program_name>^launchservicesd</program_name>
@@ -160,4 +158,3 @@
   <regex offset="after_prematch">(\S+) (\S+)</regex>
   <order>network_in, network_out</order>
 </decoder>
-</decoder_group>

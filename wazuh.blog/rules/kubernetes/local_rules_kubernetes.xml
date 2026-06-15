@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!-- Group: kubernetes -->
 <group name="wazuh_blog_custom,">
 <!-- Source: https://wazuh.com/blog/detecting-kubernetes-attacks-with-wazuh-2/ | Article: Detecting Kubernetes attacks with Wazuh -->

@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<decoder_group name="local">
 <!-- Source: https://wazuh.com/blog/monitoring-hashicorp-vault-activities-with-wazuh/ | Article: Monitoring HashiCorp Vault activities with Wazuh -->
 <decoder name="vault-audit">
     <prematch>^[vault audit]</prematch>
@@ -1730,4 +1728,3 @@
   <regex>dstusr="(\.+)"</regex>
   <order>dstuser</order>
 </decoder>
-</decoder_group>

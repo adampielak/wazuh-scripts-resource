@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<decoder_group name="local">
 <!-- Source: https://wazuh.com/blog/security-observability-on-linux-with-wazuh-and-tetragon/ | Article: Security observability on Linux with Wazuh and Tetragon -->
 <decoder name="tetragon">
   <program_name>^tetragon-events</program_name>
@@ -87,4 +85,3 @@
   <regex offset="after_prematch">(\S+) (\S+)</regex>
   <order>disk_used_bytes, disk_free_bytes</order>
 </decoder>
-</decoder_group>

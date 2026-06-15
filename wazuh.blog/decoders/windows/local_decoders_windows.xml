@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<decoder_group name="local">
 <!-- Source: https://wazuh.com/blog/ransomware-protection-on-windows-with-wazuh/ | Article: Ransomware protection on Windows with Wazuh -->
 <decoder name="Wazuh_Ransomware">
   <prematch>Wazuh_Ransomware_Protection:</prematch>
@@ -22,4 +20,3 @@
  <order>status, id, extra_data, user, system_name, url</order>
  <fts>name, location, user, system_name</fts>
 </decoder>
-</decoder_group>

@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<decoder_group name="local">
 <!-- Source: https://wazuh.com/blog/container-image-security-with-wazuh-and-trivy/ | Article: Container image security with Wazuh and Trivy -->
 <decoder name="trivy-decoder">
   <prematch>^Trivy:</prematch>
@@ -62,4 +60,3 @@
   <regex offset="after_parent">("\w*\s/\s\w*/\d.\d"\s\d*)</regex>
   <order>web_action</order>
 </decoder>
-</decoder_group>

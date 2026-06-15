@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<decoder_group name="local">
 <!-- Source: https://wazuh.com/blog/detecting-dns-spoofing-attacks-with-wazuh/ | Article: Detecting DNS spoofing attacks with Wazuh -->
 <!-- DNS Query -->
 <decoder name="zeek_decoder">
@@ -320,4 +318,3 @@
   <regex type="pcre2">SOA\s+([^\s]+)\s+([^\s]+)</regex>
   <order>dns_soa_primary, dns_soa_email</order>
 </decoder>
-</decoder_group>
