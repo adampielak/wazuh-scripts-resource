@@ -1,0 +1,735 @@
+.. Wazuh for Security Engineers documentation documentation master file, created by
+   sphinx-quickstart on Thu May 27 17:58:09 2021.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+.. _Deck2:
+
+=====================================
+Wazuh Training for Security Engineers
+=====================================
+
+==============
+Wazuh Decoders
+==============
+
+
+Wazuh Decoders
+==============
+
+
+.. admonition:: Definition
+
+        Decoders are designed to extract any relevant data from events.
+
+* Decoding an event is done in two phases:
+        - **Predecoding:** extracts predefined fields from known log headers, such as the program name from a syslog entry. This can be used to select an appropriate family of decoders.
+
+        - **Decoding:** extracts specific field values from the event, for example: IP address or usernames.
+
+Wazuh rules commonly use matching criteria that refers to one or more specific fields extracted by decoders, rather that matching for general patterns across the whole event. This improves accuracy and performance.
+
+
+Decoder Example
+===============
+
+ :Log Sample: Mar 17 13:00:01 linux_server syslogd: stopped
+  
+.. admonition:: Predecoded event
+  :class: admonition-definition
+
+    .. table::
+        :class: long-table
+    
+        ============  ===============
+        Field         Description 
+        ============  ===============
+        hostname      linux_server 
+        program_name  syslogd 
+        time/date     Mar 17 13:00:01
+        log           stopped
+        ============  ===============
+
+
+Decoder Options
+===============
+
+.. table::
+  :class: long-table
+
+  +------------------------+-------------------------------------------------------------------------------------------------+
+  | Option                 | Description                                                                                     |
+  +========================+=================================================================================================+
+  |  decoder               | This attribute defines the decoder.                                                             |
+  +------------------------+-------------------------------------------------------------------------------------------------+
+  |  parent                | Decoder will be considered if the decoder specified here is matched.                            |
+  +------------------------+-------------------------------------------------------------------------------------------------+
+  |  program_name          | Decoder will be considered if this is the predecoded value for *program_name*.                  |
+  +------------------------+-------------------------------------------------------------------------------------------------+
+  |  prematch              | It will look for a match in the log. In case it does, the decoder will be used.                 |
+  +------------------------+-------------------------------------------------------------------------------------------------+
+  |  regex                 | The decoder will use this option to find fields of interest and extract them.                   |
+  +------------------------+-------------------------------------------------------------------------------------------------+
+  |  order                 | The values that regex will extract will be stored in order in these fields.                     |
+  +------------------------+-------------------------------------------------------------------------------------------------+
+  |  fts                   | Flags a field to keep track of the first time a value is seen.                                  |
+  +------------------------+-------------------------------------------------------------------------------------------------+
+  |  ftscomment            | Adds a comment to fts.                                                                          |
+  +------------------------+-------------------------------------------------------------------------------------------------+
+  |  plugin_decoder        | Specifies a built-in plugin to be used.                                                         |
+  +------------------------+-------------------------------------------------------------------------------------------------+
+  |  use_own_name          | Only for child decoders.                                                                        |
+  +------------------------+-------------------------------------------------------------------------------------------------+
+  |  json_null_field       | Adds the option of deciding how a null value from a JSON will be stored.                        |
+  +------------------------+-------------------------------------------------------------------------------------------------+
+  |  json_array_structure  | Adds the option of deciding how an array structure from a JSON will be stored.                  |
+  +------------------------+-------------------------------------------------------------------------------------------------+
+  |  accumulate            | It allows tracking fields over multiple log messages.                                           |
+  +------------------------+-------------------------------------------------------------------------------------------------+
+  |  var                   | Defines variables that can be reused inside the same file.                                      |
+  +------------------------+-------------------------------------------------------------------------------------------------+
+
+
+Regular Expressions in Wazuh
+============================
+
+* The <prematch> and <regex> options present in stock Wazuh decoders use a simple high-performance regular expression (regex) syntax:
+
+.. code-block:: none
+  :caption: OS RegEx
+
+  \w -> A-Z, a-z, 0-9, '-', '@', '_' characters
+  \d -> 0-9 characters
+  \s -> Spaces " "
+  \t -> Tabs
+  \p -> ()*+,-.:;<=>?[]!"'#$%&|{}
+  \W -> Anything not w
+  \D -> Anything not d
+  \S -> Anything not s
+  \. -> Anything
+
+
+* Starting with Wazuh 4.1.0, you can optionally use full PCRE2 expressions by specifying <prematch type="pcre2"> and <regex type="pcre2">.  For details on using the old and new Wazuh regex expression formats, see: `Documentation <https://documentation.wazuh.com/current/user-manual/ruleset/ruleset-xml-syntax/regex.html>`_
+
+
+Simple decoder example
+======================
+
+Let's write a simple decoder for this log event:
+
+
+Example of a simple log event:
+
+        .. code::
+
+                2016-04-29T10:01:04.600374-04:00 manager myprogram[9123]: test connection
+                from 192.168.1.1 via test-protocol1
+
+
+Example of our new decoder:
+
+        .. code::
+
+                <decoder name="myprogram">
+                  <program_name>myprogram</program_name>
+                </decoder>
+
+
+Child Decoder
+=============
+
+Example of our Child decoder:
+
+        .. code::
+
+                <decoder name="myprogram-test-connection">
+                  <parent>myprogram</parent>
+                  <prematch>^test connection </prematch>
+                  <regex offset="after_prematch">^from (\S+) via (\S+)$</regex>                  <order>srcip, protocol</order>
+                </decoder>
+
+
+We're referencing the decoder from before "myprogram" and adding new parameters to extract the SRC IP address and the protocol field. 
+
+Let's see how Wazuh processes this ...
+
+Running it through wazuh-logtest
+================================
+
+* Pre-Decoding
+
+.. code::
+
+        - Full_event: '2017-09-02T10:01:04.600374-04:00 manager myprogram[9123]: test connection 
+          from 192.168.1.1 via test-protocol1'
+
+        - hostname: 'manager'
+
+        - program_name: 'myprogram'
+
+        - log: 'test connection from 192.168.1.1 via test-protocol1'
+
+* Decoding
+
+.. code::
+
+        - decoder:  'myprogram'
+
+        - srcip: '192.168.1.1'
+
+        - protocol: 'test-protocol1'
+
+
+
+Lab Exercise Set
+================
+
+.. admonition:: Lab Exercise 3A: Write a custom decoder
+  :class: admonition-definition
+  
+  :Lab Objective: Write a custom decoder that extracts the result, username and source IP address from the following log message.
+  
+.. code::
+
+         Dec  4 17:07:01 myserver Fakeinc: Accepted password for user test2, IP: 1.2.3.4
+
+.. admonition:: Lab Exercise 3B: Write a custom rule family
+  :class: admonition-definition
+  
+  :Lab Objective: Create specific rules to categorize the log messages provided. Assign the appropriate alert levels according to the previously presented "Rule Severity Levels" table.
+  
+.. code::
+
+        Dec  4 17:07:01 myserver Fakeinc: Accepted password for user test2, IP: 1.2.3.4
+        Dec  4 17:07:01 myserver Fakeinc: Failed password for user test, IP: 1.2.3.4
+        Dec  4 17:07:01 myserver Fakeinc: Application is shutting down: Internal error
+        Dec  4 17:07:01 myserver Fakeinc: DEBUG: Received OK.
+
+
+Lab Exercise Set (Continued)
+============================
+
+.. admonition:: Lab Exercise 3C: Write a more advanced custom rule
+  :class: admonition-definition
+  
+  :Lab Objective:  Create a custom rule that triggers an alert when a particular user logs into a specific server within a designated time window. Base this rule on an existing SSHD rule.
+
+======================
+Wazuh Dynamic Decoders
+======================
+
+
+Windows Eventchannel Dynamic Decoder
+====================================
+
+* The Wazuh Windows' Agent collects Eventchannel events using the full Windows Event Schema.
+* The *windows-eventchannel* decoder will automatically extract all available fields from these events.
+* Default Windows rules include the **no_full_log** option since all available fields are already parsed.
+* The Ruleset Test or wazuh-logtest capabilities cannot be used to test these events (a few workarounds can be used for this).
+
+JSON Dynamic Decoder
+====================
+
+* In addition to analyzing plain text logs and Windows event channel logs, Wazuh Server can also take JSON-formatted logs as input:
+        - Just like the *eventchannel* decoder, the *JSON* decoder is also able to automatically extract all available fields from the event.
+
+        - Wazuh can process JSON log records, utilizing the predefined fields within the records for rule evaluation and displaying them in the Wazuh dashboard.
+
+        - Many applications, such as Snort and Suricata IDS engines, and most cloud service providers can write alerts to JSON files.
+
+Lab Exercise
+============
+
+.. admonition:: Lab Exercise 3D: Integrate Suricata
+  :class: admonition-definition
+  
+  :Lab Objective:  Deploy Suricata on an agent, configure it to write JSON, and Wazuh to collect the logs so it may dynamically decode them.
+
+===========
+Wazuh Rules
+===========
+
+
+Wazuh Rules
+===========
+
+* Rules files locations:
+        - **/var/ossec/ruleset/rules/** - for Wazuh's default rules.
+
+        - **/var/ossec/etc/rules/** - for custom rules.
+
+* Rules use the fields extracted by the decoders from the events to generate alerts when their conditions are met.
+
+* Custom rules ID numbers should be kept in the range from 100,000 to 120,000 to avoid conflicts with the official Wazuh Ruleset.
+
+* Rule severity levels range between 0 to 15 (0 being the lowest).
+
+Wazuh Rules (Continued)
+=======================
+
+* There are two types of rules:
+        - **Atomic Rules** will match based on a single event, without any correlation.
+                - Examples: Authentication failure, alert on unique event, etc.
+        - **Composite Rules** are triggered by a sequence of events. Easily recognizable by the parameters:
+                - **frequency**: specifies how many times an event or pattern must occur.
+
+                - **timeframe**: determines how far back (in seconds) it should search for the matching events.
+
+                Composite rules look for **frequency** events in the last **timeframe** seconds.
+
+
+Rule Severity Levels
+====================
+
+.. table::
+  :class: long-table
+
+  +-------+----------------------------------+---------------------------------------------------------------------------+
+  | Level | Title                            | Examples                                                                  |
+  +=======+==================================+===========================================================================+
+  | 0     | Ignored                          | No action taken. Can be used to avoid false positives.                    |
+  +-------+----------------------------------+---------------------------------------------------------------------------+
+  | 2     | Low priority notification        | System notification with no security relevance.                           |
+  +-------+----------------------------------+---------------------------------------------------------------------------+
+  | 3     | Authorized events                | Successful login attempts, firewall allow events, etc.                    |
+  +-------+----------------------------------+---------------------------------------------------------------------------+
+  | 4     | System low priority error        | Errors related to bad configurations or unused applications.              |
+  +-------+----------------------------------+---------------------------------------------------------------------------+
+  | 5     | User generated error             | Missed passwords, denied actions, etc.                                    |
+  +-------+----------------------------------+---------------------------------------------------------------------------+
+  | 6     | Low relevance attack             | An attack that does not affect the system.                                |
+  +-------+----------------------------------+---------------------------------------------------------------------------+
+  | 7     | "Bad word" matching              | Events that have words like "bad", "error", etc.                          |
+  +-------+----------------------------------+---------------------------------------------------------------------------+
+  | 8     | First time seen                  | First time an IDS event is fired or the first time an user logged in.     |
+  +-------+----------------------------------+---------------------------------------------------------------------------+
+  | 9     | Error from invalid source        | Attempts to login as an unknown user or from an invalid source.           |
+  +-------+----------------------------------+---------------------------------------------------------------------------+
+  | 10    | Multiple user errors             | Multiple bad passwords, multiple failed logins, etc.                      |
+  +-------+----------------------------------+---------------------------------------------------------------------------+
+  | 11    | Integrity checking warning       | Modification of binaries or the presence of rootkits.                     |
+  +-------+----------------------------------+---------------------------------------------------------------------------+
+  | 12    | High relevance event             | Error or warning messages from the system, kernel, etc.                   |
+  +-------+----------------------------------+---------------------------------------------------------------------------+
+  | 13    | Unusual error                    | Most of the times it matches a common attack pattern.                     |
+  +-------+----------------------------------+---------------------------------------------------------------------------+
+  | 14    | High security event              | Most of the times done with correlation and it indicates an attack.       |
+  +-------+----------------------------------+---------------------------------------------------------------------------+
+  | 15    | Severe attack                    | Immediate attention is necessary.                                         |
+  +-------+----------------------------------+---------------------------------------------------------------------------+
+
+
+
+Atomic Rule Options
+===================
+
+.. table::
+  :class: long-table
+
+  +---------------+---------------------------------------+---------------------------------------------------------------------------------+
+  | Option        | Values                                | Description                                                                     |
+  +===============+=======================================+=================================================================================+
+  | rule          | id, level, overwrite                  | It starts a new rule and its defining options.                                  |
+  +---------------+---------------------------------------+---------------------------------------------------------------------------------+
+  | if_sid        | List of rule ids                      | Matches when a rule on the list has previously matched.                         |
+  +---------------+---------------------------------------+---------------------------------------------------------------------------------+
+  | if_group      | List of rule groups                   | Matches when a group on the list has previously matched.                        |
+  +---------------+---------------------------------------+---------------------------------------------------------------------------------+
+  | match         | Sregex `regular expression`_          | Matches anywhere on the log using simple SRegex.                                |
+  +---------------+---------------------------------------+---------------------------------------------------------------------------------+
+  | regex         | Any `regular expression`_             | Matches with the OS Regex syntax.                                               |
+  +---------------+---------------------------------------+---------------------------------------------------------------------------------+
+  | decoded_as    | Any decoder's name                    | Matches logs decoded by a specific decoder.                                     |
+  +---------------+---------------------------------------+---------------------------------------------------------------------------------+
+  | field         | Any `regular expression`_             | Matches a specific dynamic field using Regex.                                   |
+  +---------------+---------------------------------------+---------------------------------------------------------------------------------+
+  | srcip         | Any IP address                        | Matches the value decoded as ``srcip``.                                         |
+  +---------------+---------------------------------------+---------------------------------------------------------------------------------+
+  | dstip         | Any IP address                        | Matches the value  decoded as ``dstip``.                                        |
+  +---------------+---------------------------------------+---------------------------------------------------------------------------------+
+  | user          | Any `regular expression`_             | Matches a value decoded as ``user``.                                            |
+  +---------------+---------------------------------------+---------------------------------------------------------------------------------+
+  | program_name  | Any `regular expression`_             | Matches the value pre-decoded as ``program_name``.                              |
+  +---------------+---------------------------------------+---------------------------------------------------------------------------------+
+  | hostname      | Any `regular expression`_             | Matches the value pre-decoded as ``hostname``.                                  |
+  +---------------+---------------------------------------+---------------------------------------------------------------------------------+
+  | time          | Any time range                        | Matches if the event is seen within a specific time range.                      |
+  +---------------+---------------------------------------+---------------------------------------------------------------------------------+
+  | weekday       | Monday - Sunday, weekends             | Matches if the event was observed on certain weekdays.                          |
+  +---------------+---------------------------------------+---------------------------------------------------------------------------------+
+  | list          | Path to the CDB file                  | Performs a lookup using the CDB list.                                           |
+  +---------------+---------------------------------------+---------------------------------------------------------------------------------+
+  | options       | no_full_log, etc                      | Additional rule options that can be used.                                       |
+  +---------------+---------------------------------------+---------------------------------------------------------------------------------+
+  | check_diff    | None                                  | Determines when the output of a command changes.                                |
+  +---------------+---------------------------------------+---------------------------------------------------------------------------------+
+  | group         | Any String                            | Add the rule to additional groups.                                              |
+  +---------------+---------------------------------------+---------------------------------------------------------------------------------+
+ 
+.. _regular expression: https://documentation.wazuh.com/current/user-manual/ruleset/ruleset-xml-syntax/regex.html
+
+Composite Rule Options
+======================
+
+.. table::
+  :class: long-table
+
+  +-------------------------+------------------------------------------------------------------------------------------------------+
+  | Option                  | Description                                                                                          |
+  +=========================+======================================================================================================+
+  |  rule                   | For composite rules it will specify the ``frequency``, ``timeframe``, and ``ignore`` parameters.     |
+  +-------------------------+------------------------------------------------------------------------------------------------------+
+  |  if_matched_sid         | Matches if events with an ID have been triggered in a period of time.                                |
+  +-------------------------+------------------------------------------------------------------------------------------------------+
+  |  if_matched_group       | Matches if events within a group have been triggered in a period of time.                            |
+  +-------------------------+------------------------------------------------------------------------------------------------------+
+  |  same_srcip             | The decoded ``srcip`` must be the same.                                                              |
+  +-------------------------+------------------------------------------------------------------------------------------------------+
+  |  different_srcip        | The decoded ``srcip`` must be different.                                                             |
+  +-------------------------+------------------------------------------------------------------------------------------------------+
+  |  same_dstip             | The decoded ``dstip`` must be the same.                                                              |
+  +-------------------------+------------------------------------------------------------------------------------------------------+
+  |  different_dstip        | The decoded ``dstip`` must be different.                                                             |
+  +-------------------------+------------------------------------------------------------------------------------------------------+
+  |  same_location          | The ``location`` must be the same.                                                                   |
+  +-------------------------+------------------------------------------------------------------------------------------------------+
+  |  different_location     | The ``location`` must be different.                                                                  |
+  +-------------------------+------------------------------------------------------------------------------------------------------+
+  |  same_srcuser           | The decoded ``srcuser`` must be the same.                                                            |
+  +-------------------------+------------------------------------------------------------------------------------------------------+
+  |  different_srcuser      | The decoded ``srcuser`` must be different.                                                           |
+  +-------------------------+------------------------------------------------------------------------------------------------------+
+  |  same_field             | The decoded ``field`` must be the same as the previous ones.                                         |
+  +-------------------------+------------------------------------------------------------------------------------------------------+
+  |  different_field        | The decoded ``field`` must be different than the previous ones.                                      |
+  +-------------------------+------------------------------------------------------------------------------------------------------+
+
+
+Composite rules design scope
+============================
+
+* The Wazuh analysis engine is optimized for high performance.
+
+* Aproximately 7% of all stock Wazuh rules are composite.
+
+* Composite rules allow the Server to recognize repeated activity over short durations.
+
+* The correlation is only done per Server and for the most recent 8192 events.
+
+* For broader correlation you may use: 
+
+  *  The indexer's Alerting capability.  
+
+Rule Example
+============
+
+* Example:
+
+.. code::
+
+  <rule id="100102" level="0">
+    <decoded_as>fakeinc_custom</decoded_as>
+    <description>Parent rule for Fakeinc custom</description>
+  </rule>
+
+
+* Notice:
+        - The unique Rule ID: 100102.
+
+        - The rule level: 0 (generates no alert).
+
+        - A clear *description* on what the rule is intended for.
+
+Lab Exercise 
+============
+ 
+.. admonition:: Lab Exercise 3E: Modify an existing rule.
+  :class: admonition-definition
+  
+  :Lab Objective:  Modify an existing rule by altering its level.
+
+
+sshd rule:
+
+.. code::
+
+  <rule id="5706" level="6">
+    <if_sid>5700</if_sid>
+    <match>Did not receive identification string from</match>
+    <description>SSH insecure connection attempt (scan).</description>
+    <group>recon,pci_dss_11.4,</group>
+  </rule>
+
+=================
+The Wazuh Ruleset
+=================
+
+Ruleset Components
+==================
+ 
+There are three categories of items that make up the full ruleset that the Wazuh Server uses to analyse log events.
+
+* Decoders:
+
+        - Stock decoder files, located at */var/ossec/ruleset/decoders/*.
+
+        - Local (custom) decoder files, located at */var/ossec/etc/decoders/*.
+
+        - Decoders are grouped in files by family with parent-child relationships, and are identified by decoder name.
+
+
+Ruleset Components
+==================
+
+* Rules:
+ 
+        - Stock rule files can be found in */var/ossec/ruleset/rules/*.
+
+        - Local (custom) rule files can be found in */var/ossec/etc/rules/*.
+
+        - Rules are identified by a unique rule id number, and grouped in files by family with parent-child relationships.
+
+* Lists:
+ 
+        - CDB (Constant Data Base) lists are referenced by various rules as matching criteria.
+
+        - Stock and local lists are stored in individual files in */var/ossec/etc/lists/*.
+
+
+The Ruleset in the Server's *ossec.conf*
+=========================================
+
+This section of **ossec.conf** on the Wazuh Server identifies the various sources making up your full ruleset, with the locations always relative to the **/var/ossec/** directory.
+
+
+.. code:: 
+
+  <ruleset>
+    <!-- Default ruleset -->
+    <decoder_dir>ruleset/decoders</decoder_dir>
+    <rule_dir>ruleset/rules</rule_dir>
+    <rule_exclude>0215-policy_rules.xml</rule_exclude>
+    <list>etc/lists/audit-keys</list>
+    <list>etc/lists/amazon/aws-eventnames</list>
+    <list>etc/lists/security-eventchannel</list>
+    <!-- User-defined ruleset -->
+    <decoder_dir>etc/decoders</decoder_dir>
+    <rule_dir>etc/rules</rule_dir>
+  </ruleset>
+
+
+
+
+
+
+The Stock Wazuh Ruleset
+=======================
+
+* Wazuh continues to improve and expand its stock ruleset, and you can track or contribute changes and additions on Github:
+        - `github.com/wazuh/wazuh/tree/master/ruleset <https://github.com/wazuh/wazuh/tree/master/ruleset>`_
+
+* Rule families for many types of logs are included:
+        - `www.wazuh.com/resources/Wazuh_Ruleset.pdf <https://www.wazuh.com/resources/Wazuh_Ruleset.pdf>`_
+
+* Wazuh maintains compliance mappings in the stock rules, corresponding to PCI DSS, GDPR, and many other regulatory compliance standards:
+        - `documentation.wazuh.com/current/compliance.html <https://documentation.wazuh.com/current/compliance.html>`_
+
+        - `www.wazuh.com/resources/PCI_Tagging.pdf <https://www.wazuh.com/resources/PCI_Tagging.pdf>`_
+
+        - `wazuh.com/resources/Wazuh_GDPR_White_Paper.pdf <https://wazuh.com/resources/Wazuh_GDPR_White_Paper.pdf>`_
+
+
+Updating the Stock Wazuh Ruleset
+================================
+
+* The Wazuh default ruleset is updated during a Server upgrade.
+
+* Future ruleset content may be downloaded and added as custom rules and decoders.
+
+* Important notes:
+
+  * Some syntax of future versions may not be understood by an older Server.
+   
+  * After upgrading, you must remove the custom rules to avoid duplicate content.
+
+Wazuh encourages everyone to contribute new rules & decoders to the Wazuh GitHub repo.
+
+Ruleset Propagation Across the Server Cluster
+=============================================
+
+* **Rules and Decoders**
+        - The *stock* decoders and rules are not propagated from the master node to the worker nodes.
+
+        - Local (custom) decoders and rules files are propagated from the master node to the worker nodes.
+
+* **Lists**
+        - All list files (stock or local) in */var/ossec/etc/lists/* are propagated from the master node to the worker nodes.
+
+* **Server restart requirement**
+        - Though local rules and decoders, and all lists are rapidly propagated across the cluster, servers do not automatically restart to reload the newly changed ruleset files.
+
+
+Traversing the Ruleset
+======================
+
+* How the ruleset is traversed during the analysis of an event or set of similar events.
+
+.. image:: /_static/img/traversing.svg
+  :align: center
+  :class: custom-width
+  :width: 100%
+
+
+=========================
+File Integrity Monitoring
+=========================
+
+
+File Integrity Monitoring (FIM)
+===============================
+
+How does FIM work? 
+
+FIM periodically calculates and records the unique cryptographic checksum and other attributes of specified files, and alerts when they are modified.
+
+* In Wazuh, the Syscheck module performs FIM.
+* FIM is a key requirement for PCI DSS (Req. 11.5).
+* In addition to checksums, Syscheck also watches for changes to file ownership, size, POSIX file permissions, and Windows ACLs.
+
+
+File Integrity Monitoring (FIM)
+===============================
+
+1. The Wazuh agent scans security relevant areas of the file system.
+2. Checksums and other attibutes are stored locally if they didn't previously exist.
+3. Attributes of previously seen objects are compared.
+4. If there is any difference a FIM event is sent to the Wazuh Server.
+
+* Locally stored information is synchronized with the Server for inventory purposes.
+* A copy of monitored text files can be mantained to provide *diff* (change details) output in the events.
+
+  * This is limited by default to 50MB per file and 1GB in total.
+
+
+Wazuh Syscheck options for FIM
+==============================
+
+Wazuh Syscheck options 
+
+.. code::
+
+        <syscheck>
+                <frequency>21600</frequency>
+                <directories realtime="yes" check_all="yes">/usr/bin,/usr/sbin</directories>
+                <directories whodata="yes" check_all="yes">/etc,/bin,/sbin</directories>
+         </syscheck>
+
+
+* **frequency** sets the frequency of a Syscheck run, measured in seconds.
+* **realtime** enables the realtime or continuous monitoring on Linux and Windows systems.
+* **check_all** checks the md5/sha1/sha256 hashes, size, owner, group, and permission of files.
+* **report_changes** includes a diff report of changes to text files.
+* **whodata** reports on the user and process that actually performed the file change. This uses its own special realtime engine so when whodata is enabled, there is no need to use the *realtime* option.
+
+
+Lab Exercise 
+=============
+
+.. admonition:: Lab Exercise 4A: Set up and test syscheck
+  :class: admonition-definition
+  
+  :Lab Objective: Configure Syscheck to do periodic scans and realtime monitoring.  Generate various file change events and observe the resulting alerts.
+
+Notes on FIM Scheduled Scans After an Agent Restarts
+====================================================
+
+* FIM scans are performed every 12 hours by default.
+
+* FIM database is discarded when the agent is restarted.
+
+* Changes that ocurred after a scan and before a restart are not reported.
+
+* This is a design choice to reduce the amount of alerts during system upgrades.
+
+* Using **realtime** or **whodata** will provide guaranteed visibility.
+   
+
+=======================
+Vulnerability Detection
+=======================
+
+
+Vulnerability Detector
+======================
+
+* Common Vulnerabilities and Exposures (CVE) database:
+        * Around 300.000 Known CVEs exist.
+        * Around 5.000 CVEs are published monthly.
+* Wazuh's Syscollector gathers all necessary information.
+* The Server keeps an up-to-date, centralized DB updated from many sources, such as NIST and vendor specific feeds.
+* This module includes specialized alerts and visualizations.
+* To get more information on CVEs please visiti `cti.wazuh.com <https://cti.wazuh.com/vulnerabilities/cves>`_
+
+Lab Exercise
+============
+
+.. admonition:: Lab Exercise 4B: Scan for vulnerable software
+  :class: admonition-definition
+  
+  :Lab Objective: Use syscollector and vulnerability-detector to find known vulnerable versions of software on agents and the Server.
+
+=================
+Rootkit Detection
+=================
+
+
+What is a Rootkit?
+==================
+
+.. admonition:: Definition
+
+  A rootkit is a program that can hide itself as well as running processes, file or network connections from the host where it's running. 
+
+  It can change access rights of files and directories.
+
+* aim:  to run "incognito" in the background for as long as possible so that an intruder has access to the system.
+
+Kinds of Rootkits?
+==================
+
+There are two kinds of rootkits:
+
+        - **User-mode (user level) rootkit:** covertly replaces common UNIX binaries or libraries with infected versions to hide its existence and to gain root privileges if needed.
+
+        - **Kernel-mode (system level) rootkit:** modifies or replaces the kernel.
+
+===================================
+How to detect a Rootkit with Wazuh?
+===================================
+
+
+Detecting Rootkits
+==================
+
+* **Syscheck Module:** The Wazuh FIM monitors changes of files such as binaries that a user level rootkit might replace.
+* **Rootcheck Module:** Wazuh scans for inconsistent reporting across system calls about processes, sockets, files, etc...
+
+Detection of Kernel Level Rootkits
+==================================
+
+.. image:: /_static/img/detectionrootkits.svg
+
+
+The rootcheck module looks for possible intercepted system calls that may be hiding files or processes.
+
+Lab Exercise
+============
+
+.. admonition:: Lab Exercise 4C: Rootkit Detection
+  :class: admonition-definition
+  
+  :Lab Objective:  Install a rootkit on the linux-agent machine and see how Wazuh detects it.
+
+=========
+Questions
+=========

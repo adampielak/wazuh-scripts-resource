@@ -1,0 +1,33 @@
+Modify an existing rule by altering the frequency and/or the alert level.  
+Do this by making a local copy that will replace the stock version of the rule such 
+that future stock rule updates will not undo our change.
+
+**Lab Exercise Resolution:**
+
+1.      Go into the Wazuh dashboard interface
+
+2.	From the **Hamburger** menu ( ☰ ) go into the **Server management** section, click on **Rules** and filter by rule id ``5706``.
+
+3.	Click on the filename :file:`0095-sshd_rules.xml`. Be careful to click on the name and not the surrounding cell which would bring you to the rule description page.
+
+4.	Scroll down to rule 5706, select and **copy** the rule, and click on ``<`` on the top left to go back.
+
+5.	Then click on Custom rules and click on :file:`local_rules.xml` filename.
+
+6.	Paste the rule inside the existing group, edit the level to ``7`` and also add ``overwrite="yes"``
+
+7.	Save the file
+
+8.	Click on **Ruleset Test** and paste this example syslog event:
+
+.. code:: 
+
+	Jun 26 09:51:26 servername sshd[21487]: Did not receive identification string from 12.23.34.3
+
+.. wazuh_image:: images/rulesettest.png
+   :align: center
+   :alt: Ruleset Test utility
+
+.. note::
+
+        Every time a change is done to the ruleset the **Clear session** button must be clicked on to reload the ruleset for further tests.

@@ -1,0 +1,86 @@
+The "Wazuh Server" consists of the following components:
+
+* Wazuh Manager - main package
+* Wazuh API - provides RESTful API access to the Wazuh Manager, needed by Web UI
+* Filebeat - conveys output from Wazuh Manager to the Wazuh indexer system
+
+All of the above is already installed on your manager system, with Wazuh Manager
+and Wazuh API having default configurations.
+
+In your Wazuh interface, navigate to Server Management > Settings, and click on the *Edit configuration* button at the top of the page. This will open the main configuration file: :file:`ossec.conf`.
+
+* In the ``<alerts>`` section change the ``<log_alert_level>`` from **3** to **1**. Also in the ``<auth>`` 
+  section, change the ``<use_password>`` line from no to yes.
+
+For cloud-based Wazuh deployments, a default registration password is provided via email in pdf format and can also be obtained in the UI, in the Deploy new agent page. 
+
+   .. image:: images/password.png
+      :align: center
+      :alt: Wazuh dashboard password
+
+For on-prem deployment the following procedure needs to be followed to implement a registration password.
+
+* Make yourself root **(always sudo to root when you ssh into any of your lab machines)**
+
+  .. code-block:: bash
+
+     sudo su
+
+* Create a corresponding self-registration password file.
+
+  .. code-block:: bash
+
+     echo "secret" > /var/ossec/etc/authd.pass
+
+* Restart wazuh-manager
+
+  .. code-block:: bash
+
+     systemctl restart wazuh-manager
+
+* Confirm Wazuh manager processes are running
+
+  .. code-block:: bash
+
+      systemctl status wazuh-manager
+
+* Confirm the Wazuh API is responsive. First login to get an API authentication token via curl, and use the 
+  token in a subsequent curl to make a basic request.
+
+  .. code-block:: bash
+
+     APIUSER="wazuh"
+     APIPASS="%%PASSWORD%%"
+     TOKEN=$(curl -sS -u $APIUSER:$APIPASS -k -X POST "https://manager%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info:55000/security/user/authenticate?raw=true")
+     curl -sS -k -X GET "https://manager%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info:55000/" -H "Authorization: Bearer $TOKEN" | jq
+
+  .. code-block:: json
+    :class: output
+
+    {
+      "data": {
+        "title": "Wazuh API REST",
+        "api_version": "4.9.0",
+        "revision": 40313,
+        "license_name": "GPL 2.0",
+        "license_url": "https://github.com/wazuh/wazuh/blob/4.3/LICENSE",
+        "hostname": "managerT0",
+        "timestamp": "2024-10-03T10:20:05Z"
+      },
+      "error": 0
+    }
+
+NOTE: Cloud solutions should request access to the API to support and then use the following command:
+
+  .. code-block:: bash
+    :class: output
+
+     curl -ku <user>:<pass> -XGET https://<cloudid>.cloud.wazuh.com/api/elastic
+This can also be done in the interface by navigating to *Server management* > *Dev Tools* and pasting the request there:
+
+  .. code-block:: json
+    :class: output
+
+    GET /
+
+And selecting the green triangle icon to run the request. There is no need to request a token since the Dashboard will handle authentication.

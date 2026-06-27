@@ -1,0 +1,202 @@
+
+In this lab we will switch from shipping only alerts to shipping all events to the Wazuh indexer. 
+We will then use an extended ingest node pipeline to split the incoming events across three different 
+index patterns and use two different index rollover policies:
+
+
+======================     ================    ======================
+wazuh-alerts-4.x-*         all alerts          daily index rollover
+wazuh-alerts-4.x-ids-*     Suricata alerts     monthly index rollover
+wazuh-archives-4.x-*       non-alert events    daily index rollover
+======================     ================    ======================
+ 
+
+The pipeline will also normalize source and destination IP field names so we can consistently know where to find common values of that kind regardless of the log source.  Additionally, the pipeline will perform GeoIP and ASN lookups against both source and destination IPs in events.  Lastly the pipeline will make a conditional transform to the ``rule.description`` field to make grouping of Suricata alerts easier.
+
+
+#. Configure manager to spool alerts to alerts.json & archives.json instead of to only alerts.json.   
+   
+   
+   In the manager's ossec.conf configuration, in the ``<global>`` section near the top, change the <logall_json> line to look like this:
+   
+   .. code::
+   
+   	 <logall_json>yes</logall_json>
+   
+   
+   Make the following highlighted changes to :file:`/etc/filebeat/filebeat.yml` on your manager, to make Filebeat start shipping 
+   :file:`archives.json` to the Wazuh indexer instead of :file:`alerts.json.`
+   
+   .. code-block:: 
+     :emphasize-lines: 4,6
+   
+   	filebeat.modules:
+   	  - module: wazuh
+   		alerts:
+   		  enabled: false
+   		archives:
+   		  enabled: true
+   
+   
+   
+   Restart wazuh-manager and filebeat on your manager:
+   
+   .. code::
+   
+   	systemctl restart wazuh-manager
+   	systemctl restart filebeat
+   
+   
+   Switching over to archives.json is not necessary to take advantage of extended pipeline enhancements.  
+   It simply lets us illustrate split-routing more richly in this lab.
+   
+#. Deploy extended pipeline.json in Wazuh Filebeat module
+
+   On your manager, move aside the standard Wazuh Filebeat :file:`pipeline.json` file and replace it with our extended version.  
+   Then make Filebeat push it to the Wazuh indexer.
+   
+   .. code::
+   
+      cd /usr/share/filebeat/module/wazuh/archives/ingest/
+      mv pipeline.json original-pipeline.json
+      cp /var/tmp/pipeline.json ./
+      filebeat setup --pipelines --modules wazuh
+
+#. Generate new IDS events by running the following on your ``linux-agent``:
+
+   .. code:: 
+   
+   	  dig a 3wzn5p2yiumh7akj.onion
+
+#. Create index patterns.
+   Alert and non-alert events are now being split across the three different patterns of index names, but in order to see this, we need to create new index patterns in Wazuh dashboard to correspond to the two additional patterns of index names now being used.  
+   
+   #. From the **Hamburger** menu ( ☰ ) go into the **Dashboard management** section, select the **Dashboard Management** option, click on **Index patterns** and then on **Create index pattern**.
+
+   #. Enter ``wazuh-alerts-4.x-ids-*`` as the Index pattern name, and click on the *Next step* button; select **timestamp** as the time field and click on the *Create index pattern* button. Repeat these steps to create a ``wazuh-archives-*`` index pattern.
+
+   #. Go back to the **Hamburger** menu ( ☰ ) go into the **Threat intelligence** section, click on the **Threat Hunting** option and select the ``wazuh-alerts-4.x-ids-*`` index pattern from the newly visible **Index pattern** selector on the top right. 
+   
+   #. Click on the Events tab.  See that only Suricata IDS alerts are arriving here. 
+   
+   #. Note that the exact same alerts will also be found if you switch back to the ``wazuh-alerts-4.x-*`` index pattern, filter for ``rule.id:86601`` to see them.
+      This is because the original ``wazuh-alerts-4.x-*`` index pattern will also consider the same indices that match the more specific ``wazuh-alerts-4.x-ids-*`` pattern.
+
+
+   #. Lastly, select the ``wazuh-archives-*`` index pattern (removing the ``rule.id:86601`` criteria).  
+
+      The dashboard now has some empty panels and columns because they are only meaningful in the context of Wazuh alerts. Due to the moodified pipeline, only events that don't have any rule information will be sent to the archives indices.
+      Clicking on the Events tab will show these non-alert events.
+   
+
+**Why do split-routing**
+
+The two main reasons for this are:
+
+		- to apply different data retention and index rollover policies to different classes of alerts/events.  
+		
+		- to use RBAC to give different users access to different subsets of your alerts/events.
+		
+There may be a narrow subset of alerts you are required to retain for much longer that you do for the rest of your alerts.  If the alert volume of 
+that subset is fairly small, you may want to use a monthly instead of daily rollover to preserve limited shard resources in your Wazuh indexer cluster.  
+There may also be a subset of your alerts that general purpose users of your Wazuh SIEM should not be allowed to see at all, requiring a restrictive 
+RBAC policy to be applied to a separate index name pattern dedicated to this purpose.
+
+**Normalized field names**
+
+
+Also, note the new normalized source and destination IP field names ``source.ip`` and  ``destination.ip`` that are present because of field name normalization done by the pipeline. 
+Review the "set" and "rename" sections in the extended pipeline.json file to see how the above is accomplished.  When using the "set" processor, 
+we are copying the value assigned to a standard Wazuh field to a normalized field name.  This leaves the original field name intact in cases where 
+the Wazuh web app may have dependencies on it.  With the "rename" processor, we are simply moving the initial name of a Wazuh field to a new normalized name.
+In this pipeline we use "set" with source IPs and "rename" with destination IPs to illustrate both name normalization methods.
+
+**GeoIP/ASN enhancement**
+
+
+While the stock Wazuh pipeline does do GeoIP lookups on the source IP field of events, the extended pipeline does this for both source and destination IPs, 
+including both GeoIP and ASN lookups which are normalized to standard file names.  Refer to the "geoip" sections of the extended pipeline to see this being done.
+
+**Transforming the rule.description field for Suricata alerts**
+
+There are several large clusters of Suricata signatures that all refer to the same events but with a group number suffix added to make each signature have a 
+unique name.  This disrupts our ability to effectively aggregate Suricata alerts by signature name since rule families like this tend to cause the set of unique signature names to explode
+
+.. code:: 
+
+	ET CINS Active Threat Intelligence Poor Reputation IP group 1
+	ET CINS Active Threat Intelligence Poor Reputation IP group 2
+	ET CINS Active Threat Intelligence Poor Reputation IP group 3
+	...
+	ET CINS Active Threat Intelligence Poor Reputation IP group 100
+
+We use a conditional "gsub" processor in the pipeline to delete the group number suffix from the rule.description field wherever it is found in Suricata alert events, while leaving the raw data.alert.signature field intact.
+
+Trigger a number of such grouped Suricata rules by running this on your ``linux-agent``:
+
+.. code::
+
+	apt -y install fping
+
+.. code::
+
+	TARGETS=`grep "^alert" /etc/suricata/rules/ciarmy.rules | sed 's/alert ip \[//' | sed 's/,.*//'`
+	fping -a -r0 $TARGETS
+
+
+
+Go to the Wazuh Security events dashboard, adding a filter for ``rule.id: 86601``.  Then switch to the Event tab.  Also add data.alert.signature as an additional column.
+
+Note diverse "ET CINS Active Threat Intelligence Poor Reputation" data.alert.signature values with different group number suffixes, but that the rule.description 
+field value for all of them is simply "Suricata: Alert - ET CINS Active Threat Intelligence Poor Reputation IP" because the group number suffix was trimmed off 
+by the pipeline.
+
+The instructor will demo the building of a Wazuh dashboard Saved search visualization that displays Suricata events by rule.description vs by data.alert.signature.
+
+**Switch from back to only using alerts.json**
+
+
+To prevent from overloading your Wazuh indexer cluster with too many records, let's drop back down to using only alerts.json instead of archives.json.
+
+Configure your manager to switch back to only writing to alerts.json,  In the manager's ossec.conf configuration, in the ``<global>`` section near the top, 
+make the detailed changes to these lines:
+
+.. code::
+
+	 <jsonout_output>yes</jsonout_output>
+	 <logall_json>no</logall_json
+
+|
+
+Make the following highlighted changes to :file:`/etc/filebeat/filebeat.yml` on your manager, to make Filebeat switch back to shipping :file:`alerts.json` to the Wazuh indexer.
+
+.. code-block:: 
+  :emphasize-lines: 4,6
+
+	filebeat.modules:
+	  - module: wazuh
+		alerts:
+		  enabled: true
+		archives:
+		  enabled: false
+
+|
+
+Restart wazuh-manager and filebeat on your manager:
+
+.. code::
+
+	systemctl restart wazuh-manager
+	systemctl restart filebeat
+	
+**For further reference about other Ingest node pipeline processors**
+
+
+There is much more that can be done with extensions to the pipeline than what is illustrated in this lab.  DNS reverse lookups, enrichment by table lookups, 
+grok/dissect/csv/key-value parsing of field data, and far more are possible.  
+The full documentation is here:
+
+https://www.elastic.co/guide/en/elasticsearch/reference/7.10/ingest-processors.html
+
+
+

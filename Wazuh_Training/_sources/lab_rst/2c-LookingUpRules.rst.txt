@@ -1,0 +1,1 @@
+Find several alerts of interest and look up the rule id and seek to understand the rule.  If there is an ``<if_sid>`` or ``<if_matched_sid>`` in the rule, take a look at the parent rule referenced by it as well.  Don't try to exhaustively understand the rules.  Just explore.

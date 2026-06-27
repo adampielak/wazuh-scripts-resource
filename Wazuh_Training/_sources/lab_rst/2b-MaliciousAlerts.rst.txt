@@ -1,0 +1,15 @@
+Assess several malicious-looking log entries reported by Wazuh in the Security Events dashboard or inside the `alerts.json` file.
+Gain as much insight as possible about the nature of the attack and the identity of 
+the attacker.  Record your observations.
+
+
+* **Knowing the rules**
+
+	Part of being able to assess rules is knowing the criteria that lead to them firing.  
+	Wazuh rules are spread across many files and it is helpful to be able to quickly look 
+	up rules and their parent rules with the help of an extra script for this purpose.
+
+* **Using the Wazuh dashboard plugin**
+
+  When seeing any event in Wazuh you may click on the value for the Rule ID and it will open the information page for that specific rule. You may also find it by using the search box in the Rules section under Wazuh > Management. 
+        

@@ -1,0 +1,351 @@
+@import url('https://fonts.googleapis.com/css?family=Manrope:400,500,600');
+@import url('https://fonts.googleapis.com/css?family=Fira+Mono:400,500');
+
+body {
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: #000000;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: auto;
+}
+
+.slide.level-1 {
+  background-color: #3585f9;
+  color: #ffffff;
+}
+
+.slide.level-2 {
+  background-color: white;
+  background-image: url('../img/backgroundh2.jpg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center top;
+}
+
+.slide.level-1 h1 {
+  color: #ffffff;
+  font-family: 'Manrope', sans-serif;
+  text-align: center;
+  font-weight: 600;
+  line-height: 1.2;
+  font-size: 44px;
+  letter-spacing: 0;
+  margin: 0 0 2rem;
+  height: 350px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+h2 {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 600;
+  color: #ffffff;
+  text-align: left;
+  line-height: 1.0em;
+  display: flex;
+  align-items: center;
+  height: 80px;
+  font-size: 32px;
+  padding: 5px;
+  letter-spacing: 0;
+  margin-bottom: 2rem;
+}
+
+.slide-footer,
+.slide-no {
+  color: #000000;
+}
+
+#slide_container article {
+  border: none;
+  padding: 0 60px 40px;
+}
+
+.slide ul {
+  margin-left: 1em;
+}
+
+.slide ul li {
+  position: relative;
+}
+
+.slide ul li::before {
+  content: '';
+  width: .4em;
+  height: .4em;
+  margin-left: -1em;
+  position: absolute;
+  background: #3585f9;
+  border-radius: 50%;
+  top: .5em;
+}
+
+.slide.level-1 ul li::before {
+  background: #000000;
+  width: .3em;
+  height: .3em;
+  top: .6em;
+}
+
+.slide ul > li ul > li::before {
+  width: .25em;
+  height: .25em;
+  border-radius: 0;
+  top: .6em;
+}
+
+.slide ul > li > ul > li ul > li::before {
+  border-radius: 50%;
+}
+
+.slides :not(li) > ol > li:first-child > :first-child, 
+.slides :not(li) > ul > li:first-child > :first-child,
+.slide ul > li ul {
+  margin-top: 1rem;
+}
+    
+.slide.level-1 ul > li ul > li::before {
+  width: .25em;
+  height: .25em;
+  border-radius: 0;
+  top: .6em;
+}
+
+ol.arabic.simple {
+  padding-left: 1.1em;
+}
+
+p,
+ul,
+ol,
+th,
+td,
+div {
+  color: #000000;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 1.5em;
+  letter-spacing: 0;
+}
+
+.slide a {
+  color: #256bd1;
+}
+
+.slide a:visited,
+.slide a:hover {
+  color: #3585f9;
+}
+
+.slide.level-1 a {
+  color: #000000;
+}
+
+.slide.level-1 a:visited,
+.slide.level-1 a:hover {
+  color: #292929;
+}
+
+th {
+  font-weight: 500;
+}
+
+h3 {
+  font-size: 20px;
+}
+
+h4 {
+  font-size: 17px;
+}
+
+h5 {
+  font-size: 15px;
+}
+
+h6 {
+  font-size: 15px;
+}
+
+img.custom-width {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: auto;
+}
+
+.docutils.field-list th {
+  white-space: nowrap;
+}
+
+/* Code-blocks */
+
+[class*=highlight-] {
+  border-color: #e2eefe;
+}
+
+[class*=highlight-] {
+  position: relative;
+  max-width: 100%;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  overflow-y: hidden;
+  border: 1px solid #e2eefe;;
+  transition: max-height .2s;
+}
+
+[class*=highlight-] .highlight {
+    color: #000;
+    background-color: #f4f6fa;
+    position: relative;
+    z-index: 0;
+    display: flex;
+    padding: 20px 0 0;
+    overflow-x: auto;
+    font-family: "Fira Mono",monospace;
+    line-height: 24px;
+}
+
+[class*=highlight-] .highlight pre {
+    position: unset;
+    padding: 0 20px 20px;
+    margin: 0;
+    font-family: "Fira Mono",monospace;
+    background-color: #f4f6fa;
+    font-size: .9rem;
+    color: #000;
+    border: none;
+    box-shadow: none;
+    letter-spacing: 0;
+}
+
+.slide .code-block-caption {
+  background-color: #3595F9;
+  color: #ffffff;
+  font-size: 20px;
+  padding: 5px 20px;
+}
+
+main code, main kbd, main pre, main samp {
+    font-family: "Fira Mono",monospace;
+}
+
+/* Admonitions */
+
+.slide div.admonition.note {
+  display: block;
+  visibility: unset;
+}
+
+.slide div.admonition {
+  padding: 0 20px 1px;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border-left: 5px solid;
+}
+
+.slide .admonition .admonition-title {
+  position: relative;
+  padding: 16px 5px 16px 38px;
+  margin-bottom: 0;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 28px;
+}
+
+.slide .admonition .admonition-title::after {
+  position: absolute;
+  top: 18px;
+  left: 0;
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  vertical-align: middle;
+  content: "";
+}
+
+.slide .admonition p {
+  margin-top: 0;
+}
+
+.slide .admonition :last-child {
+  margin-bottom: 15px;
+}
+
+.slide .admonition.note,
+.slide .admonition.attention,
+.slide .admonition.important,
+.slide .admonition.admonition-definition {
+  border-color: #3585f9;
+  background-color: rgba(53,133,249,.05);
+}
+
+.slide .admonition.note .admonition-title,
+.slide .admonition.attention .admonition-title,
+.slide .admonition.important .admonition-title,
+.slide .admonition.admonition-definition .admonition-title {
+  color: #3585f9;
+}
+
+.slide .admonition.warning,
+.slide .admonition.caution {
+  border-color: #ff7a2f;
+  background-color: rgba(255,122,47,.05);
+}
+
+.slide .admonition.warning .admonition-title,
+.slide .admonition.caution .admonition-title {
+  color: #ff7a2f;
+}
+
+.slide .admonition.danger,
+.slide .admonition.error {
+  border-color: #bd271e;
+  background-color: rgba(189,39,30,.05);
+}
+
+.slide .admonition.danger .admonition-title,
+.slide .admonition.error .admonition-title {
+  color: #bd271e;
+}
+
+.slide .admonition.hint,
+.slide .admonition.tip {
+  border-color: #207d82;
+  background-color: rgba(32,125,130,.05);
+}
+
+.slide .admonition.hint .admonition-title,
+.slide .admonition.tip .admonition-title {
+  color: #207d82;
+}
+
+.slide .admonition.note .admonition-title::after,
+.slide .admonition.admonition-definition .admonition-title::after {
+  background: url(../img/svg-icons.svg#circle-check-lt);
+}
+
+.slide .long-table tr:nth-child(2n+1){
+  background: #D2E4F9;
+}
+
+.slide .long-table th {
+  color: white;
+  font-weight: 800;
+  font-size: 20px;
+  text-align: center;
+  background-color:#3595F9;
+}
+
+.slide .long-table td {
+  color: #333333;
+  font-weight: 400;
+  font-size: 16px;
+  text-align: center;
+}

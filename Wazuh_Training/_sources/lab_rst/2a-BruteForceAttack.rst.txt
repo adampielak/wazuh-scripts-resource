@@ -1,0 +1,96 @@
+Lab Objective:
+
+* Generate a Brute Force Attack – Simulate an ssh brute force attack by repeatedly attempting to use ssh to login from your ``linux-agent`` to your ``indexer`` system.  Then analyze this attack via the Wazuh dashboard Discover tab. 
+
+Lab Exercise Resolution:
+
+1.	Install the hydra program on your ``linux-agent`` which is a very fast network logon cracker.
+
+.. code:: bash
+
+	apt -y install hydra
+
+2. Using hydra on ``linux-agent``, run the following commands to create a password list and cause 9 failed ssh attempts to your indexer system in a small time window.
+
+.. code:: bash
+
+		for i in {1..9}; do echo $i >> pass.list; done
+                hydra -l badguy -P pass.list indexer%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info ssh -I
+
+.. code-block:: bash
+  :class: output
+
+  Hydra v8.6 (c) 2017 by van Hauser/THC - Please do not use in military or secret service organizations, or for illegal purposes.
+  
+  Hydra (http://www.thc.org/thc-hydra) starting at 2022-06-07 19:05:48
+  [WARNING] Many SSH configurations limit the number of parallel tasks, it is recommended to reduce the tasks: use -t 4
+  [DATA] max 9 tasks per 1 server, overall 9 tasks, 9 login tries (l:1/p:9), ~1 try per task
+  [DATA] attacking ssh://indexer%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info:22/
+  1 of 1 target completed, 0 valid passwords found
+  Hydra (http://www.thc.org/thc-hydra) finished at 2021-11-02 19:05:50
+
+
+3. In your Wazuh dashboard browser session, select the **Threat Hunting** option under the **Threat intelligence** section, enter  **badguy** in the search field and then click on the search button.
+
+4. Observe what the results look like in dashboard form and then click on the **Events** tab to take a closer look. 
+
+5. Note the time sort is descending, so looking at the bottom of the result set first and working your way up, 
+you should see 7 alerts on rule 5710 about the same repeating event followed by the same exact event tripping a 
+different higher level alert 5712 on the 8th repetition.
+
+6. Expand one of the search results by clicking the ``magnifying glass`` icon on the left side of the search result to see 
+the detail of the alert and underlying event.  Notice the rich Wazuh event and alert metadata, as well as the 
+geoip enrichment that was added by the Wazuh indexer.
+
+All the alerts we are seeing in the *Wazuh dashboard* are originally written by the *Wazuh manager* to the ``/var/ossec/logs/alerts/alerts.json`` file and 
+then forwarded by *Filebeat* to the *Wazuh indexer*. 
+
+In this lab exercise you will see that Wazuh indexer performs GeoIP lookups based on the source IP address using the corresponding processor available for the ingest pipeline. Much more is possible in this area with the available processors, as we will see later.
+
+**Example of an expanded alert 5712 record from this lab:**
+
+   .. image:: images/alert5712.png
+      :align: center
+	  
+	  
+|
+
+In the above, you can see the program_name (sshd), the alert level (10), the rule description that triggered (SSHD brute force trying to get access), 
+how often the Wazuh rule fired (1) and of course which Wazuh rule generated this alert (5712).  This same information is found in the expanded 
+events from rule.id 5710.
+
+Now, let's take a closer look the rules that were triggered by these events:
+
+The first rule that creates an alert for our bad ssh login attempts is rule 5710 signifying a severity level of 5.
+
+	 .. code::
+
+             <rule id="5710" level="5">
+               <if_sid>5700</if_sid>
+               <match>illegal user|invalid user</match>
+               <description>sshd: Attempt to login using a non-existent user</description>
+               <mitre>
+                 <id>T1110.001</id>
+                 <id>T1021.004</id>
+                 <id>T1078</id>
+               </mitre>
+               <group>authentication_failed,gdpr_IV_35.7.d,gdpr_IV_32.2,gpg13_7.1,hipaa_164.312.b,invalid_login,nist_800_53_AU.14,nist_800_53_AC.7,nist_800_53_AU.6,pci_dss_10.2.4,pci_dss_10.2.5,pci_dss_10.6.1,tsc_CC6.1,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,</group>
+             </rule>
+
+
+The above rule is a fairly simple rule that is set to alert on any ssh event that includes either the phrase **illegal user** or **invalid user.**  
+
+In the event that rule 5710 occurs repeatedly, this is then escalated based on the criteria in rule 5712 as show below:
+
+.. code::
+
+   <rule id="5712" level="10" frequency="8" timeframe="120" ignore="60">
+     <if_matched_sid>5710</if_matched_sid>
+     <same_source_ip />
+     <description>sshd: brute force trying to get access to the system. Non existent user.</description>
+     <mitre>
+       <id>T1110</id>
+     </mitre>
+     <group>authentication_failures,gdpr_IV_35.7.d,gdpr_IV_32.2,hipaa_164.312.b,nist_800_53_SI.4,nist_800_53_AU.14,nist_800_53_AC.7,pci_dss_11.4,pci_dss_10.2.4,pci_dss_10.2.5,tsc_CC6.1,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,</group>
+   </rule>
+

@@ -1,0 +1,40 @@
+
+Preliminary
+===========
+
+
+Course goals:
+=============
+
+* Enable you to configure and fine-tune Wazuh to meet your own needs
+* Present tasks that cover the full spectrum of Wazuh’s capabilities:
+
+  * Log Analysis
+  * File Integrity Monitoring
+  * Rootkit Detection
+  * Policy Enforcement
+  * Writing custom rules & decoders
+  * Active Response
+  * CDB Lists
+
+* Provide numerous and meaningful practice opportunities in the Lab Exercises
+
+
+How this Training Course is organized:
+======================================
+
+The Wazuh training lab is broken into six sessions of task-focused activities, lab-based knowledge checks, and facilitative discussions. Lab-exercises consist of deployment and tuning of Wazuh rules and decoders, practical use-cases, Wazuh architecture and processes and open format discussion. Students are expected to be familiar with basic UNIX administration commands, however no prior Wazuh knowledge is necessary.
+
+Table of Content
+================
+
+.. toctree::
+   :maxdepth: 2
+
+   pre_lab
+   session_1
+   session_2
+   session_3
+   session_4
+   session_5
+   session_6

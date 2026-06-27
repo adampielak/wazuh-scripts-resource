@@ -1,0 +1,134 @@
+
+In this exercise you will safely implement a kernel-mode rootkit as a proof-of-concept for Wazuh rootkit detection. This rootkit 
+is able to hide itself from the kernel module list as well as hide selected processes from being visible to "ps".  However, Wazuh 
+will still detect it using the system calls **“setsid()”, “getpid()”, and “kill()”**. This makes Wazuh a very effective Linux 
+rootkit detection application by looking for general low-level hiding behavior.
+
+For this lab the Diamorphine kernel module has already been compiled for you and is waiting in /tmp/diamorphine.ko to be inserted.
+
+1: Log on to your linux-agent system and become root.
+
+2: Download, build, and load the rootkit kernel module and put it to use
+
+.. code::
+
+	git clone https://github.com/wazuh/Diamorphine.git
+	cd Diamorphine
+	sed -i 's/asm\/uaccess\.h/linux\/uaccess.h/' diamorphine.c
+	make
+	insmod diamorphine.ko
+
+|
+
+
+The kernel-level rootkit “diamorphine” is now installed on this system! By default it is hidden so we wouldn’t be able to detect it by running “lsmod”.  
+Only with a special "kill" signal can we make diamorphine unhide itself, try it out:
+
+.. code::
+
+	lsmod | grep diamorphine
+	kill -63 509
+	lsmod | grep diamorphine
+
+.. code-block:: bash
+  :class: output
+
+  diamorphine            13155  0
+
+.. code::
+
+	kill -63 509
+	lsmod | grep diamorphine
+	
+	
+|
+
+In the case of Diamorphine, any attempt to send kill signal -63 to any process whether it exists or not, will toggle whether the Diamorphine kernel module 
+hides itself.
+
+This rootkit also allows you to hide a selected processes from being seen by the "ps" command for example.  Here we will find the pid of rsyslogd and then hide it.  
+Your rsyslogd pid will be different than the one in this example.  Substitute the correct pid for **535** below.
+
+.. code::
+
+	ps auxw | grep rsyslog | grep -v grep
+
+.. code-block:: bash
+  :class: output
+
+  root       535  0.0  0.3 218744  3736 ?        Ssl  Dec07   0:00 /usr/sbin/rsyslogd -n
+
+.. code::
+
+	kill -31 535
+	ps auxw | grep rsyslog | grep -v grep
+	
+
+|
+
+3: In your linux-agent's :file:`/var/ossec/etc/local_internal_options.conf` file, enable debug logging :
+
+
+.. code::
+
+	echo "syscheck.debug=2" > /var/ossec/etc/local_internal_options.conf
+	echo "agent.debug=2" >> /var/ossec/etc/local_internal_options.conf
+
+
+4: Next configure your linux-agent to run rootcheck scans every 5 minutes and to disable syscheck FIM and policy enforcement scans to make the lab less noisy.
+To accomplish this, replace the entire ``<rootcheck>`` section in the linux group's :file:`/agent.conf` file on the manager, with the following,  Also, in the ``<syscheck>`` section, set ``<disabled>`` to **yes**.  Then save the configuration.
+
+.. code::
+
+	  <rootcheck>
+		<disabled>no</disabled>
+		<frequency>300</frequency>
+		<skip_nfs>yes</skip_nfs>
+		<check_unixaudit>yes</check_unixaudit>
+		<check_files>yes</check_files>
+		<check_trojans>yes</check_trojans>
+		<check_dev>yes</check_dev>
+		<check_sys>yes</check_sys>
+		<check_pids>yes</check_pids>
+		<check_ports>yes</check_ports>
+		<check_if>yes</check_if>
+	  </rootcheck>
+
+|
+
+Now our next rootcheck scan should run shortly.  It should notice the rsyslogd process which we have hidden with Diamorphine and alert about it.
+
+5: Pay close attention to :file:`ossec.log` on your linux-agent. You will see the following information being displayed then the rootcheck scan runs:
+
+.. code::
+
+	2016/04/09 14:15:49 rootcheck: DEBUG: Condition ANY.
+	2016/04/09 14:15:49 rootcheck: DEBUG: Going into check_rc_dev
+	2016/04/09 14:15:49 rootcheck: DEBUG: Starting on check_rc_dev
+	2016/04/09 14:15:49 rootcheck: DEBUG: Going into check_rc_sys
+	2016/04/09 14:15:49 rootcheck: DEBUG: Starting on check_rc_sys
+	2016/04/09 14:15:49 rootcheck: DEBUG: Going into check_rc_pids
+	2016/04/09 14:16:07 wazuh-agentd: DEBUG: Sending agent notification.
+
+|
+
+We can see that the ``rootcheckd`` process is running some check on the /dev filesystem (``check_rc_dev``), as well as running some syscall checks (``check_rc_sys``) 
+as well as, and this is probably the most interesting part for our rootkit, running the checks on the the process id's (``check_rc_pids``).
+
+6. Also try to find the same event in Wazuh dashboard by searching for ``decoder.name:rootcheck``:
+
+.. image:: images/decoderrootcheck.png
+   :align: center
+
+|
+
+7: Remember, if you run the same ``kill -31`` command as before against rsyslogd, the rsyslogd process will become visible again. The subsequent rootcheck 
+scan would no longer alert about it.
+
+8: Remove the rootkit from your linux-agent since we don't need it any longer.
+
+.. code::
+
+	rmmod diamorphine
+	kill -63 509
+	rmmod diamorphine

@@ -1,0 +1,957 @@
+<!DOCTYPE html><html lang="en-US"class="auto-theme">
+  <head>
+    
+    
+    <meta name="robots" content="noindex" />
+    
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="author" content="Wazuh">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="color-scheme" content="dark light">
+    <meta property="og:image" content="https://documentation.wazuh.com/current/_static/images/wazuh-docs-card.png">
+    <meta property="og:url" content="https://documentation.wazuh.com/current/session_4.html">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Session 4 · Wazuh Training">
+    <meta property="og:description" content="User manual, installation and configuration guides. Learn how to get the most out of the Wazuh platform.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@wazuh">
+    <meta name="twitter:creator" content="@wazuh">
+    <meta name="twitter:title" content="Session 4 · Wazuh Training">
+    <meta name="twitter:description" content="User manual, installation and configuration guides. Learn how to get the most out of the Wazuh platform.">
+    <meta name="twitter:image" content="https://documentation.wazuh.com/current/_static/images/wazuh-docs-card.png">
+    <title>Session 4 · Wazuh Training</title>
+    <style media="prefers-color-scheme: light">
+      html, body {
+        color: black;
+        background-color: #fff;
+      }
+    </style>  
+    <style media="prefers-color-scheme: dark">
+      html, body {
+        background-color: #2b303a!important;
+      }
+    </style>
+    <script>
+    const prefersDarkScheme=window.matchMedia("(prefers-color-scheme: dark)"),currentTheme=document.documentElement.classList.contains("auto-theme")?"":localStorage.getItem("theme");"dark"==currentTheme||"light"!=currentTheme&&prefersDarkScheme.matches?document.documentElement.classList.toggle("dark-theme"):document.documentElement.classList.toggle("light-theme");
+    </script>
+  <style type="text/css">@font-face{font-family:Manrope;font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggqxSuXd.woff2") format("woff2");unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:Manrope;font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggOxSuXd.woff2") format("woff2");unicode-range:U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:Manrope;font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggSxSuXd.woff2") format("woff2");unicode-range:U+0370-03FF}@font-face{font-family:Manrope;font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggixSuXd.woff2") format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+1EA0-1EF9,U+20AB}@font-face{font-family:Manrope;font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggmxSuXd.woff2") format("woff2");unicode-range:U+0100-024F,U+0259,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:Manrope;font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggexSg.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:Manrope;font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggqxSuXd.woff2") format("woff2");unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:Manrope;font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggOxSuXd.woff2") format("woff2");unicode-range:U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:Manrope;font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggSxSuXd.woff2") format("woff2");unicode-range:U+0370-03FF}@font-face{font-family:Manrope;font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggixSuXd.woff2") format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+1EA0-1EF9,U+20AB}@font-face{font-family:Manrope;font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggmxSuXd.woff2") format("woff2");unicode-range:U+0100-024F,U+0259,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:Manrope;font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggexSg.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:Manrope;font-style:normal;font-weight:600;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggqxSuXd.woff2") format("woff2");unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:Manrope;font-style:normal;font-weight:600;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggOxSuXd.woff2") format("woff2");unicode-range:U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:Manrope;font-style:normal;font-weight:600;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggSxSuXd.woff2") format("woff2");unicode-range:U+0370-03FF}@font-face{font-family:Manrope;font-style:normal;font-weight:600;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggixSuXd.woff2") format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+1EA0-1EF9,U+20AB}@font-face{font-family:Manrope;font-style:normal;font-weight:600;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggmxSuXd.woff2") format("woff2");unicode-range:U+0100-024F,U+0259,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:Manrope;font-style:normal;font-weight:600;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggexSg.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bX2SlFPv1weGeLZDtgK_7SodY.woff2") format("woff2");unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bX2SlFPv1weGeLZDtgIv7SodY.woff2") format("woff2");unicode-range:U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bX2SlFPv1weGeLZDtgKv7SodY.woff2") format("woff2");unicode-range:U+1F00-1FFF}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bX2SlFPv1weGeLZDtgJf7SodY.woff2") format("woff2");unicode-range:U+0370-03FF}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bX2SlFPv1weGeLZDtgKP7SodY.woff2") format("woff2");unicode-range:U+0100-024F,U+0259,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bX2SlFPv1weGeLZDtgJv7S.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bS2SlFPv1weGeLZDto1d3Hk_fUWZA.woff2") format("woff2");unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bS2SlFPv1weGeLZDto1d3HmvfUWZA.woff2") format("woff2");unicode-range:U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bS2SlFPv1weGeLZDto1d3HkvfUWZA.woff2") format("woff2");unicode-range:U+1F00-1FFF}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bS2SlFPv1weGeLZDto1d3HnffUWZA.woff2") format("woff2");unicode-range:U+0370-03FF}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bS2SlFPv1weGeLZDto1d3HkPfUWZA.woff2") format("woff2");unicode-range:U+0100-024F,U+0259,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bS2SlFPv1weGeLZDto1d3HnvfU.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}</style>
+    <link rel="preload" href="./_static/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="./_static/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Wazuh Training" href="index.html"/>
+    <link rel="next" title="Session 5" href="session_5.html"/>
+    <link rel="prev" title="Session 3" href="session_3.html"/>
+    <link rel="stylesheet" href="_static/css/min/bootstrap.min.css?ver=1749453341.2702713" type="text/css"><link rel="stylesheet" href="_static/css/fontawesome.min.css?ver=1749453341.2692714" type="text/css"><link rel="stylesheet" href="_static/wazuh-doc-images/wazuh-light-box.css" type="text/css"><link rel="stylesheet" href="_static/css/min/wazuh-documentation.min.css?ver=1749453341.2702713" type="text/css"><link rel="mask-icon" href="_static/images/favicon.svg" color="#000000">
+    <link rel="icon" href="_static/images/favicon.png" media="(prefers-color-scheme:no-preference)" sizes="any" type="image/png"/>
+    <link rel="icon" href="_static/images/dark-favicon.png" media="(prefers-color-scheme:dark)" sizes="any" type="image/png"/>
+    <link rel="icon" href="_static/images/favicon.png" media="(prefers-color-scheme:light)" sizes="any" type="image/png"/>
+    <link rel="apple-touch-icon" href="_static/images/favicon.svg"></head><body class="document"  data-path="session_4" data-spy="scroll" data-target="#local-toc" data-offset="200">
+<header id="header" class="fixed-top">
+  <nav class="d-xl-flex align-items-center justify-content-between"> 
+    <div class="mobile-primary-header navbar navbar-expand-xl d-flex">
+        <div class="navbar-brand">
+  
+    <a class="logo-link docs d-flex align-items-baseline" href="index.html">
+  
+      <span class="sr-only">Wazuh documentation index</span>
+      <svg height="29" width="150" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="10 0 600.252 121.191">
+        <g>
+          <polygon points="93.182,89.822 74.016,27.521 58.884,27.521 39.712,89.822 20.714,27.479 3.307,27.479 31.052,118.326 
+            45.177,118.326 66.45,52.575 87.637,118.326 101.761,118.326 129.507,27.521 112.187,27.521"/>
+          <polygon points="252.707,43.244 299.532,43.244 247.995,115.547 247.995,118.326 324.927,118.326 324.927,102.604 
+            275.995,102.604 327.445,30.381 327.445,27.521 252.707,27.521"/>
+          <path d="M212.985,37.093c-7.786-8.124-18.408-12.399-30.906-12.399c-26.449,0-46.391,20.767-46.391,48.304
+            c0,27.534,19.942,48.298,46.391,48.298c12.469,0,23.091-4.249,30.906-12.318v10.414h17.777V26.604h-17.777V37.093z
+             M183.891,104.566c-17.459,0-30.136-13.276-30.136-31.569c0-18.234,12.677-31.47,30.136-31.47
+            c17.407,0,30.043,13.236,30.043,31.47C213.935,91.29,201.298,104.566,183.891,104.566z"/>
+          <path d="M410.246,78.913c0,16.301-8.972,25.653-24.608,25.653c-15.693,0-24.695-9.352-24.695-25.653v-52.31h-17.783v53.739
+            c0,30.226,22.883,40.952,42.477,40.952c19.554,0,42.385-10.726,42.385-40.952V26.604h-17.777V78.913z"/>
+          <path d="M530.848,58.126c-0.504-3.702-1.459-7.485-2.86-11.352c-1.401-3.867-3.433-7.441-6.095-10.721
+            c-2.663-3.276-6.124-5.925-10.379-7.945c-4.26-2.017-9.534-3.025-15.809-3.025c-8.185,0-15.161,1.766-20.932,5.297
+            c-3.534,2.16-6.558,4.845-9.082,8.044V3.183h-15.722v115.143h17.823V71.073c0-5.381,0.602-9.948,1.806-13.705
+            c1.21-3.754,2.86-6.781,4.961-9.08c2.101-2.298,4.556-3.965,7.357-5.001c2.802-1.039,5.771-1.557,8.915-1.557
+            c4.816,0,8.729,0.981,11.728,2.944c2.999,1.962,5.326,4.538,6.975,7.734c1.656,3.195,2.779,6.657,3.363,10.385
+            c0.59,3.728,0.886,7.355,0.886,10.886v44.648h17.823V67.877C531.606,65.076,531.352,61.825,530.848,58.126z"/>
+        </g>
+        <ellipse transform="matrix(0.3827 -0.9239 0.9239 0.3827 251.1053 587.4084)" fill="#007AFF" cx="565.113" cy="105.801" rx="14.331" ry="14.331"/>
+      </svg>
+      
+      Training
+      
+      
+  
+    </a>
+  
+  </div>
+      <div class="toggle-buttons d-flex d-xl-none">
+        <button class="navbar-toggler search-toggler" type="button" data-toggle="collapse" data-target="#search-box-wrapper" aria-controls="search-box-wrapper" aria-expanded="false" aria-label="Toggle search bar">
+          <span class="search-toggler-icon"></span>
+        </button>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#global-toc" aria-controls="global-toc" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
+    </div>
+    
+    <div class="mobile-secondary-header version-zone">
+    
+      <div class="d-none d-xl-block">
+        <div class="search-box" role="search">
+  <form method="get" class="search-form" action="search.html" id="search-form">
+    <label class="sr-only" for="search-input">Search term</label>
+    <input id="search-input" type="text" class="form-control" name="q" placeholder="Search"></input>
+    <span id="search-btn-label" class="sr-only">Search now!</span>
+    <button aria-labelledby="search-btn-label" type="submit" class="btn-search"></button>
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+    
+  </div>
+  </nav>
+</header>
+<div class="inner-body">
+      <div id="left-sidebar" class="sidebar">
+  <div class="sidebar-container">
+    
+    <div id="search-box-wrapper" class="collapse navbar-collapse d-xl-none"><div class="search-box" role="search">
+  <form method="get" class="search-form" action="search.html" id="search-form">
+    <label class="sr-only" for="search-input">Search term</label>
+    <input id="search-input" type="text" class="form-control" name="q" placeholder="Search"></input>
+    <span id="search-btn-label" class="sr-only">Search now!</span>
+    <button aria-labelledby="search-btn-label" type="submit" class="btn-search"></button>
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+    </div>
+    <nav id="global-toc" class="collapse navbar-collapse">
+      <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="pre_lab.html">Pre-lab</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pre_lab.html#student-roster">Student Roster</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pre_lab.html#linux-manager">Linux Manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pre_lab.html#linux-agent">Linux Agent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pre_lab.html#windows-agent">Windows Agent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pre_lab.html#indexer-system">Indexer System</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pre_lab.html#dashboard-system">Dashboard System</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="session_1.html">Session 1</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="session_1.html#wazuh-server-configuration">Wazuh Server Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_1.html#lab-1a-take-first-look-at-the-wazuh-web-ui">Lab 1A - Take first look at the Wazuh Web UI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_1.html#lab-1b-wazuh-custom-dashboard">Lab 1B - Wazuh Custom Dashboard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_1.html#lab-1c-wazuh-custom-dashboard">Lab 1C - Wazuh Custom Dashboard</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_1.html#agent-registration-and-connection-to-manager">Agent Registration and Connection to Manager</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_1.html#lab-1d-wazuh-server-configuration">Lab 1D - Wazuh Server Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_1.html#id1">Agent Registration and Connection to Manager</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_1.html#lab-1e-deployment-variables">Lab 1E - Deployment Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_1.html#lab-1f-agent-auth-tool">Lab 1F - Agent-auth tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_1.html#lab-1g-auto-enrollment">Lab 1G - Auto enrollment</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_1.html#pushing-agent-upgrades">Pushing Agent Upgrades</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_1.html#lab-1h-push-wazuh-agent-upgrade-from-manager">Lab 1H - Push Wazuh agent upgrade from manager</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_1.html#centralized-agent-configuration">Centralized Agent Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_1.html#meet-agent-conf">Meet agent.conf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_1.html#procedure-for-changing-the-shared-agent-conf-file-and-deploying-it-to-agents">Procedure for changing the shared agent.conf file and deploying it to agents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_1.html#enumerating-agents-connected-to-the-manager">Enumerating agents connected to the manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_1.html#lab-1i-deploy-agent-groups-and-agent-conf-files">Lab 1I - deploy agent groups and agent.conf files</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_1.html#mass-deployment-considerations">Mass Deployment Considerations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="session_2.html">Session 2</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="session_2.html#log-analysis">Log Analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_2.html#log-analysis-101">Log Analysis 101:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_2.html#how-does-log-analysis-work-in-wazuh">How does log analysis work in Wazuh?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_2.html#log-retention-time">Log Retention Time</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_2.html#lab-exercise-2a-explore-brute-force-attack">Lab Exercise 2A - explore brute force attack</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_2.html#alert-assessment">Alert Assessment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_2.html#lab-exercise-2b-assess-several-malicious-alerts">Lab Exercise 2B - Assess several malicious alerts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_2.html#lab-exercise-2c-looking-up-rules">Lab Exercise 2C - Looking up rules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="session_3.html">Session 3</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="session_3.html#rules-and-decoders">Rules and Decoders</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_3.html#the-wazuh-ruleset">The Wazuh Ruleset</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_3.html#the-wazuh-decoders">The Wazuh Decoders</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_3.html#what-are-decoders-and-what-do-they-do">What are decoders and what do they do?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_3.html#main-decoder-options">Main Decoder Options:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_3.html#simple-decoder-example">Simple Decoder Example:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_3.html#lab-exercise-3a-write-a-custom-decoder">Lab Exercise 3A - Write a custom decoder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_3.html#lab-exercise-3b-write-basic-custom-rules">Lab Exercise 3B - Write basic custom rules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_3.html#lab-exercise-3c-write-a-more-advanced-custom-rule">Lab Exercise 3C - Write a more advanced custom rule</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_3.html#lab-exercise-3d-wazuh-s-dynamic-json-decoder">Lab Exercise 3D - Wazuh’s Dynamic JSON Decoder</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_3.html#wazuh-rules">Wazuh Rules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_3.html#alert-levels-in-wazuh-rules">Alert-Levels in Wazuh Rules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_3.html#wazuh-rule-groups">Wazuh Rule Groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_3.html#writing-custom-rules">Writing custom rules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_3.html#lab-exercise-3e-modify-an-existing-rule">Lab Exercise 3E - Modify an existing rule</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_3.html#looking-at-rule-evaluation-order">Looking at rule evaluation order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="session_3.html#sibling-decoders">Sibling decoders</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current show"><a class="current reference internal current-toc-node" href="#">Session 4</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#file-integrity-monitoring">File Integrity Monitoring</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lab-exercise-4a-customize-syscheck-and-trigger-various-fim-events">Lab Exercise 4A - Customize syscheck and trigger various FIM events</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#vulnerability-detection">Vulnerability Detection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lab-exercise-4b-syscollector-and-vulnerability-detection">Lab Exercise 4B - Syscollector and Vulnerability-Detection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#rootkit-detection">Rootkit Detection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#how-can-wazuh-detect-rootkits">How can Wazuh detect rootkits?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detecting-user-mode-rootkits-with-wazuh">Detecting User-Mode rootkits with Wazuh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detecting-kernel-mode-rootkits-with-wazuh">Detecting Kernel-Mode rootkits with Wazuh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lab-exercise-4c-rootkit-detection">Lab Exercise 4C - Rootkit Detection</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="session_5.html">Session 5</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="session_5.html#cdb-lists">CDB Lists</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_5.html#lab-exercise-5a-distinguish-between-different-ssh-watch-list-values">Lab Exercise 5A - Distinguish between different ssh-watch-list values</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_5.html#active-response">Active Response</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_5.html#creating-custom-active-commands">Creating custom Active Commands:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_5.html#creating-custom-active-response">Creating custom Active Response:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_5.html#stateful-vs-stateless-command">Stateful vs stateless command:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_5.html#lab-exercise-5b-deploy-and-test-linux-firewall-active-response">Lab Exercise 5B - Deploy and test Linux firewall active response</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="session_6.html">Session 6</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="session_6.html#osquery-integration-with-wazuh">Osquery Integration with Wazuh</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_6.html#lab-6a-set-up-osquery-across-two-agents">Lab 6A - Set up Osquery across two agents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_6.html#sysmon-integration-with-wazuh">Sysmon Integration with Wazuh</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_6.html#lab-6b-set-up-sysmon-on-windows-agent">Lab 6B- Set up Sysmon on Windows agent</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_6.html#docker">Docker</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_6.html#lab-6c-monitoring-docker-activity">Lab 6C - Monitoring docker activity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_6.html#cloudtrail">CloudTrail</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+  </div>
+</div>
+      <div id="central-column">
+          
+        
+
+        
+          <div class="breadcrumb-wrapper">
+                <ul id="breadcrumbs" role="navigation" aria-label="breadcrumbs navigation">
+      <li>
+        <a href="index.html">
+        
+          Training
+        
+        </a> <span class="breadcrumb-separator" aria-hidden="true"></span>
+      </li><li>Session 4</li>
+    </ul>
+          </div>
+        
+        
+        
+        <main role="main">
+        <div class="section" id="session-4">
+<h1>Session 4<a class="headerlink" href="#session-4" title="Permalink to this headline"> </a></h1>
+<div class="section" id="file-integrity-monitoring">
+<h2>File Integrity Monitoring<a class="headerlink" href="#file-integrity-monitoring" title="Permalink to this headline"> </a></h2>
+<div class="section" id="lab-exercise-4a-customize-syscheck-and-trigger-various-fim-events">
+<h3>Lab Exercise 4A - Customize syscheck and trigger various FIM events<a class="headerlink" href="#lab-exercise-4a-customize-syscheck-and-trigger-various-fim-events" title="Permalink to this headline"> </a></h3>
+<blockquote>
+<div><p>During this exercise we will create, modify and delete files in both our <code class="docutils literal notranslate"><span class="pre">windows-agent</span></code> and <code class="docutils literal notranslate"><span class="pre">linux-agent</span></code> using various monitoring modes.</p>
+<p>On the <code class="docutils literal notranslate"><span class="pre">windows-agent</span></code> create the directories we will be monitoring with syscheck</p>
+<ol class="arabic">
+<li><p>Open a Windows Powershell or command prompt as administrator</p></li>
+<li><p>Create two test directories</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="n">C</span><span class="p">:</span>\<span class="n">apple</span>
+<span class="n">mkdir</span> <span class="n">C</span><span class="p">:</span>\<span class="n">orange</span>
+</pre></div>
+</div>
+<p>To configure syscheck for the Windows agent, replace the entire <code class="docutils literal notranslate"><span class="pre">&lt;syscheck&gt;</span></code> section in the os=”Windows” portion of the windows’ group  <code class="file docutils literal notranslate"><span class="pre">agent.conf</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">syscheck</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">disabled</span><span class="o">&gt;</span><span class="n">no</span><span class="o">&lt;/</span><span class="n">disabled</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">scan_on_start</span><span class="o">&gt;</span><span class="n">yes</span><span class="o">&lt;/</span><span class="n">scan_on_start</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">frequency</span><span class="o">&gt;</span><span class="mi">300</span><span class="o">&lt;/</span><span class="n">frequency</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">directories</span> <span class="n">check_all</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span> <span class="n">whodata</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span> <span class="n">report_changes</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span>  <span class="n">tags</span><span class="o">=</span><span class="s2">&quot;core,worms&quot;</span><span class="o">&gt;</span><span class="n">C</span><span class="p">:</span><span class="o">/</span><span class="n">apple</span><span class="o">&lt;/</span><span class="n">directories</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">directories</span> <span class="n">check_all</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span><span class="o">&gt;</span><span class="n">C</span><span class="p">:</span><span class="o">/</span><span class="n">orange</span><span class="o">&lt;/</span><span class="n">directories</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">syscheck</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The above enables syscheck FIM on Windows agents, such that a periodic syscheck scan of <code class="docutils literal notranslate"><span class="pre">C:\orange</span></code> will take place shortly after the start/restart of the Wazuh agent, and then every 300 seconds thereafter.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">C:\apple</span></code> directory will be monitored in real time for all possible kinds of file changes, while the <code class="docutils literal notranslate"><span class="pre">C:\orange</span></code> directory will only be periodically scanned for changes.  Changes to existing text files in <code class="docutils literal notranslate"><span class="pre">C:\apple</span></code> will  trigger an alert that includes the details of the actual text that was changed.</p>
+<p>You could then restart your Wazuh Windows agent to cause the new config to be picked up immediately, or just wait a couple of minutes for the Windows agent to pick up the change automatically and restart itself.</p>
+<p>In the Windows agent log, you should see a couple of entries like this accounting for the new syscheck monitoring of your two test directories:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">2022</span><span class="o">/</span><span class="mi">06</span><span class="o">/</span><span class="mi">10</span> <span class="mi">13</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">47</span> <span class="n">wazuh</span><span class="o">-</span><span class="n">agent</span><span class="p">:</span> <span class="n">INFO</span><span class="p">:</span> <span class="p">(</span><span class="mi">6003</span><span class="p">):</span> <span class="n">Monitoring</span> <span class="n">path</span><span class="p">:</span> <span class="s1">&#39;c:</span><span class="se">\a</span><span class="s1">pple&#39;</span><span class="p">,</span> <span class="k">with</span> <span class="n">options</span> <span class="s1">&#39;size | permissions | owner | group | mtime | inode | hash_md5 | hash_sha1 | hash_sha256 | attributes | report_changes | whodata&#39;</span><span class="o">.</span>
+<span class="mi">2022</span><span class="o">/</span><span class="mi">06</span><span class="o">/</span><span class="mi">10</span> <span class="mi">13</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">47</span> <span class="n">wazuh</span><span class="o">-</span><span class="n">agent</span><span class="p">:</span> <span class="n">INFO</span><span class="p">:</span> <span class="p">(</span><span class="mi">6003</span><span class="p">):</span> <span class="n">Monitoring</span> <span class="n">path</span><span class="p">:</span> <span class="s1">&#39;c:\orange&#39;</span><span class="p">,</span> <span class="k">with</span> <span class="n">options</span> <span class="s1">&#39;size | permissions | owner | group | mtime | inode | hash_md5 | hash_sha1 | hash_sha256 | attributes | scheduled&#39;</span><span class="o">.</span>
+</pre></div>
+</div>
+</li>
+<li><p>At this point, add, modify, and delete files in these two test directories on the Windows agent.</p>
+<p>You may easily create or modify files by running the following Powershell commands:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Set-Content -Path &#39;C:\apple\date.txt&#39; -Value $(Get-Date)
+Set-Content -Path &#39;C:\orange\date.txt&#39; -Value $(Get-Date)
+</pre></div>
+</div>
+</li>
+<li><p>Watch your search results in Wazuh dashboard for the query text <code class="docutils literal notranslate"><span class="pre">apple</span> <span class="pre">orange</span></code>, to see syscheck events as they appear.</p>
+<p>Notice that alerts about changes in <code class="docutils literal notranslate"><span class="pre">c:\apple</span></code> show up promptly, while alerts about changes in <code class="docutils literal notranslate"><span class="pre">c:\orange</span></code> are not reported until the next every-300-second syscheck scan.</p>
+</li>
+</ol>
+<p><strong>Alternative Linux FIM lab</strong></p>
+<ol class="arabic">
+<li><p>Ubuntu systems (like our <code class="docutils literal notranslate"><span class="pre">linux-agent</span></code>) do not have the <code class="docutils literal notranslate"><span class="pre">auditd</span></code> service installed by default, and this is required for <code class="docutils literal notranslate"><span class="pre">whodata</span></code> to work, so install it now on linux-agent.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apt</span> <span class="o">-</span><span class="n">y</span> <span class="n">install</span> <span class="n">auditd</span>
+<span class="n">systemctl</span> <span class="n">start</span> <span class="n">auditd</span>
+</pre></div>
+</div>
+</li>
+<li><p>Create on your linux-agent an <code class="docutils literal notranslate"><span class="pre">/apple</span></code> and an <code class="docutils literal notranslate"><span class="pre">/orange</span></code> directory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="o">/</span><span class="n">apple</span> <span class="o">/</span><span class="n">orange</span> <span class="o">/</span><span class="n">pear</span>
+</pre></div>
+</div>
+</li>
+<li><p>Replace the entire <code class="docutils literal notranslate"><span class="pre">&lt;syscheck&gt;</span></code> section in the <code class="docutils literal notranslate"><span class="pre">linux</span></code> group’s <code class="file docutils literal notranslate"><span class="pre">agent.conf</span></code> file with this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">syscheck</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">disabled</span><span class="o">&gt;</span><span class="n">no</span><span class="o">&lt;/</span><span class="n">disabled</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">scan_on_start</span><span class="o">&gt;</span><span class="n">yes</span><span class="o">&lt;/</span><span class="n">scan_on_start</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">frequency</span><span class="o">&gt;</span><span class="mi">300</span><span class="o">&lt;/</span><span class="n">frequency</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">directories</span> <span class="n">check_all</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span> <span class="n">whodata</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span> <span class="n">report_changes</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span><span class="o">&gt;/</span><span class="n">apple</span><span class="o">&lt;/</span><span class="n">directories</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">directories</span> <span class="n">check_all</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span> <span class="n">realtime</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span><span class="o">&gt;/</span><span class="n">orange</span><span class="o">&lt;/</span><span class="n">directories</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">directories</span> <span class="n">check_all</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span><span class="o">&gt;/</span><span class="n">pear</span><span class="o">&lt;/</span><span class="n">directories</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">syscheck</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Make changes in the <code class="docutils literal notranslate"><span class="pre">/apple</span></code> and <code class="docutils literal notranslate"><span class="pre">/orange</span></code> and <code class="docutils literal notranslate"><span class="pre">/pear</span></code> directories and watch for them to be accounted for in Wazuh dashboard.  Search for <code class="docutils literal notranslate"><span class="pre">syscheck</span></code>.</p></li>
+</ol>
+<p>Watch especially for the who-data fields.  They start with <code class="docutils literal notranslate"><span class="pre">syscheck.audit</span></code></p>
+<img alt="_images/syscheck.audit1.png" class="align-center" src="_images/syscheck.audit1.png" />
+<p><strong>Suppressing FIM false positives when a server is in a maintenance window.</strong></p>
+<p>To avoid false positive noise created by changes that are made to a system’s monitored files during a maintenance window,
+you can create a new agent group with a configuration that disables FIM.  Then you could add agents into this group when they enter a maintenance window and remove them from the group when their maintenance window closes.</p>
+<p>For example, you could create a new agent group called <code class="docutils literal notranslate"><span class="pre">fim-disabled</span></code> and set the content of its <code class="file docutils literal notranslate"><span class="pre">agent.conf</span></code> file to be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">agent_config</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">syscheck</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">disabled</span><span class="o">&gt;</span><span class="n">yes</span><span class="o">&lt;/</span><span class="n">disabled</span><span class="o">&gt;</span>
+   <span class="o">&lt;/</span><span class="n">syscheck</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">agent_config</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Note that upon including an agent as a member of the <code class="docutils literal notranslate"><span class="pre">fim-disabled</span></code> group, that will become the last group in the agent’s group list,
+and thus it will take precedence over FIM settings defined in other groups that the agent is a part of.</p>
+<p>When the maintenance window has passed for the agents you previously added to this group, simply remove them from the <code class="docutils literal notranslate"><span class="pre">fim-disabled</span></code> group.
+The agents will then automatically restart and will silently create a new FIM baseline.</p>
+<p>Another possibly complementary strategy would be create an agent group called <code class="docutils literal notranslate"><span class="pre">maintenance</span></code> and then set its <code class="file docutils literal notranslate"><span class="pre">agent.conf</span></code> file to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">agent_config</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">labels</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">label</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;state&quot;</span><span class="o">&gt;</span><span class="n">maintenance</span><span class="o">&lt;/</span><span class="n">label</span><span class="o">&gt;</span>
+   <span class="o">&lt;/</span><span class="n">labels</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">agent_config</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>This would cause a new field <code class="docutils literal notranslate"><span class="pre">agent.labels.state</span></code> to be added to all alerts from any agent you put into the <code class="docutils literal notranslate"><span class="pre">maintenance</span></code> group, only while it is
+in that group.  Among other things, this would allow you to use the following criteria in the integrity monitoring dashboard to exclude FIM events
+that took place while an agent was in a maintenance window.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ow">not</span> <span class="n">agent</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">state</span><span class="p">:</span> <span class="n">maintenance</span>
+</pre></div>
+</div>
+<p>You might want to consider what other kinds of states a given server might enter and exit over time that would be meaningful to account for via agent labels in this way.</p>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="vulnerability-detection">
+<h2>Vulnerability Detection<a class="headerlink" href="#vulnerability-detection" title="Permalink to this headline"> </a></h2>
+<div class="section" id="lab-exercise-4b-syscollector-and-vulnerability-detection">
+<h3>Lab Exercise 4B - Syscollector and Vulnerability-Detection<a class="headerlink" href="#lab-exercise-4b-syscollector-and-vulnerability-detection" title="Permalink to this headline"> </a></h3>
+<blockquote>
+<div><p>Of the many software packages installed on each of your endpoints, which ones have known vulnerabilities that might impact your security posture? Wazuh helps you answer this question with the <code class="docutils literal notranslate"><span class="pre">syscollector</span></code> and <code class="docutils literal notranslate"><span class="pre">vulnerability-detection</span></code> modules.</p>
+<p>On each agent, <code class="docutils literal notranslate"><span class="pre">syscollector</span></code> can scan the system for the presence and version of all software packages. This information is submitted to the Wazuh manager where it is stored in an agent-specific database for later assessment.</p>
+<p>Within the Wazuh server, the <code class="docutils literal notranslate"><span class="pre">Vulnerability</span> <span class="pre">Detection</span></code> module correlates the software inventory data with vulnerability content documents to detect vulnerable software on the monitored endpoint. These documents are Common Vulnerabilities and Exposures (CVE) records that are available in our Cyber Threat Intelligence (CTI) platform. On the CTI platform, we aggregate vulnerability data from diverse sources like operating system vendors and vulnerability databases, consolidating it into a unified, reliable repository.</p>
+<p>On the <strong>Wazuh Server</strong>, the <code class="docutils literal notranslate"><span class="pre">vulnerability-detection</span></code> module is enabled by default to periodically scan the collected inventory data for known vulnerabilities.</p>
+<p>Wazuh includes a dedicated <em>Dashboard</em> for the <strong>Vulnerability Detection</strong> capability, as well as an <em>Inventory</em> tab (that shows current vulnerabilites for all the agents) and an <em>Events</em> tab(which shows the alerts generated when a new vulnerability is detected or solved).</p>
+<p>For the full documentation concerning this feature, see:</p>
+<p><a class="reference external" href="https://documentation.wazuh.com/current/user-manual/reference/ossec-conf/vuln-detector.html">https://documentation.wazuh.com/current/user-manual/reference/ossec-conf/vuln-detector.html</a></p>
+<p><a class="reference external" href="https://documentation.wazuh.com/current/user-manual/capabilities/vulnerability-detection">https://documentation.wazuh.com/current/user-manual/capabilities/vulnerability-detection</a></p>
+<ol class="arabic">
+<li><p>On your Wazuh interface, navigate to <strong>Agent Management</strong> and select <strong>Groups</strong>. Click on the edit (pencil) icon from your windows group, and set the <code class="docutils literal notranslate"><span class="pre">syscollector</span></code> interval to 2 minutes, as shown in the following example. Click on the Save button to set the changes and have the agent restart automatically.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;!-- System inventory --&gt;
+&lt;wodle name=&quot;syscollector&quot;&gt;
+  &lt;disabled&gt;no&lt;/disabled&gt;
+  &lt;interval&gt;2m&lt;/interval&gt;
+  &lt;scan_on_start&gt;yes&lt;/scan_on_start&gt;
+  &lt;hardware&gt;yes&lt;/hardware&gt;
+  &lt;os&gt;yes&lt;/os&gt;
+  &lt;network&gt;yes&lt;/network&gt;
+  &lt;packages&gt;yes&lt;/packages&gt;
+  &lt;ports all=&quot;no&quot;&gt;yes&lt;/ports&gt;
+  &lt;processes&gt;yes&lt;/processes&gt;
+
+  &lt;!-- Database synchronization settings --&gt;
+  &lt;synchronization&gt;
+    &lt;max_eps&gt;10&lt;/max_eps&gt;
+  &lt;/synchronization&gt;
+&lt;/wodle&gt;
+</pre></div>
+</div>
+</li>
+<li><p>Ensure your windows-agent is running a vulnerable package: using Chrome, <strong>download</strong> and <strong>install</strong> this known vulnerable outdated version of VLC:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">get</span><span class="o">.</span><span class="n">videolan</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">vlc</span><span class="o">/</span><span class="mf">3.0.0</span><span class="o">/</span><span class="n">win32</span><span class="o">/</span><span class="n">vlc</span><span class="o">-</span><span class="mf">3.0.0</span><span class="o">-</span><span class="n">win32</span><span class="o">.</span><span class="n">exe</span>
+</pre></div>
+</div>
+</li>
+<li><p>Review the <strong>Wazuh Manager</strong> logs:</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">vulnerability-detection</span></code> module generates logs on the Manager and they can be seen by going to the <strong>Hamburger</strong> menu ( ☰ ), selecting the <strong>Server management</strong> section, clicking on <strong>Logs</strong>, and selecting  <code class="docutils literal notranslate"><span class="pre">wazuh-modulesd:vulnerability-scanner</span></code> option from the first drop down list.</p>
+<div class="output highlight-bash notranslate"><div class="highlight"><pre><span></span> Oct <span class="m">10</span>, <span class="m">2024</span> @ <span class="m">10</span>:06:36.000 wazuh-modulesd:vulnerability-scanner INFO  Initiating update feed process
+ Oct <span class="m">10</span>, <span class="m">2024</span> @ <span class="m">10</span>:28:16.000 wazuh-modulesd:vulnerability-scanner INFO  Triggered a re-scan after content update
+ Oct <span class="m">10</span>, <span class="m">2024</span> @ <span class="m">10</span>:28:16.000 wazuh-modulesd:vulnerability-scanner INFO  Feed update process completed
+</pre></div>
+</div>
+<p>You may also see the syscollector activity on the agents’ logs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">grep</span> <span class="s2">&quot;syscollector:&quot;</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">ossec</span><span class="o">/</span><span class="n">logs</span><span class="o">/</span><span class="n">ossec</span><span class="o">.</span><span class="n">log</span>
+</pre></div>
+</div>
+<div class="output highlight-bash notranslate"><div class="highlight"><pre><span></span> <span class="m">2022</span>/06/10 <span class="m">15</span>:45:58 wazuh-modulesd:syscollector: INFO: Module started.
+ <span class="m">2022</span>/06/10 <span class="m">15</span>:45:58 wazuh-modulesd:syscollector: INFO: Starting evaluation.
+ <span class="m">2022</span>/06/10 <span class="m">15</span>:45:58 wazuh-modulesd:syscollector: INFO: Evaluation finished.
+</pre></div>
+</div>
+</li>
+<li><p>Review the alerts in the <strong>Wazuh Dashboard</strong>:</p>
+<p>From the <strong>Hamburger</strong> menu ( ☰ ) go into the <strong>Threat intelligence</strong> section, select the  <strong>Vulnerability Detection</strong> option. You can use the <em>Explore agent</em> button on the top right corner to apply a filter.</p>
+<img alt="_images/vulnerability-detector1.png" class="align-center" src="_images/vulnerability-detector1.png" />
+</li>
+<li><p>Click on the Inventory tab to view current Vulnerabilities.</p>
+<img alt="_images/vulnerability-inventory1.png" class="align-center" src="_images/vulnerability-inventory1.png" />
+</li>
+<li><p>Select the Events tab to view the related alerts.</p>
+<img alt="_images/vulnerability-expanded1.png" class="align-center" src="_images/vulnerability-expanded1.png" />
+</li>
+</ol>
+<p>From the <strong>Hamburger</strong> menu ( ☰ ) go into the <strong>Server management</strong> section, and click on <strong>Dev Tools</strong>. Explore possible Wazuh API syscollector-related queries based on these examples:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span>GET /syscollector/002/os
+GET /syscollector/001/netiface
+GET /syscollector/002/netproto
+GET /syscollector/000/netaddr
+GET /syscollector/003/ports
+GET /syscollector/003/processes?select=pid,name
+GET /syscollector/002/packages
+</pre></div>
+</div>
+<p>Each request must be submitted by pressing on the green triangle that appears on the right edge of the highlighted request line.</p>
+<p>Take time to look over the online documentation about the syscollection section of the Wazuh API:</p>
+<p><a class="reference external" href="https://documentation.wazuh.com/current/user-manual/api/reference.html#tag/Syscollector">https://documentation.wazuh.com/current/user-manual/api/reference.html#tag/Syscollector</a></p>
+<p>This is a powerful tool that puts all sorts of data, configuration details, and state information at your fingertips once you know how to ask for it.  With
+the right parameters, not only can you query these data sources, but you can select, filter, sort, and limit the results.</p>
+</div></blockquote>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="rootkit-detection">
+<h2>Rootkit Detection<a class="headerlink" href="#rootkit-detection" title="Permalink to this headline"> </a></h2>
+<p>A rootkit is a program that can hide itself as well as running processes, file or network connections from the host where it is running.
+The malicious program can change access rights of files and directories and its aim is to run “incognito”, meaning in the background for
+as long as possible. The purpose for the intruder is to gain full access to the victim’s system all the time. The only precondition is
+that a rootkit needs to be installed with root privileges in the first place. This might be the biggest challenge for the attacker.
+We distinguish between two kinds of rootkits:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>User-mode rootkit: A user-mode rootkit covertly replaces common UNIX binaries or libraries with infected versions to hide its existence and to gain root privileges if needed.</p></li>
+<li><p>Kernel-mode rootkit: A kernel-mode rootkit operates on the system level and modifies or replaces the kernel which may have been affected in the boot process.</p></li>
+</ul>
+</div></blockquote>
+<p>The typical characteristics of a rootkit are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>stealth-functionality: it aims to hide the traces of the intruder by manipulating processes, open files and network activity</p></li>
+<li><p>backdoor: it aims to gain remote access to the target system, e.g. through a SSH tunnel.</p></li>
+<li><p>sniffer: it also has the possibility of wiretapping and intercepting various system components, e.g through the network or a keylogger.</p></li>
+</ul>
+</div></blockquote>
+<div class="section" id="how-can-wazuh-detect-rootkits">
+<h3>How can Wazuh detect rootkits?<a class="headerlink" href="#how-can-wazuh-detect-rootkits" title="Permalink to this headline"> </a></h3>
+<p>Without using a host-based intrusion detection system it is almost impossible to detect rootkits on a system. Simple file integrity checking
+alone is not going to detect a rootkit. Wazuh monitors changes of files, directories and commands by performing file integrity checks on these files.
+Wazuh’s syscheck module compares current checksums, so called hashes, of files with
+known “good” hashes. This means with the initial installation of Wazuh (agent or manager) a first syscheck run is triggered and creates a database
+with checksums of all files and directories that should be monitored. What should be monitored is specified in the ossec.conf, Wazuh’s main
+configuration file. The directories on UNIX systems that are hashed by default include:</p>
+<ul class="simple">
+<li><p>/bin</p></li>
+<li><p>/usr/bin</p></li>
+<li><p>/sbin</p></li>
+<li><p>/usr/sbin</p></li>
+<li><p>/etc</p></li>
+<li><p>/boot</p></li>
+</ul>
+<p>Basically every directory that includes binaries, if modified with malicious code could contain a rootkit. The /etc directory contains all the config
+files that are necessary to run programs. The /var filesystem is not included because it usually is the place where all systemwide log files are stored,
+monitoring this directory would cause a lot of alerts because log files usually change very often. Every time a file changes it automatically generates a
+new checksum.
+The interval of each syscheck is 43200 seconds, which translates to every 12 hours. The interval is measured in seconds but is easily configurable in the
+Wazuh config. Wazuh’s rootkit detection module looks specifically for traces of rootkits, malware, and trojans on configured systems.
+There are two other configuration files responsible for detecting a rootkit within Wazuh. The rootcheck module which works similar to the aforementioned
+syscheck module continuously parses the following text files during a rootcheck analysis.
+Below is an example of how a typical config for Rootkit detection looks like</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">rootcheck</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">frequency</span><span class="o">&gt;</span><span class="mi">3600</span><span class="o">&lt;/</span><span class="n">frequency</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">rootkit_files</span><span class="o">&gt;/</span><span class="n">var</span><span class="o">/</span><span class="n">ossec</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">shared</span><span class="o">/</span><span class="n">rootkit_files</span><span class="o">.</span><span class="n">txt</span><span class="o">&lt;/</span><span class="n">rootkit_files</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">rootkit_trojans</span><span class="o">&gt;/</span><span class="n">var</span><span class="o">/</span><span class="n">ossec</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">shared</span><span class="o">/</span><span class="n">rootkit_trojans</span><span class="o">.</span><span class="n">txt</span><span class="o">&lt;/</span><span class="n">rootkit_trojans</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">rootcheck</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p><code class="file docutils literal notranslate"><span class="pre">rootkit_files.txt</span></code>: it contains a list of file names known to be user mode rootkits</p>
+<p><code class="file docutils literal notranslate"><span class="pre">rootkit_trojans.txt</span></code>: it contains signatures that known rootkits have embedded in the binary file, by default the binaries in /bin, /sbin, /usr/bin and /usr/sbin are searched.</p>
+<p>The rootcheck module extracts strings from binaries and uses a Regular Expression (RegEx) to identify a match. Wazuh uses a signature-based approach because
+many rootkits contain a unique string in trojaned versions of Linux utilities. As previously mentioned the intention of a rootkit is to hide its existence and
+any traces for as long as possible. Therefore popular scenarios would be to modify the “ps” or the “netstat” utility. The ps command displays a list of the
+current running processes, a modified version would hide the rootkit processes running in the background. The netstat utility displays all open network connections,
+a malicious version could hide outgoing connections to a Command &amp; Control (C&amp;C) server, being the target server of the intruder. Additional signatures of new
+rootkits, can be added at any time to the rootkit_trojans.txt file. The rootcheck module generates an alert if “there’s a discrepancy in information about a file,
+process, port or network interface.
+The interval of the rootcheck module may vary from the duration of the syscheck module, they act independently.</p>
+<p>Following is an excerpt of the <code class="file docutils literal notranslate"><span class="pre">rootkit_files.txt</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># T.R.K rootkit
+   usr/bin/soucemask            ! TRK rootkit ::/rootkits/trk.php
+   usr/bin/sourcemask           ! TRK rootkit ::/rootkits/trk.php
+
+# Volc Rootkit
+   usr/lib/volc                 ! Volc Rootkit ::
+   usr/bin/volc                 ! Volc Rootkit ::
+</pre></div>
+</div>
+<p>Below is an example of the <code class="file docutils literal notranslate"><span class="pre">rootkit_trojans.txt</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>ps                              !/dev/ttyo|\.1proc|proc\.h|bash|^/bin/sh!
+netstat                 !bash|^/bin/sh|/dev/[^aik]|/prof|grep|addr\.h!
+</pre></div>
+</div>
+<p>The Wazuh rootkit detection engine performs the following checks:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1.Read the rootkit_files.txt which contains a database of rootkits and files commonly
+used by them. It will try to stats, fopen and opendir each specified file. We use all
+these system calls because some kernel-level rootkits hide files from some system calls.
+The more system calls we try, the better the detection. This method is more like an
+anti-virus rule that needs to be updated constantly. The chances of false-positives are
+small,but false negatives can be produced by modifying the rootkits.
+
+2.Read the rootkit_trojans.txt which contains a database of signatures of files trojaned by rootkits.
+This technique of modifying binaries with trojaned versions was commonly used by most of the popular
+rootkits available. This detection method will not find any kernel level rootkit or any unknown rootkit.
+
+3.Scan the /dev directory looking for anomalies. The /dev should only have device files and the Makedev script.
+A lot of rootkits use the /dev to hide files. This technique can detect even non-public rootkits.
+
+4.Scan the whole filesystem looking for unusual files and permission problems. Files owned by root, with write
+permission to others are very dangerous, and the rootkit detection will look for them. Suid files,hidden
+directories and files will also be inspected.
+
+5.Look for the presence of hidden processes. We use getsid() and kill() to check if any pid is being used or not.
+If the pid is being used, but “ps” can&#39;t see it, it is the indication of kernel-level rootkit or a trojaned
+version of “ps”. We also verify that the output of kill and getsid are the same.
+
+6.Look for the presence of hidden ports. We use bind() to check every tcp and udp port on the system.
+If we can&#39;t bind to the port (it&#39;s being used), but netstat does not show it, we probably have a rootkit installed.
+
+7.Scan all interfaces on the system and look for the ones with “promisc” mode enabled. If the interface is in
+promiscuous mode, the output of “ifconfig” should show that. If not, we probably have a rootkit installed.
+</pre></div>
+</div>
+</div>
+<div class="section" id="detecting-user-mode-rootkits-with-wazuh">
+<h3>Detecting User-Mode rootkits with Wazuh<a class="headerlink" href="#detecting-user-mode-rootkits-with-wazuh" title="Permalink to this headline"> </a></h3>
+<p>Wazuh performs several tests to detect rootkits, one of them is to check the hidden files in /dev. The /dev directory
+should only contain device-specific files such as the primary IDE hard disk (/dev/hda), the kernel random number generators
+(/dev/random and /dev/urandom), etc. Any additional files, outside of the expected device-specific files, should be inspected
+because many rootkits use /dev as a storage partition to hide files. In the following example we have created the file .hid
+which is detected by Wazuh and generates the corresponding alert.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>/dev
+touch .hid
+ls -a /dev <span class="p">|</span> grep <span class="s1">&#39;^\.&#39;</span>
+</pre></div>
+</div>
+<div class="output highlight-bash notranslate"><div class="highlight"><pre><span></span>.
+..
+.hid
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Afterwards we restart the wazuh-manager using systemctl restart wazuh-manager to force rootcheck to verify this folder and take a
+close look on the alerts.log by issuing this command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tail -f /var/ossec/logs/alerts/alerts.log
+</pre></div>
+</div>
+<div class="output highlight-bash notranslate"><div class="highlight"><pre><span></span>** Alert <span class="m">1460661371</span>.476343: mail  - ossec,rootcheck
+<span class="m">2016</span> Apr <span class="m">14</span> <span class="m">19</span>:16:11 manager-&gt;rootcheck
+<span class="hll">Rule: <span class="m">510</span> <span class="o">(</span>level <span class="m">7</span><span class="o">)</span> -&gt; <span class="s1">&#39;Host-based anomaly detection event (rootcheck).&#39;</span>
+</span><span class="hll">File <span class="s1">&#39;/dev/.hid&#39;</span> present on /dev. Possible hidden file.
+</span></pre></div>
+</div>
+<p>We can see that Wazuh detected our fake hidden file, by scanning the /dev file system for hidden files which usually are not supposed to be there.</p>
+</div>
+<div class="section" id="detecting-kernel-mode-rootkits-with-wazuh">
+<h3>Detecting Kernel-Mode rootkits with Wazuh<a class="headerlink" href="#detecting-kernel-mode-rootkits-with-wazuh" title="Permalink to this headline"> </a></h3>
+<p>There are two separate Wazuh modules that run on every agent, those are called Syscheck and Rootcheck. These modules perform various tests that
+help in detecting both user mode and kernel mode rootkits. While Rootcheck performs most of the checks, syscheck is key when looking for user mode
+malicious binary files.</p>
+<p>Below is a table for Wazuh’s detection methods for user mode and kernel mode rootkits:</p>
+<p><strong>User mode rootkits:</strong></p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 11%" />
+<col style="width: 39%" />
+<col style="width: 21%" />
+<col style="width: 29%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Syscheck</p></td>
+<td colspan="3"><p>Regular hash comparison of files in <cite>/bin</cite>, <cite>/sbin</cite>, <cite>/usr/sbin/</cite>, <cite>/etc</cite> and others</p></td>
+</tr>
+<tr class="row-even"><td rowspan="8"><p>Rootcheck</p></td>
+<td colspan="3"><p>Detecting Hidden files</p></td>
+</tr>
+<tr class="row-odd"><td colspan="3"><p>Scan <cite>/dev</cite> anomalies</p></td>
+</tr>
+<tr class="row-even"><td><p>Detecting Hidden Processes</p></td>
+<td><p>Command</p></td>
+<td><p>System calls</p></td>
+</tr>
+<tr class="row-odd"><td><p>Process hidden by trojaned ps</p></td>
+<td><p>ps</p></td>
+<td><p>setsid(), getpdgid(), kill()</p></td>
+</tr>
+<tr class="row-even"><td><p>Detecting Hidden Ports</p></td>
+<td><p>Command</p></td>
+<td><p>System calls</p></td>
+</tr>
+<tr class="row-odd"><td><p>Process hidden by trojaned netstat</p></td>
+<td><p>netstat</p></td>
+<td><p>bind()</p></td>
+</tr>
+<tr class="row-even"><td colspan="3"><p>Other</p></td>
+</tr>
+<tr class="row-odd"><td colspan="3"><ul class="simple">
+<li><p>Known rootkits signature check - rootkit_trojans.txt</p></li>
+<li><p>Search in strings of binaries for signatures</p></li>
+<li><p>Anomalous file permissions/ownership</p></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Kernel mode rootkits:</strong></p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 11%" />
+<col style="width: 40%" />
+<col style="width: 20%" />
+<col style="width: 29%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td rowspan="8"><p>Rootcheck</p></td>
+<td colspan="2"><p>Detecting Hidden files</p></td>
+<td><p>System calls</p></td>
+</tr>
+<tr class="row-even"><td colspan="2"><p>Files hidden by intercepting sys calls</p></td>
+<td><p>stat(), opendir(), readdir()</p></td>
+</tr>
+<tr class="row-odd"><td><p>Detecting Hidden Processes</p></td>
+<td><p>Command</p></td>
+<td><p>System calls</p></td>
+</tr>
+<tr class="row-even"><td><p>Process hidden by intercepted sys calls</p></td>
+<td><p>ps</p></td>
+<td><p>setsid(), getpdgid(), kill()</p></td>
+</tr>
+<tr class="row-odd"><td><p>Detecting Hidden Ports</p></td>
+<td><p>Command</p></td>
+<td><p>System calls</p></td>
+</tr>
+<tr class="row-even"><td><p>Process hidden by intercepted sys calls</p></td>
+<td><p>netstat</p></td>
+<td><p>bind()</p></td>
+</tr>
+<tr class="row-odd"><td colspan="2"><p>Other</p></td>
+<td><p>System calls</p></td>
+</tr>
+<tr class="row-even"><td colspan="2"><p>Database of known rootkits - rootkit_files.txt</p></td>
+<td><p>stat(), fopen(), opendir()</p></td>
+</tr>
+</tbody>
+</table>
+<p>This shows that Wazuh uses system calls to detect both User mode and Kernel mode rootkits. Particularly interesting to use will be the system calls
+<strong>setsid(), getpid() and kill()</strong> as those are used to detect hidden processes from the process listing utility “ps”. Rootcheck attempts to detect a
+rootkit by issuing those system calls and comparing the results to the output from ps. Rootcheck calls <strong>setsid(), getpgid() and kill()</strong> for all process
+IDs and if any of them finds a process that is not listed by ps then rootcheck logs an alert about a possible user mode rootkit or a “trojaned” version of
+the ps utility.</p>
+<p>A kernel mode rootkit makes changes to the kernel with the goal of intercepting system calls. It can manipulate information sent to and from the user mode
+tools. Wazuh is a user mode application and thus also relies on data passed to it from the kernel. The rootcheck module looks for possible intercepted
+system calls that may be hiding files and processes.</p>
+<p>In the picture below we can see that Wazuh looks for the existence of hidden files used by known rootkits.</p>
+<img alt="_images/detectionrootkits.svg" class="align-center" src="_images/detectionrootkits.svg" /><div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>The list of files from known rootkits that rootcheck attempts to locate can be found on the Wazuh manager in <strong>/var/ossec/etc/shared/rootkit_files.txt</strong>
+The rootcheck module tries to open each file by using the system calls opendir(), chdir(), stats() and fopen(). We can see that rootcheck is able to open
+a file with the opendir() and chdir() system calls but unable to do with stats() or fopen(). This may be an indication that a rootkit has intercepted the
+<strong>stats() and fopen()</strong> system calls. Following this, rootcheck would report a possible kernel level rootkit based on that discrepancy. However, this d
+etection method will have limited success since the file names must be present in rootkit_files.txt or rootcheck will fail to detect this.
+We have previously mentioned that rootkits try to hide its existence by manipulating the process listing. A user-mode rootkit would replace the original
+“ps” binary with a modified one that is capable of hiding its existence. However, this would not be very efficient because Wazuh’s syscheck module would
+detect this bogus binary during the file integrity checks or it may be detected by the rootcheck module when comparing the output from the ps utility to
+the output from three different system calls that query running processes. As shown in the table above we can see that processes hidden by a kernel mode
+rootkit would be detected by the system calls getsid(), getpid() and kill() and comparing their outputs. Rootcheck cycles through all possible process IDs.
+If getsid() finds the process but getpgid() or kill() don’t then it may indicate a kernel level rootkit which has intercepted a system call.
+Resulting from this, Wazuh will automatically generate an alert for the suspect process.</p>
+<p><strong>Prevention and mitigation of a rootkit</strong></p>
+<p>As previously mentioned in order for a rootkit to exist, it requires root (administrator) privileges to be installed. To prevent a rootkit from existing
+on a system, it is essential that the administrator or root user only installs packages that are known to be harmless. A compromise of Linux core packages,
+such as ps, netstat, stat utility is very unlikely, because a modification would be noticed during regular code reviews. If the distributor of a new package
+or Windows executables provides a checksum (sha-2/md5) to its package, it is recommended to validate the hash before installing the desired package.
+This is essentially what the syscheck module does and guarantees the downloaded package has the same content as its origin. If Wazuh or any other HIDS
+detects a malicious file as a rootkit, it is recommended to remove the file and replace it through a new installation of said binary. When in doubt it is
+recommended to contact the WAZUH mailing list or to file a bug report for a potential false-positive alert.</p>
+</div>
+<div class="section" id="lab-exercise-4c-rootkit-detection">
+<h3>Lab Exercise 4C - Rootkit Detection<a class="headerlink" href="#lab-exercise-4c-rootkit-detection" title="Permalink to this headline"> </a></h3>
+<blockquote>
+<div><p>In this exercise you will safely implement a kernel-mode rootkit as a proof-of-concept for Wazuh rootkit detection. This rootkit
+is able to hide itself from the kernel module list as well as hide selected processes from being visible to “ps”.  However, Wazuh
+will still detect it using the system calls <strong>“setsid()”, “getpid()”, and “kill()”</strong>. This makes Wazuh a very effective Linux
+rootkit detection application by looking for general low-level hiding behavior.</p>
+<p>For this lab the Diamorphine kernel module has already been compiled for you and is waiting in /tmp/diamorphine.ko to be inserted.</p>
+<p>1: Log on to your linux-agent system and become root.</p>
+<p>2: Download, build, and load the rootkit kernel module and put it to use</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">wazuh</span><span class="o">/</span><span class="n">Diamorphine</span><span class="o">.</span><span class="n">git</span>
+<span class="n">cd</span> <span class="n">Diamorphine</span>
+<span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s1">&#39;s/asm\/uaccess\.h/linux\/uaccess.h/&#39;</span> <span class="n">diamorphine</span><span class="o">.</span><span class="n">c</span>
+<span class="n">make</span>
+<span class="n">insmod</span> <span class="n">diamorphine</span><span class="o">.</span><span class="n">ko</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>The kernel-level rootkit “diamorphine” is now installed on this system! By default it is hidden so we wouldn’t be able to detect it by running “lsmod”.
+Only with a special “kill” signal can we make diamorphine unhide itself, try it out:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">lsmod</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">diamorphine</span>
+<span class="n">kill</span> <span class="o">-</span><span class="mi">63</span> <span class="mi">509</span>
+<span class="n">lsmod</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">diamorphine</span>
+</pre></div>
+</div>
+<div class="output highlight-bash notranslate"><div class="highlight"><pre><span></span>diamorphine            <span class="m">13155</span>  <span class="m">0</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kill</span> <span class="o">-</span><span class="mi">63</span> <span class="mi">509</span>
+<span class="n">lsmod</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">diamorphine</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>In the case of Diamorphine, any attempt to send kill signal -63 to any process whether it exists or not, will toggle whether the Diamorphine kernel module
+hides itself.</p>
+<p>This rootkit also allows you to hide a selected processes from being seen by the “ps” command for example.  Here we will find the pid of rsyslogd and then hide it.
+Your rsyslogd pid will be different than the one in this example.  Substitute the correct pid for <strong>535</strong> below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ps</span> <span class="n">auxw</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">rsyslog</span> <span class="o">|</span> <span class="n">grep</span> <span class="o">-</span><span class="n">v</span> <span class="n">grep</span>
+</pre></div>
+</div>
+<div class="output highlight-bash notranslate"><div class="highlight"><pre><span></span>root       <span class="m">535</span>  <span class="m">0</span>.0  <span class="m">0</span>.3 <span class="m">218744</span>  <span class="m">3736</span> ?        Ssl  Dec07   <span class="m">0</span>:00 /usr/sbin/rsyslogd -n
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kill</span> <span class="o">-</span><span class="mi">31</span> <span class="mi">535</span>
+<span class="n">ps</span> <span class="n">auxw</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">rsyslog</span> <span class="o">|</span> <span class="n">grep</span> <span class="o">-</span><span class="n">v</span> <span class="n">grep</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>3: In your linux-agent’s <code class="file docutils literal notranslate"><span class="pre">/var/ossec/etc/local_internal_options.conf</span></code> file, enable debug logging :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">echo</span> <span class="s2">&quot;syscheck.debug=2&quot;</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">ossec</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">local_internal_options</span><span class="o">.</span><span class="n">conf</span>
+<span class="n">echo</span> <span class="s2">&quot;agent.debug=2&quot;</span> <span class="o">&gt;&gt;</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">ossec</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">local_internal_options</span><span class="o">.</span><span class="n">conf</span>
+</pre></div>
+</div>
+<p>4: Next configure your linux-agent to run rootcheck scans every 5 minutes and to disable syscheck FIM and policy enforcement scans to make the lab less noisy.
+To accomplish this, replace the entire <code class="docutils literal notranslate"><span class="pre">&lt;rootcheck&gt;</span></code> section in the linux group’s <code class="file docutils literal notranslate"><span class="pre">/agent.conf</span></code> file on the manager, with the following,  Also, in the <code class="docutils literal notranslate"><span class="pre">&lt;syscheck&gt;</span></code> section, set <code class="docutils literal notranslate"><span class="pre">&lt;disabled&gt;</span></code> to <strong>yes</strong>.  Then save the configuration.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">rootcheck</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">disabled</span><span class="o">&gt;</span><span class="n">no</span><span class="o">&lt;/</span><span class="n">disabled</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">frequency</span><span class="o">&gt;</span><span class="mi">300</span><span class="o">&lt;/</span><span class="n">frequency</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">skip_nfs</span><span class="o">&gt;</span><span class="n">yes</span><span class="o">&lt;/</span><span class="n">skip_nfs</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">check_unixaudit</span><span class="o">&gt;</span><span class="n">yes</span><span class="o">&lt;/</span><span class="n">check_unixaudit</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">check_files</span><span class="o">&gt;</span><span class="n">yes</span><span class="o">&lt;/</span><span class="n">check_files</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">check_trojans</span><span class="o">&gt;</span><span class="n">yes</span><span class="o">&lt;/</span><span class="n">check_trojans</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">check_dev</span><span class="o">&gt;</span><span class="n">yes</span><span class="o">&lt;/</span><span class="n">check_dev</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">check_sys</span><span class="o">&gt;</span><span class="n">yes</span><span class="o">&lt;/</span><span class="n">check_sys</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">check_pids</span><span class="o">&gt;</span><span class="n">yes</span><span class="o">&lt;/</span><span class="n">check_pids</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">check_ports</span><span class="o">&gt;</span><span class="n">yes</span><span class="o">&lt;/</span><span class="n">check_ports</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">check_if</span><span class="o">&gt;</span><span class="n">yes</span><span class="o">&lt;/</span><span class="n">check_if</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">rootcheck</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Now our next rootcheck scan should run shortly.  It should notice the rsyslogd process which we have hidden with Diamorphine and alert about it.</p>
+<p>5: Pay close attention to <code class="file docutils literal notranslate"><span class="pre">ossec.log</span></code> on your linux-agent. You will see the following information being displayed then the rootcheck scan runs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">2016</span><span class="o">/</span><span class="mi">04</span><span class="o">/</span><span class="mi">09</span> <span class="mi">14</span><span class="p">:</span><span class="mi">15</span><span class="p">:</span><span class="mi">49</span> <span class="n">rootcheck</span><span class="p">:</span> <span class="n">DEBUG</span><span class="p">:</span> <span class="n">Condition</span> <span class="n">ANY</span><span class="o">.</span>
+<span class="mi">2016</span><span class="o">/</span><span class="mi">04</span><span class="o">/</span><span class="mi">09</span> <span class="mi">14</span><span class="p">:</span><span class="mi">15</span><span class="p">:</span><span class="mi">49</span> <span class="n">rootcheck</span><span class="p">:</span> <span class="n">DEBUG</span><span class="p">:</span> <span class="n">Going</span> <span class="n">into</span> <span class="n">check_rc_dev</span>
+<span class="mi">2016</span><span class="o">/</span><span class="mi">04</span><span class="o">/</span><span class="mi">09</span> <span class="mi">14</span><span class="p">:</span><span class="mi">15</span><span class="p">:</span><span class="mi">49</span> <span class="n">rootcheck</span><span class="p">:</span> <span class="n">DEBUG</span><span class="p">:</span> <span class="n">Starting</span> <span class="n">on</span> <span class="n">check_rc_dev</span>
+<span class="mi">2016</span><span class="o">/</span><span class="mi">04</span><span class="o">/</span><span class="mi">09</span> <span class="mi">14</span><span class="p">:</span><span class="mi">15</span><span class="p">:</span><span class="mi">49</span> <span class="n">rootcheck</span><span class="p">:</span> <span class="n">DEBUG</span><span class="p">:</span> <span class="n">Going</span> <span class="n">into</span> <span class="n">check_rc_sys</span>
+<span class="mi">2016</span><span class="o">/</span><span class="mi">04</span><span class="o">/</span><span class="mi">09</span> <span class="mi">14</span><span class="p">:</span><span class="mi">15</span><span class="p">:</span><span class="mi">49</span> <span class="n">rootcheck</span><span class="p">:</span> <span class="n">DEBUG</span><span class="p">:</span> <span class="n">Starting</span> <span class="n">on</span> <span class="n">check_rc_sys</span>
+<span class="mi">2016</span><span class="o">/</span><span class="mi">04</span><span class="o">/</span><span class="mi">09</span> <span class="mi">14</span><span class="p">:</span><span class="mi">15</span><span class="p">:</span><span class="mi">49</span> <span class="n">rootcheck</span><span class="p">:</span> <span class="n">DEBUG</span><span class="p">:</span> <span class="n">Going</span> <span class="n">into</span> <span class="n">check_rc_pids</span>
+<span class="mi">2016</span><span class="o">/</span><span class="mi">04</span><span class="o">/</span><span class="mi">09</span> <span class="mi">14</span><span class="p">:</span><span class="mi">16</span><span class="p">:</span><span class="mi">07</span> <span class="n">wazuh</span><span class="o">-</span><span class="n">agentd</span><span class="p">:</span> <span class="n">DEBUG</span><span class="p">:</span> <span class="n">Sending</span> <span class="n">agent</span> <span class="n">notification</span><span class="o">.</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>We can see that the <code class="docutils literal notranslate"><span class="pre">rootcheckd</span></code> process is running some check on the /dev filesystem (<code class="docutils literal notranslate"><span class="pre">check_rc_dev</span></code>), as well as running some syscall checks (<code class="docutils literal notranslate"><span class="pre">check_rc_sys</span></code>)
+as well as, and this is probably the most interesting part for our rootkit, running the checks on the the process id’s (<code class="docutils literal notranslate"><span class="pre">check_rc_pids</span></code>).</p>
+<ol class="arabic simple" start="6">
+<li><p>Also try to find the same event in Wazuh dashboard by searching for <code class="docutils literal notranslate"><span class="pre">decoder.name:rootcheck</span></code>:</p></li>
+</ol>
+<img alt="_images/decoderrootcheck1.png" class="align-center" src="_images/decoderrootcheck1.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>7: Remember, if you run the same <code class="docutils literal notranslate"><span class="pre">kill</span> <span class="pre">-31</span></code> command as before against rsyslogd, the rsyslogd process will become visible again. The subsequent rootcheck
+scan would no longer alert about it.</p>
+<p>8: Remove the rootkit from your linux-agent since we don’t need it any longer.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">rmmod</span> <span class="n">diamorphine</span>
+<span class="n">kill</span> <span class="o">-</span><span class="mi">63</span> <span class="mi">509</span>
+<span class="n">rmmod</span> <span class="n">diamorphine</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+</div>
+</div>
+
+        
+        
+    <div class="navigation-buttons" role="navigation" aria-label="previous/next navigation">
+      
+      <a href="session_3.html" title="Previous. Session 3">
+        <span class="chevron left" aria-hidden="true"></span>
+        Session 3
+      </a>
+      
+      
+      <a href="session_5.html" title="Next. Session 5">
+        Session 5
+        <span class="chevron right" aria-hidden="true"></span>
+      </a>
+      
+    </div>
+
+        
+        </main>
+      </div>
+      <footer>
+        
+  <div class="desktop-footer row">
+    
+    <div class="copyright col-12 col-sm-4 col-xl-3 order-sm-1">
+      &copy; 2025 &middot; Wazuh Inc.
+    </div>
+  </div>
+      </footer>
+      <div id="right-sidebar" class="sidebar">
+  <div class="sidebar-container">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+      
+    <nav id="local-toc" class="navbar d-none d-xl-block">
+      <span class="toc-title">On this page</span>
+      <ul class="navbar-nav">
+<li class="nav-item"><a class="reference internal nav-link" href="#">Session 4</a><ul class="navbar-nav">
+<li class="nav-item"><a class="reference internal nav-link" href="#file-integrity-monitoring">File Integrity Monitoring</a><ul class="navbar-nav">
+<li class="nav-item"><a class="reference internal nav-link" href="#lab-exercise-4a-customize-syscheck-and-trigger-various-fim-events">Lab Exercise 4A - Customize syscheck and trigger various FIM events</a></li>
+</ul>
+</li>
+<li class="nav-item"><a class="reference internal nav-link" href="#vulnerability-detection">Vulnerability Detection</a><ul class="navbar-nav">
+<li class="nav-item"><a class="reference internal nav-link" href="#lab-exercise-4b-syscollector-and-vulnerability-detection">Lab Exercise 4B - Syscollector and Vulnerability-Detection</a></li>
+</ul>
+</li>
+<li class="nav-item"><a class="reference internal nav-link" href="#rootkit-detection">Rootkit Detection</a><ul class="navbar-nav">
+<li class="nav-item"><a class="reference internal nav-link" href="#how-can-wazuh-detect-rootkits">How can Wazuh detect rootkits?</a></li>
+<li class="nav-item"><a class="reference internal nav-link" href="#detecting-user-mode-rootkits-with-wazuh">Detecting User-Mode rootkits with Wazuh</a></li>
+<li class="nav-item"><a class="reference internal nav-link" href="#detecting-kernel-mode-rootkits-with-wazuh">Detecting Kernel-Mode rootkits with Wazuh</a></li>
+<li class="nav-item"><a class="reference internal nav-link" href="#lab-exercise-4c-rootkit-detection">Lab Exercise 4C - Rootkit Detection</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+    </nav>
+      
+    
+  </div>
+</div>
+      </div>
+    <script id="documentation_options" data-url_root="./" src="_static/js/documentation_options.js"></script>
+    <script>
+      const emptyTocNodes = JSON.parse('[]');
+    </script>
+        
+
+<script src="_static/js/jquery.js?ver=1749453341.2832716"></script><script src="_static/js/min/bootstrap.bundle.min.js?ver=1749453341.2832716"></script><script src="_static/js/underscore.js?ver=1749453341.2882714"></script><script src="_static/js/min/wazuh-documentation.min.js?ver=1749453341.2842715"></script><script src="_static/wazuh-doc-images/wazuh-light-box.js"></script>
+  <div id="wazuh-light-box-overlay" class="wazuh-light-box-overlay"></div><div id="wazuh-light-box" class="wazuh-light-box"><div class="wazuh-light-box-slides-container"><div class="wlb-loading"></div></div><button tabindex="0" class="wlb-close-button"><span class="wlb-close-button-content read-only">Close</span></button></div></body>
+</html>

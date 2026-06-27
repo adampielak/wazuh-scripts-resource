@@ -1,0 +1,212 @@
+
+Write a custom rule family that matches the following log messages and assign the appropriate alerts and levels:
+
+.. code::
+
+	Dec  4 17:07:01 myserver Fakeinc: Accepted password for user test2, IP: 1.2.3.4
+	Dec  4 17:07:01 myserver Fakeinc: Failed password for user test, IP: 1.2.3.4
+	Dec  4 17:07:01 myserver Fakeinc: Application is shutting down: Internal error
+	Dec  4 17:07:01 myserver Fakeinc: DEBUG: Received OK.
+
+**Lab Exercise Resolution**
+
+
+1. From the **Hamburger** menu ( ☰ ) go into the **Server management** section, select the **Rules** option, click the "Custom rules" button on the right and then click on :file:`local_rules.xml`
+
+2. Since we have 4 log messages that very much look alike we only want to focus on the part of the log message that varies. We start by creating a “parent rule” that will always match, even when no other “child rule” is triggering.
+
+Add the parent rule within a new group, looking like this:
+
+.. code::
+
+	<group name="fakeinc">
+		<rule id="100102" level="0">
+			<decoded_as>fakeinc_custom</decoded_as>
+			<description>Parent rule for Fakeinc custom</description>
+		</rule>
+	</group>
+
+We set the rule ID to ``100102``, which is within the custom rule-ID range, and set the alert level to 0, because we don't want any alerts for this rule when it triggers, but instead for its children to be considered for matching. 
+
+Next we specify that for this rule to match the “fakeinc_custom” decoder must have matched in the decoding stage.
+
+The last part of our rule is a description.  This should be as meaningful and cohesive as possible, especially if you intend to submit the rule to the Wazuh-HIDS project. Then other people will better understand what this rule is meant to do.
+
+Now, let's add the following child rules to :file:`local_rules.xml` within the fakeinc rule group we created previously for rule 100102:
+
+.. code::
+
+	  <rule id="100103" level="5">
+		<if_sid>100102</if_sid>
+		<field name="result">Failed</field>
+		<description>Fakeinc Custom: Failed password</description>
+		<group>authentication_failed</group>
+	  </rule>
+
+We see the rule ID is sequential and similar to our parent rule ID, but the alert level has changed, we have increased it to 5 because the event
+“Failed password” is of greater importance to us. 
+
+In order to tell Wazuh that this rule should be considered if the parent rule matches we use the ``<if_sid>`` tag with the id ``100102`` as a value.
+
+Next we see the tag ``<field name="result">`` where we define the criteria to trigger this rule.
+Following this, we see the mandatory description message again.
+
+The following additional rules match other Fakeinc message types.
+
+.. code::
+
+	  <rule id="100104" level="3">
+		<if_sid>100102</if_sid>
+		<field name="result">Accepted</field>
+		<description>Fakeinc Custom: Accepted password</description>
+	  </rule>
+
+.. code::
+
+	  <rule id="100105" level="10">
+		<if_sid>100102</if_sid>
+		<match>Internal error</match>
+		<description>Fakeinc Custom: Internal error</description>
+	  </rule>
+
+|
+
+Lastly we will write a composite rule that fires after multiple attempts of failed passwords. This time we use the atomic rule **100103** as our parent rule, as it already matches with failed password attempts. We want to raise the alert level even further to 10, to trigger after 5 attempts within a 1 minutes interval. We use the tag ``<if_matched_sid>`` to reference to our new parent rule. The ``<same_source_ip />`` tag should restrict the attempts coming from the same IP address only.
+
+.. code::
+
+	<rule id="100106" level="10" frequency="5" timeframe="60">
+		<if_matched_sid>100103</if_matched_sid>
+		<same_source_ip />
+		<description>Fakeinc Custom: Multiple Failed passwords</description>
+		<group>authentication_failures</group>
+	</rule>
+
+|
+
+Let's see if our new defined rules work as expected.
+
+3: Open the Ruleset Test tool, paste in individual log samples, clicking the Test button after each one to see if each new rule behaves as intended.
+
+.. code-block:: bash
+
+	Dec  4 17:07:01 myserver Fakeinc: Accepted password for user test2, IP: 1.2.3.4
+
+.. code-block:: bash
+  :class: output
+
+	**Phase 1: Completed pre-decoding.
+		full event: 'Dec  4 17:07:01 myserver Fakeinc: Accepted password for user test2, IP: 1.2.3.4'
+		timestamp: 'Dec  4 17:07:01'
+		hostname: 'myserver'
+		program_name: 'Fakeinc'
+
+	**Phase 2: Completed decoding.
+		name: 'fakeinc_custom'
+		parent: 'fakeinc_custom'
+		result: 'Accepted'
+		dstuser: 'test2'
+		srcip: '1.2.3.4'
+
+	**Phase 3: Completed filtering (rules).
+		id: '100104'
+		level: '3'
+		description: 'Fakeinc Custom: Accepted password'
+		groups: '["fakeinc"]'
+		firedtimes: '1'
+		mail: 'false'
+	**Alert to be generated.
+
+.. code-block:: bash
+
+	Dec  4 17:07:01 myserver Fakeinc: Failed password for user test, IP: 1.2.3.4
+
+.. code-block:: bash
+   :class: output
+
+	**Phase 1: Completed pre-decoding.
+		full event: 'Dec  4 17:07:01 myserver Fakeinc: Failed password for user test, IP: 1.2.3.4'
+		timestamp: 'Dec  4 17:07:01'
+		hostname: 'myserver'
+		program_name: 'Fakeinc'
+   
+	**Phase 2: Completed decoding.
+		name: 'fakeinc_custom'
+		parent: 'fakeinc_custom'
+		result: 'Failed'
+		dstuser: 'test'
+		srcip: '1.2.3.4'
+   
+	**Phase 3: Completed filtering (rules).
+		id: '100103'
+		level: '5'
+		description: 'Fakeinc Custom: Failed password'
+		groups: '["fakeincauthentication_failed"]'
+		firedtimes: '1'
+		mail: 'false'
+	**Alert to be generated.
+
+.. code-block:: bash
+
+	Dec  4 17:07:01 myserver Fakeinc: Application is shutting down: Internal error
+
+.. code-block:: bash
+   :class: output
+
+	**Phase 1: Completed pre-decoding.
+		full event: 'Dec  4 17:07:01 myserver Fakeinc: Application is shutting down: Internal error'
+		timestamp: 'Dec  4 17:07:01'
+		hostname: 'myserver'
+		program_name: 'Fakeinc'
+		log: 'Application is shutting down: Internal error'
+
+	**Phase 2: Completed decoding.
+		decoder: 'fakeinc_custom'
+
+	**Phase 3: Completed filtering (rules).
+		Rule id: '100105'
+		Level: '10'
+		Description: 'Fakeinc Custom: Internal error'
+	**Alert to be generated.
+
+
+.. code-block:: bash
+
+	Dec  4 17:07:01 myserver Fakeinc: DEBUG: Received OK.
+
+.. code-block:: bash
+   :class: output
+   
+	**Phase 1: Completed pre-decoding.
+		full event: 'Dec  4 17:07:01 myserver Fakeinc: DEBUG: Received OK.'
+		timestamp: 'Dec  4 17:07:01'
+		hostname: 'myserver'
+		program_name: 'Fakeinc'
+		log: 'DEBUG: Received OK.'
+
+	**Phase 2: Completed decoding.
+		decoder: 'fakeinc_custom'
+
+	**Phase 3: Completed filtering (rules).
+		Rule id: '100102'
+		Level: '0'
+		Description: 'Parent rule for Fakeinc custom'
+
+
+
+We can see that the last log message didn't generate an alert, because the parent rule with the alert level 0 fired. The alert level 0 doesn't generate any alerts!
+
+Lastly, paste five repetitions of the failed password log into the Ruleset Test window and then click the Test button.
+
+.. code::
+
+	Dec  4 17:07:01 myserver Fakeinc: Failed password for user test, IP: 1.2.3.4
+	Dec  4 17:07:02 myserver Fakeinc: Failed password for user test, IP: 1.2.3.4
+	Dec  4 17:07:03 myserver Fakeinc: Failed password for user test, IP: 1.2.3.4
+	Dec  4 17:07:04 myserver Fakeinc: Failed password for user test, IP: 1.2.3.4
+	Dec  4 17:07:05 myserver Fakeinc: Failed password for user test, IP: 1.2.3.4
+
+The tool will provide the analysis for each line of the log and on the 5th and final time, instead of triggering rule ``100103``, the composite rule ``100106`` will fire.
+
+
+The Ruleset test is a powerful tool and helps immensely when writing new rules and decoders as it indicates when an error occurs.

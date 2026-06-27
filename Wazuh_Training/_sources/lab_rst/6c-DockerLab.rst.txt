@@ -1,0 +1,46 @@
+On the indexer instance
+
+.. code::
+
+	yum -y install docker
+	pip3 install urllib3==1.26.15
+        pip3 install docker==4.2.0
+	systemctl start docker
+
+|
+
+Add to the linux group agent.conf on the Wazuh interface:
+
+.. code-block:: xml
+
+	  <agent_config name="indexer%%LABLETTER%%%%LABNUMBER%%">
+		 <wodle name="docker-listener">
+			<disabled>no</disabled>
+		 </wodle>
+	  </agent_config>
+
+|
+
+On the indexer instance run:
+
+.. code::
+
+	docker pull nginx
+	docker run -d --name ngtest nginx
+	docker pause ngtest
+	docker unpause ngtest
+	docker exec -it ngtest /bin/bash
+	
+(then exit out)
+
+.. code::
+
+
+	docker stop ngtest
+	docker rm ngtest
+
+Use Wazuh dashboard to see the history of Docker activity with the following query:
+
+.. code::
+
+	data.integration:docker

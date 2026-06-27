@@ -1,0 +1,338 @@
+<!DOCTYPE html><html lang="en-US"class="auto-theme">
+  <head>
+    
+    
+    <meta name="robots" content="noindex" />
+    
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="author" content="Wazuh">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="color-scheme" content="dark light">
+    <meta property="og:image" content="https://documentation.wazuh.com/current/_static/images/wazuh-docs-card.png">
+    <meta property="og:url" content="https://documentation.wazuh.com/current/lab_rst/2c-LookingUpRules.html">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="&lt;no title&gt; · Wazuh Training">
+    <meta property="og:description" content="User manual, installation and configuration guides. Learn how to get the most out of the Wazuh platform.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@wazuh">
+    <meta name="twitter:creator" content="@wazuh">
+    <meta name="twitter:title" content="&lt;no title&gt; · Wazuh Training">
+    <meta name="twitter:description" content="User manual, installation and configuration guides. Learn how to get the most out of the Wazuh platform.">
+    <meta name="twitter:image" content="https://documentation.wazuh.com/current/_static/images/wazuh-docs-card.png">
+    <title>&lt;no title&gt; · Wazuh Training</title>
+    <style media="prefers-color-scheme: light">
+      html, body {
+        color: black;
+        background-color: #fff;
+      }
+    </style>  
+    <style media="prefers-color-scheme: dark">
+      html, body {
+        background-color: #2b303a!important;
+      }
+    </style>
+    <script>
+    const prefersDarkScheme=window.matchMedia("(prefers-color-scheme: dark)"),currentTheme=document.documentElement.classList.contains("auto-theme")?"":localStorage.getItem("theme");"dark"==currentTheme||"light"!=currentTheme&&prefersDarkScheme.matches?document.documentElement.classList.toggle("dark-theme"):document.documentElement.classList.toggle("light-theme");
+    </script>
+  <style type="text/css">@font-face{font-family:Manrope;font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggqxSuXd.woff2") format("woff2");unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:Manrope;font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggOxSuXd.woff2") format("woff2");unicode-range:U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:Manrope;font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggSxSuXd.woff2") format("woff2");unicode-range:U+0370-03FF}@font-face{font-family:Manrope;font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggixSuXd.woff2") format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+1EA0-1EF9,U+20AB}@font-face{font-family:Manrope;font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggmxSuXd.woff2") format("woff2");unicode-range:U+0100-024F,U+0259,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:Manrope;font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggexSg.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:Manrope;font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggqxSuXd.woff2") format("woff2");unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:Manrope;font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggOxSuXd.woff2") format("woff2");unicode-range:U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:Manrope;font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggSxSuXd.woff2") format("woff2");unicode-range:U+0370-03FF}@font-face{font-family:Manrope;font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggixSuXd.woff2") format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+1EA0-1EF9,U+20AB}@font-face{font-family:Manrope;font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggmxSuXd.woff2") format("woff2");unicode-range:U+0100-024F,U+0259,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:Manrope;font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggexSg.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:Manrope;font-style:normal;font-weight:600;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggqxSuXd.woff2") format("woff2");unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:Manrope;font-style:normal;font-weight:600;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggOxSuXd.woff2") format("woff2");unicode-range:U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:Manrope;font-style:normal;font-weight:600;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggSxSuXd.woff2") format("woff2");unicode-range:U+0370-03FF}@font-face{font-family:Manrope;font-style:normal;font-weight:600;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggixSuXd.woff2") format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+1EA0-1EF9,U+20AB}@font-face{font-family:Manrope;font-style:normal;font-weight:600;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggmxSuXd.woff2") format("woff2");unicode-range:U+0100-024F,U+0259,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:Manrope;font-style:normal;font-weight:600;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggexSg.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bX2SlFPv1weGeLZDtgK_7SodY.woff2") format("woff2");unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bX2SlFPv1weGeLZDtgIv7SodY.woff2") format("woff2");unicode-range:U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bX2SlFPv1weGeLZDtgKv7SodY.woff2") format("woff2");unicode-range:U+1F00-1FFF}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bX2SlFPv1weGeLZDtgJf7SodY.woff2") format("woff2");unicode-range:U+0370-03FF}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bX2SlFPv1weGeLZDtgKP7SodY.woff2") format("woff2");unicode-range:U+0100-024F,U+0259,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bX2SlFPv1weGeLZDtgJv7S.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bS2SlFPv1weGeLZDto1d3Hk_fUWZA.woff2") format("woff2");unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bS2SlFPv1weGeLZDto1d3HmvfUWZA.woff2") format("woff2");unicode-range:U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bS2SlFPv1weGeLZDto1d3HkvfUWZA.woff2") format("woff2");unicode-range:U+1F00-1FFF}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bS2SlFPv1weGeLZDto1d3HnffUWZA.woff2") format("woff2");unicode-range:U+0370-03FF}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bS2SlFPv1weGeLZDto1d3HkPfUWZA.woff2") format("woff2");unicode-range:U+0100-024F,U+0259,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bS2SlFPv1weGeLZDto1d3HnvfU.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}</style>
+    <link rel="preload" href="../_static/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="../_static/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Wazuh Training" href="../index.html"/>
+    <link rel="stylesheet" href="../_static/css/min/bootstrap.min.css?ver=1749453341.2702713" type="text/css"><link rel="stylesheet" href="../_static/css/fontawesome.min.css?ver=1749453341.2692714" type="text/css"><link rel="stylesheet" href="../_static/wazuh-doc-images/wazuh-light-box.css" type="text/css"><link rel="stylesheet" href="../_static/css/min/wazuh-documentation.min.css?ver=1749453341.2702713" type="text/css"><link rel="mask-icon" href="../_static/images/favicon.svg" color="#000000">
+    <link rel="icon" href="../_static/images/favicon.png" media="(prefers-color-scheme:no-preference)" sizes="any" type="image/png"/>
+    <link rel="icon" href="../_static/images/dark-favicon.png" media="(prefers-color-scheme:dark)" sizes="any" type="image/png"/>
+    <link rel="icon" href="../_static/images/favicon.png" media="(prefers-color-scheme:light)" sizes="any" type="image/png"/>
+    <link rel="apple-touch-icon" href="../_static/images/favicon.svg"></head><body class="document"  data-path="lab_rst/2c-LookingUpRules" data-spy="scroll" data-target="#local-toc" data-offset="200">
+<header id="header" class="fixed-top">
+  <nav class="d-xl-flex align-items-center justify-content-between"> 
+    <div class="mobile-primary-header navbar navbar-expand-xl d-flex">
+        <div class="navbar-brand">
+  
+    <a class="logo-link docs d-flex align-items-baseline" href="../index.html">
+  
+      <span class="sr-only">Wazuh documentation index</span>
+      <svg height="29" width="150" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="10 0 600.252 121.191">
+        <g>
+          <polygon points="93.182,89.822 74.016,27.521 58.884,27.521 39.712,89.822 20.714,27.479 3.307,27.479 31.052,118.326 
+            45.177,118.326 66.45,52.575 87.637,118.326 101.761,118.326 129.507,27.521 112.187,27.521"/>
+          <polygon points="252.707,43.244 299.532,43.244 247.995,115.547 247.995,118.326 324.927,118.326 324.927,102.604 
+            275.995,102.604 327.445,30.381 327.445,27.521 252.707,27.521"/>
+          <path d="M212.985,37.093c-7.786-8.124-18.408-12.399-30.906-12.399c-26.449,0-46.391,20.767-46.391,48.304
+            c0,27.534,19.942,48.298,46.391,48.298c12.469,0,23.091-4.249,30.906-12.318v10.414h17.777V26.604h-17.777V37.093z
+             M183.891,104.566c-17.459,0-30.136-13.276-30.136-31.569c0-18.234,12.677-31.47,30.136-31.47
+            c17.407,0,30.043,13.236,30.043,31.47C213.935,91.29,201.298,104.566,183.891,104.566z"/>
+          <path d="M410.246,78.913c0,16.301-8.972,25.653-24.608,25.653c-15.693,0-24.695-9.352-24.695-25.653v-52.31h-17.783v53.739
+            c0,30.226,22.883,40.952,42.477,40.952c19.554,0,42.385-10.726,42.385-40.952V26.604h-17.777V78.913z"/>
+          <path d="M530.848,58.126c-0.504-3.702-1.459-7.485-2.86-11.352c-1.401-3.867-3.433-7.441-6.095-10.721
+            c-2.663-3.276-6.124-5.925-10.379-7.945c-4.26-2.017-9.534-3.025-15.809-3.025c-8.185,0-15.161,1.766-20.932,5.297
+            c-3.534,2.16-6.558,4.845-9.082,8.044V3.183h-15.722v115.143h17.823V71.073c0-5.381,0.602-9.948,1.806-13.705
+            c1.21-3.754,2.86-6.781,4.961-9.08c2.101-2.298,4.556-3.965,7.357-5.001c2.802-1.039,5.771-1.557,8.915-1.557
+            c4.816,0,8.729,0.981,11.728,2.944c2.999,1.962,5.326,4.538,6.975,7.734c1.656,3.195,2.779,6.657,3.363,10.385
+            c0.59,3.728,0.886,7.355,0.886,10.886v44.648h17.823V67.877C531.606,65.076,531.352,61.825,530.848,58.126z"/>
+        </g>
+        <ellipse transform="matrix(0.3827 -0.9239 0.9239 0.3827 251.1053 587.4084)" fill="#007AFF" cx="565.113" cy="105.801" rx="14.331" ry="14.331"/>
+      </svg>
+      
+      Training
+      
+      
+  
+    </a>
+  
+  </div>
+      <div class="toggle-buttons d-flex d-xl-none">
+        <button class="navbar-toggler search-toggler" type="button" data-toggle="collapse" data-target="#search-box-wrapper" aria-controls="search-box-wrapper" aria-expanded="false" aria-label="Toggle search bar">
+          <span class="search-toggler-icon"></span>
+        </button>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#global-toc" aria-controls="global-toc" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
+    </div>
+    
+    <div class="mobile-secondary-header version-zone">
+    
+      <div class="d-none d-xl-block">
+        <div class="search-box" role="search">
+  <form method="get" class="search-form" action="../search.html" id="search-form">
+    <label class="sr-only" for="search-input">Search term</label>
+    <input id="search-input" type="text" class="form-control" name="q" placeholder="Search"></input>
+    <span id="search-btn-label" class="sr-only">Search now!</span>
+    <button aria-labelledby="search-btn-label" type="submit" class="btn-search"></button>
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+    
+  </div>
+  </nav>
+</header>
+<div class="inner-body">
+      <div id="left-sidebar" class="sidebar">
+  <div class="sidebar-container">
+    
+    <div id="search-box-wrapper" class="collapse navbar-collapse d-xl-none"><div class="search-box" role="search">
+  <form method="get" class="search-form" action="../search.html" id="search-form">
+    <label class="sr-only" for="search-input">Search term</label>
+    <input id="search-input" type="text" class="form-control" name="q" placeholder="Search"></input>
+    <span id="search-btn-label" class="sr-only">Search now!</span>
+    <button aria-labelledby="search-btn-label" type="submit" class="btn-search"></button>
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+    </div>
+    <nav id="global-toc" class="collapse navbar-collapse">
+      <ul>
+<li class="toctree-l1"><a class="reference internal" href="../pre_lab.html">Pre-lab</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../pre_lab.html#student-roster">Student Roster</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pre_lab.html#linux-manager">Linux Manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pre_lab.html#linux-agent">Linux Agent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pre_lab.html#windows-agent">Windows Agent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pre_lab.html#indexer-system">Indexer System</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pre_lab.html#dashboard-system">Dashboard System</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../session_1.html">Session 1</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../session_1.html#wazuh-server-configuration">Wazuh Server Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../session_1.html#lab-1a-take-first-look-at-the-wazuh-web-ui">Lab 1A - Take first look at the Wazuh Web UI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_1.html#lab-1b-wazuh-custom-dashboard">Lab 1B - Wazuh Custom Dashboard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_1.html#lab-1c-wazuh-custom-dashboard">Lab 1C - Wazuh Custom Dashboard</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../session_1.html#agent-registration-and-connection-to-manager">Agent Registration and Connection to Manager</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../session_1.html#lab-1d-wazuh-server-configuration">Lab 1D - Wazuh Server Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../session_1.html#id1">Agent Registration and Connection to Manager</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../session_1.html#lab-1e-deployment-variables">Lab 1E - Deployment Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_1.html#lab-1f-agent-auth-tool">Lab 1F - Agent-auth tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_1.html#lab-1g-auto-enrollment">Lab 1G - Auto enrollment</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../session_1.html#pushing-agent-upgrades">Pushing Agent Upgrades</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../session_1.html#lab-1h-push-wazuh-agent-upgrade-from-manager">Lab 1H - Push Wazuh agent upgrade from manager</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../session_1.html#centralized-agent-configuration">Centralized Agent Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../session_1.html#meet-agent-conf">Meet agent.conf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_1.html#procedure-for-changing-the-shared-agent-conf-file-and-deploying-it-to-agents">Procedure for changing the shared agent.conf file and deploying it to agents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_1.html#enumerating-agents-connected-to-the-manager">Enumerating agents connected to the manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_1.html#lab-1i-deploy-agent-groups-and-agent-conf-files">Lab 1I - deploy agent groups and agent.conf files</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../session_1.html#mass-deployment-considerations">Mass Deployment Considerations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../session_2.html">Session 2</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../session_2.html#log-analysis">Log Analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../session_2.html#log-analysis-101">Log Analysis 101:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_2.html#how-does-log-analysis-work-in-wazuh">How does log analysis work in Wazuh?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../session_2.html#log-retention-time">Log Retention Time</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../session_2.html#lab-exercise-2a-explore-brute-force-attack">Lab Exercise 2A - explore brute force attack</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../session_2.html#alert-assessment">Alert Assessment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../session_2.html#lab-exercise-2b-assess-several-malicious-alerts">Lab Exercise 2B - Assess several malicious alerts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_2.html#lab-exercise-2c-looking-up-rules">Lab Exercise 2C - Looking up rules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../session_3.html">Session 3</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../session_3.html#rules-and-decoders">Rules and Decoders</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../session_3.html#the-wazuh-ruleset">The Wazuh Ruleset</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../session_3.html#the-wazuh-decoders">The Wazuh Decoders</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../session_3.html#what-are-decoders-and-what-do-they-do">What are decoders and what do they do?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_3.html#main-decoder-options">Main Decoder Options:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_3.html#simple-decoder-example">Simple Decoder Example:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_3.html#lab-exercise-3a-write-a-custom-decoder">Lab Exercise 3A - Write a custom decoder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_3.html#lab-exercise-3b-write-basic-custom-rules">Lab Exercise 3B - Write basic custom rules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_3.html#lab-exercise-3c-write-a-more-advanced-custom-rule">Lab Exercise 3C - Write a more advanced custom rule</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_3.html#lab-exercise-3d-wazuh-s-dynamic-json-decoder">Lab Exercise 3D - Wazuh’s Dynamic JSON Decoder</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../session_3.html#wazuh-rules">Wazuh Rules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../session_3.html#alert-levels-in-wazuh-rules">Alert-Levels in Wazuh Rules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_3.html#wazuh-rule-groups">Wazuh Rule Groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_3.html#writing-custom-rules">Writing custom rules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_3.html#lab-exercise-3e-modify-an-existing-rule">Lab Exercise 3E - Modify an existing rule</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../session_3.html#looking-at-rule-evaluation-order">Looking at rule evaluation order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../session_3.html#sibling-decoders">Sibling decoders</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../session_4.html">Session 4</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../session_4.html#file-integrity-monitoring">File Integrity Monitoring</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../session_4.html#lab-exercise-4a-customize-syscheck-and-trigger-various-fim-events">Lab Exercise 4A - Customize syscheck and trigger various FIM events</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../session_4.html#vulnerability-detection">Vulnerability Detection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../session_4.html#lab-exercise-4b-syscollector-and-vulnerability-detection">Lab Exercise 4B - Syscollector and Vulnerability-Detection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../session_4.html#rootkit-detection">Rootkit Detection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../session_4.html#how-can-wazuh-detect-rootkits">How can Wazuh detect rootkits?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_4.html#detecting-user-mode-rootkits-with-wazuh">Detecting User-Mode rootkits with Wazuh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_4.html#detecting-kernel-mode-rootkits-with-wazuh">Detecting Kernel-Mode rootkits with Wazuh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_4.html#lab-exercise-4c-rootkit-detection">Lab Exercise 4C - Rootkit Detection</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../session_5.html">Session 5</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../session_5.html#cdb-lists">CDB Lists</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../session_5.html#lab-exercise-5a-distinguish-between-different-ssh-watch-list-values">Lab Exercise 5A - Distinguish between different ssh-watch-list values</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../session_5.html#active-response">Active Response</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../session_5.html#creating-custom-active-commands">Creating custom Active Commands:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_5.html#creating-custom-active-response">Creating custom Active Response:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_5.html#stateful-vs-stateless-command">Stateful vs stateless command:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_5.html#lab-exercise-5b-deploy-and-test-linux-firewall-active-response">Lab Exercise 5B - Deploy and test Linux firewall active response</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../session_6.html">Session 6</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../session_6.html#osquery-integration-with-wazuh">Osquery Integration with Wazuh</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../session_6.html#lab-6a-set-up-osquery-across-two-agents">Lab 6A - Set up Osquery across two agents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../session_6.html#sysmon-integration-with-wazuh">Sysmon Integration with Wazuh</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../session_6.html#lab-6b-set-up-sysmon-on-windows-agent">Lab 6B- Set up Sysmon on Windows agent</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../session_6.html#docker">Docker</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../session_6.html#lab-6c-monitoring-docker-activity">Lab 6C - Monitoring docker activity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../session_6.html#cloudtrail">CloudTrail</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+  </div>
+</div>
+      <div id="central-column">
+          
+        
+
+        
+          <div class="breadcrumb-wrapper">
+                <ul id="breadcrumbs" role="navigation" aria-label="breadcrumbs navigation">
+      <li>
+        <a href="../index.html">
+        
+          Training
+        
+        </a> <span class="breadcrumb-separator" aria-hidden="true"></span>
+      </li><li>&lt;no title&gt;</li>
+    </ul>
+          </div>
+        
+        
+        
+        <main role="main">
+        <p>Find several alerts of interest and look up the rule id and seek to understand the rule.  If there is an <code class="docutils literal notranslate"><span class="pre">&lt;if_sid&gt;</span></code> or <code class="docutils literal notranslate"><span class="pre">&lt;if_matched_sid&gt;</span></code> in the rule, take a look at the parent rule referenced by it as well.  Don’t try to exhaustively understand the rules.  Just explore.</p>
+
+        
+        
+        
+        </main>
+      </div>
+      <footer>
+        
+  <div class="desktop-footer row">
+    
+    <div class="copyright col-12 col-sm-4 col-xl-3 order-sm-1">
+      &copy; 2025 &middot; Wazuh Inc.
+    </div>
+  </div>
+      </footer>
+      <div id="right-sidebar" class="sidebar">
+  <div class="sidebar-container">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+      
+    
+  </div>
+</div>
+      </div>
+    <script id="documentation_options" data-url_root="../" src="../_static/js/documentation_options.js"></script>
+    <script>
+      const emptyTocNodes = JSON.parse('[]');
+    </script>
+        
+
+<script src="../_static/js/jquery.js?ver=1749453341.2832716"></script><script src="../_static/js/min/bootstrap.bundle.min.js?ver=1749453341.2832716"></script><script src="../_static/js/underscore.js?ver=1749453341.2882714"></script><script src="../_static/js/min/wazuh-documentation.min.js?ver=1749453341.2842715"></script><script src="../_static/wazuh-doc-images/wazuh-light-box.js"></script>
+  <div id="wazuh-light-box-overlay" class="wazuh-light-box-overlay"></div><div id="wazuh-light-box" class="wazuh-light-box"><div class="wazuh-light-box-slides-container"><div class="wlb-loading"></div></div><button tabindex="0" class="wlb-close-button"><span class="wlb-close-button-content read-only">Close</span></button></div></body>
+</html>

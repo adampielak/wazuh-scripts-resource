@@ -1,0 +1,72 @@
+.. role:: raw-html(raw)
+   :format: html
+
+Pre-lab
+#######
+Confirm you can login via ssh into your manager, linux-agent, and indexer systems.  Also confirm you can RDP into your windows-agent as well as web surf to your dashboard system.  Once you can reach them all, we are ready to proceed.  Each system's name includes an environment letter and a student number, i.e. "linux-agentX3.lab.wazuh.info".
+
+Student Roster
+**************
+The class roster that was emailed to you assigns you a specific student number associated with your set of lab systems.
+
+
+Linux Manager
+=============
+| **User:**     ``wazuh-user``
+| **Password:** ``%%PASSWORD%%``
+|
+| Establish an **SSH** session to:
+
+.. code-block:: bash
+
+   wazuh-user@manager%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info
+
+|
+
+Linux Agent
+===========
+| **User:**     ``wazuh-user``
+| **Password:** ``%%PASSWORD%%``
+|
+
+| Establish an **SSH** session to:
+
+.. code-block:: bash
+
+   wazuh-user@linux-agent%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info
+
+|
+
+Windows Agent
+=============
+| **User:** ``wazuh-user``
+| **Password:** ``%%PASSWORD%%``
+|
+
+| Establish an **RDP** session to: 
+
+.. code-block:: bash
+
+   windows-agent%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info
+
+|
+
+Indexer System
+===============
+| **User:** ``wazuh-user``
+| **Password:** ``%%PASSWORD%%``
+|
+
+| Establish an **SSH** session to: 
+
+.. code-block:: bash
+
+   wazuh-user@indexer%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info
+
+|
+
+Dashboard System
+================
+| **Dashboard URL:** ``https://dashboard%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info``
+| **User:** ``admin``
+| **Password:** ``%%PASSWORD%%``

@@ -1,0 +1,137 @@
+
+During this exercise we will create, modify and delete files in both our ``windows-agent`` and ``linux-agent`` using various monitoring modes. 
+
+On the ``windows-agent`` create the directories we will be monitoring with syscheck
+
+#. Open a Windows Powershell or command prompt as administrator
+
+#. Create two test directories
+   
+   .. code::  
+   
+   	mkdir C:\apple
+   	mkdir C:\orange
+   
+   To configure syscheck for the Windows agent, replace the entire ``<syscheck>`` section in the os="Windows" portion of the windows' group  :file:`agent.conf`:
+   
+   .. code::
+   
+   	<syscheck>
+   	   <disabled>no</disabled>
+   	   <scan_on_start>yes</scan_on_start>
+   	   <frequency>300</frequency>
+   	   <directories check_all="yes" whodata="yes" report_changes="yes"  tags="core,worms">C:/apple</directories>
+   	   <directories check_all="yes">C:/orange</directories>
+   	</syscheck>
+   
+   The above enables syscheck FIM on Windows agents, such that a periodic syscheck scan of ``C:\orange`` will take place shortly after the start/restart of the Wazuh agent, and then every 300 seconds thereafter.
+   
+   The ``C:\apple`` directory will be monitored in real time for all possible kinds of file changes, while the ``C:\orange`` directory will only be periodically scanned for changes.  Changes to existing text files in ``C:\apple`` will  trigger an alert that includes the details of the actual text that was changed. 
+
+   You could then restart your Wazuh Windows agent to cause the new config to be picked up immediately, or just wait a couple of minutes for the Windows agent to pick up the change automatically and restart itself.
+   
+   In the Windows agent log, you should see a couple of entries like this accounting for the new syscheck monitoring of your two test directories:
+   
+   .. code::
+   
+           2022/06/10 13:00:47 wazuh-agent: INFO: (6003): Monitoring path: 'c:\apple', with options 'size | permissions | owner | group | mtime | inode | hash_md5 | hash_sha1 | hash_sha256 | attributes | report_changes | whodata'.
+           2022/06/10 13:00:47 wazuh-agent: INFO: (6003): Monitoring path: 'c:\orange', with options 'size | permissions | owner | group | mtime | inode | hash_md5 | hash_sha1 | hash_sha256 | attributes | scheduled'.
+
+   
+#. At this point, add, modify, and delete files in these two test directories on the Windows agent.
+
+   You may easily create or modify files by running the following Powershell commands:
+   
+   .. code::
+   
+      Set-Content -Path 'C:\apple\date.txt' -Value $(Get-Date)
+      Set-Content -Path 'C:\orange\date.txt' -Value $(Get-Date)
+
+
+
+#. Watch your search results in Wazuh dashboard for the query text ``apple orange``, to see syscheck events as they appear. 
+
+   Notice that alerts about changes in ``c:\apple`` show up promptly, while alerts about changes in ``c:\orange`` are not reported until the next every-300-second syscheck scan.
+
+
+**Alternative Linux FIM lab**
+
+#. Ubuntu systems (like our ``linux-agent``) do not have the ``auditd`` service installed by default, and this is required for ``whodata`` to work, so install it now on linux-agent.
+
+   .. code:: 
+   
+      apt -y install auditd
+      systemctl start auditd
+   	
+
+#. Create on your linux-agent an ``/apple`` and an ``/orange`` directory:
+
+   .. code::
+   
+   	mkdir /apple /orange /pear
+   	
+
+#. Replace the entire ``<syscheck>`` section in the ``linux`` group's :file:`agent.conf` file with this:
+   
+   .. code::
+   
+   	  <syscheck>
+   	     <disabled>no</disabled>
+   	     <scan_on_start>yes</scan_on_start>
+   	     <frequency>300</frequency>
+   	     <directories check_all="yes" whodata="yes" report_changes="yes">/apple</directories>
+   	     <directories check_all="yes" realtime="yes">/orange</directories>
+   	     <directories check_all="yes">/pear</directories>
+   	  </syscheck>
+
+
+#. Make changes in the ``/apple`` and ``/orange`` and ``/pear`` directories and watch for them to be accounted for in Wazuh dashboard.  Search for ``syscheck``.
+
+Watch especially for the who-data fields.  They start with ``syscheck.audit``
+
+.. image:: images/syscheck.audit.png
+   :align: center
+
+**Suppressing FIM false positives when a server is in a maintenance window.**
+
+To avoid false positive noise created by changes that are made to a system's monitored files during a maintenance window, 
+you can create a new agent group with a configuration that disables FIM.  Then you could add agents into this group when they enter a maintenance window and remove them from the group when their maintenance window closes.
+
+For example, you could create a new agent group called ``fim-disabled`` and set the content of its :file:`agent.conf` file to be:
+
+.. code::
+
+	  <agent_config>
+	     <syscheck>
+		<disabled>yes</disabled>
+	     </syscheck>
+	  </agent_config>
+
+
+Note that upon including an agent as a member of the ``fim-disabled`` group, that will become the last group in the agent's group list, 
+and thus it will take precedence over FIM settings defined in other groups that the agent is a part of.
+
+When the maintenance window has passed for the agents you previously added to this group, simply remove them from the ``fim-disabled`` group.
+The agents will then automatically restart and will silently create a new FIM baseline. 
+
+Another possibly complementary strategy would be create an agent group called ``maintenance`` and then set its :file:`agent.conf` file to:
+
+.. code::
+
+	  <agent_config>
+	     <labels>
+		<label key="state">maintenance</label>
+	     </labels>
+	  </agent_config>
+
+|
+
+This would cause a new field ``agent.labels.state`` to be added to all alerts from any agent you put into the ``maintenance`` group, only while it is 
+in that group.  Among other things, this would allow you to use the following criteria in the integrity monitoring dashboard to exclude FIM events 
+that took place while an agent was in a maintenance window.
+
+.. code::
+
+	not agent.labels.state: maintenance
+	
+You might want to consider what other kinds of states a given server might enter and exit over time that would be meaningful to account for via agent labels in this way.

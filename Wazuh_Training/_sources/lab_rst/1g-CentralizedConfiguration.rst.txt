@@ -1,0 +1,202 @@
+.. role:: raw-html(raw)
+   :format: html
+
+You already created a "windows" and "linux" agent group, and during registration your agents were assigned to the appropriate agent group.  In future labs, these 
+agents will be added to additional new groups as well.  For now, confirm the group memberships are as intended via Wazuh web UI.
+
+Each agent is positioned to fetch its own :file:`agent.conf` from the manager according to the 
+group or groups it is a member of.  Our next step is to provide a separate :file:`agent.conf` on the 
+Wazuh manager for each agent group so that we can start centrally maintaining the vast majority 
+of agent configuration details on the Wazuh manager in an organized way. 
+
+Replace the entire content of the large :file:`/var/ossec/etc/ossec.conf` files of 
+each agent with the following small stub configurations:
+
+.. note::
+   
+  On Linux devices, first, make a backup of the :file:`ossec.conf` file.
+  ``cp -p /var/ossec/etc/ossec.conf /var/ossec/etc/ossec.conf.backup`` 
+  Then, empty out ossec.conf first with ``echo "" > /var/ossec/etc/ossec.conf`` before opening the file with the text editor of your choice and pasting in the new content. This will preserve file permissions.
+
+
+For linux-agent (:file:`/var/ossec/etc/ossec.conf`):
+
+.. code:: xml
+
+   <ossec_config>
+     <client>
+       <server>
+         <address>manager%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info</address>
+         <port>1514</port>
+         <protocol>tcp</protocol>
+       </server>
+       <config-profile>ubuntu, ubuntu18, ubuntu18.04</config-profile>
+       <notify_time>10</notify_time>
+       <time-reconnect>60</time-reconnect>
+       <auto_restart>yes</auto_restart>
+     </client>
+     <agent-upgrade>
+       <ca_verification>
+         <enabled>yes</enabled>
+         <ca_store>etc/wpk_root.pem</ca_store>
+       </ca_verification>
+     </agent-upgrade>
+   </ossec_config>
+
+For indexer  (:file:`/var/ossec/etc/ossec.conf`):
+
+.. code:: xml
+
+   <ossec_config>
+     <client>
+       <server>
+         <address>manager%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info</address>
+         <port>1514</port>
+         <protocol>tcp</protocol>
+       </server>
+       <config-profile>amzn, amzn2, indexer</config-profile>
+       <notify_time>10</notify_time>
+       <time-reconnect>60</time-reconnect>
+       <auto_restart>yes</auto_restart>
+     </client>
+     <agent-upgrade>
+       <ca_verification>
+         <enabled>yes</enabled>
+         <ca_store>etc/wpk_root.pem</ca_store>
+       </ca_verification>
+     </agent-upgrade>
+   </ossec_config>
+
+
+
+For windows-agent **(via Wazuh Agent Manager -> View -> View Config)**:
+:file:`C:\\Program Files (x86)\\ossec-agent\\win32ui.exe`
+
+.. code:: xml
+
+   <ossec_config>
+     <client>
+       <server>
+         <address>manager%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info</address>
+         <port>1514</port>
+         <protocol>tcp</protocol>
+       </server>
+       <config-profile>windows2019</config-profile>
+       <notify_time>10</notify_time>
+       <time-reconnect>60</time-reconnect>
+       <auto_restart>yes</auto_restart>
+     </client>
+     <agent-upgrade>
+       <ca_verification>
+         <enabled>yes</enabled>
+         <ca_store>wpk_root.pem</ca_store>
+       </ca_verification>
+     </agent-upgrade>
+   </ossec_config>
+
+**Configure agents to allow process monitoring commands to be distributed via agent.conf**
+
+On both ``linux-agent`` and ``indexer``, enable the execution of commands via the centralized configuration.
+
+.. code:: bash
+
+   echo "logcollector.remote_commands=1" > /var/ossec/etc/local_internal_options.conf
+
+In windows-agent, open Windows PowerShell **(Run as Administrator)** and run the following command:
+
+.. code:: bash
+
+   echo "logcollector.remote_commands=1" | out-file -encoding ASCII "C:\Program Files (x86)\ossec-agent\local_internal_options.conf"
+
+A prepared version of agent.conf for both the windows and linux agent groups has already been deposited 
+in your ``manager``'s ``/var/tmp/`` directory.  Copy them to their production locations by running the following commands on your ``manager``:
+
+.. code:: none 
+
+        \cp /var/tmp/linux-agent.conf /var/ossec/etc/shared/linux/agent.conf
+        \cp /var/tmp/windows-agent.conf /var/ossec/etc/shared/windows/agent.conf
+
+
+Notice in the linux agent-group's :file:`agent.conf` file, that in addition to a large global ``<agent_config>``
+section that there are also a couple of profile-specific and one name-specific section.
+
+.. code:: xml
+
+        <!-- config sections for specific agent profiles -->
+
+          <agent_config profile="amzn">
+                <localfile>
+                  <log_format>syslog</log_format>
+                  <location>/var/log/messages</location>
+                </localfile>
+                <localfile>
+                  <log_format>syslog</log_format>
+                  <location>/var/log/secure</location>
+                </localfile>
+          </agent_config>
+
+   ⋮
+         
+   ⋮
+
+          <agent_config profile="ubuntu">
+                <localfile>
+                  <log_format>syslog</log_format>
+                  <location>/var/log/syslog</location>
+                </localfile>
+                <localfile>
+                  <log_format>syslog</log_format>
+                  <location>/var/log/auth.log</location>
+                </localfile>
+          </agent_config>
+
+          <!-- config section for a specific agent -->
+
+          <agent_config name="linux-agentN">
+                <localfile>
+                  <log_format>syslog</log_format>
+                  <location>/var/log/agent-testing.log</location>
+                </localfile>
+          </agent_config>
+
+
+At the head of the final agent_config section in :file:`/var/ossec/etc/shared/linux/agent.conf` file, 
+replace the :raw-html:`<b><font color="blue">"linux-agentN"</font></b>` in :raw-html:`linux-agent<b><font color="blue">"^linux-agent"</font></b>`:
+
+.. code:: xml
+
+   <agent_config name="linux-agent%%LABLETTER%%%%LABNUMBER%%">
+
+Confirm that the :file:`agent.conf` files are valid.
+
+.. code:: bash
+
+        /var/ossec/bin/verify-agent-conf
+
+After performing any change to the centralized configuration, the agents will automatically restart themselves to apply the new configuration.
+
+**Examine the :file:`ossec.log` on both agents for evidence that the relevant agent config sections were applied to 
+the correct members of the linux agent group.**
+
+.. code:: bash
+
+   egrep "/var/log/(messages|syslog)" /var/ossec/logs/ossec.log
+
+Note that only the agent using the ``amzn`` config profile (indexer%%LABLETTER%%%%LABNUMBER%%`) is analyzing :file:`/var/log/messages` and that 
+only the agent using the `ubuntu` config profile (linux-agent%%LABLETTER%%%%LABNUMBER%%) is analyzing :file:`/var/log/syslog`.  
+
+Also notice that only on linux-agent%%LABLETTER%%%%LABNUMBER%% is the :file:`agent-testing.log` file being attempted to be analyzed due to the name-specific config section in :file:`agent.conf`, and as this file does not exist then there is an error log that does not stop the agent from working.
+
+.. code:: bash
+
+        grep "agent-testing" /var/ossec/logs/ossec.log  | grep Analyzing
+
+.. code-block:: none
+  :class: output
+
+   2022/06/07 15:09:53 wazuh-logcollector: INFO: (1950): Analyzing file: '/var/log/agent-testing.log'.
+
+
+
+Directly via the Wazuh API you can get even deeper visibility into and control over agent groups, memberships, and files.  See:
+https://documentation.wazuh.com/current/user-manual/api/reference.html#tag/Agents

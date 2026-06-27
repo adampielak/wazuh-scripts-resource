@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Wazuh Training for Security Engineers &mdash; Wazuh for Security Engineers  documentation</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/styles.css" type="text/css" />
+    <link rel="stylesheet" href="_static/slides.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <link rel="stylesheet" href="_static/css/style.css" type="text/css" />
+    
+    
+    
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/common.js"></script>
+    
+    <script type="text/javascript" src="_static/slides.js"></script>
+    <script type="text/javascript" src="_static/sync.js"></script>
+    <script type="text/javascript" src="_static/controller.js"></script>
+    <script type="text/javascript" src="_static/init.js"></script>
+    
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="Wazuh for Security Engineers  documentation" href="index.html" />
+    <link rel="next" title="Wazuh Training for Security Engineers" href="Deck3.html" />
+    <link rel="prev" title="Wazuh Training for Security Engineers" href="Deck1.html" /> 
+  </head>
+  <body>
+
+<section
+   id="slide_container"
+   class='slides layout-regular'>
+
+
+  
+<article class="slide level-1" id="wazuh-training-for-security-engineers">
+
+<h1>Wazuh Training for Security Engineers</h1>
+
+
+
+
+<div class="slide-no">1</div>
+
+
+</article>
+<article class="slide level-1" id="wazuh-decoders">
+
+<h1>Wazuh Decoders</h1>
+
+
+
+
+<div class="slide-no">2</div>
+
+
+</article>
+<article class="slide level-2" id="id1">
+
+<h2>Wazuh Decoders</h2>
+
+<div class="admonition-definition admonition">
+<p class="first admonition-title">Definition</p>
+<p class="last">Decoders are designed to extract any relevant data from events.</p>
+</div>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>Decoding an event is done in two phases:</dt><dd><ul>
+<li><strong>Predecoding:</strong> extracts predefined fields from known log headers, such as the program name from a syslog entry. This can be used to select an appropriate family of decoders.</li>
+<li><strong>Decoding:</strong> extracts specific field values from the event, for example: IP address or usernames.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Wazuh rules commonly use matching criteria that refers to one or more specific fields extracted by decoders, rather that matching for general patterns across the whole event. This improves accuracy and performance.</p>
+
+
+
+<div class="slide-no">3</div>
+
+
+</article>
+<article class="slide level-2" id="decoder-example">
+
+<h2>Decoder Example</h2>
+
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Log Sample:</th><td class="field-body">Mar 17 13:00:01 linux_server syslogd: stopped</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<div class="admonition-definition admonition">
+<p class="first admonition-title">Predecoded event</p>
+<blockquote class="last">
+<div><table border="1" class="long-table docutils align-default">
+<colgroup>
+<col width="44%" />
+<col width="56%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Field</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>hostname</td>
+<td>linux_server</td>
+</tr>
+<tr class="row-odd"><td>program_name</td>
+<td>syslogd</td>
+</tr>
+<tr class="row-even"><td>time/date</td>
+<td>Mar 17 13:00:01</td>
+</tr>
+<tr class="row-odd"><td>log</td>
+<td>stopped</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</div>
+
+
+
+<div class="slide-no">4</div>
+
+
+</article>
+<article class="slide level-2" id="decoder-options">
+
+<h2>Decoder Options</h2>
+
+<table border="1" class="long-table docutils align-default">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Option</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>decoder</td>
+<td>This attribute defines the decoder.</td>
+</tr>
+<tr class="row-odd"><td>parent</td>
+<td>Decoder will be considered if the decoder specified here is matched.</td>
+</tr>
+<tr class="row-even"><td>program_name</td>
+<td>Decoder will be considered if this is the predecoded value for <em>program_name</em>.</td>
+</tr>
+<tr class="row-odd"><td>prematch</td>
+<td>It will look for a match in the log. In case it does, the decoder will be used.</td>
+</tr>
+<tr class="row-even"><td>regex</td>
+<td>The decoder will use this option to find fields of interest and extract them.</td>
+</tr>
+<tr class="row-odd"><td>order</td>
+<td>The values that regex will extract will be stored in order in these fields.</td>
+</tr>
+<tr class="row-even"><td>fts</td>
+<td>Flags a field to keep track of the first time a value is seen.</td>
+</tr>
+<tr class="row-odd"><td>ftscomment</td>
+<td>Adds a comment to fts.</td>
+</tr>
+<tr class="row-even"><td>plugin_decoder</td>
+<td>Specifies a built-in plugin to be used.</td>
+</tr>
+<tr class="row-odd"><td>use_own_name</td>
+<td>Only for child decoders.</td>
+</tr>
+<tr class="row-even"><td>json_null_field</td>
+<td>Adds the option of deciding how a null value from a JSON will be stored.</td>
+</tr>
+<tr class="row-odd"><td>json_array_structure</td>
+<td>Adds the option of deciding how an array structure from a JSON will be stored.</td>
+</tr>
+<tr class="row-even"><td>accumulate</td>
+<td>It allows tracking fields over multiple log messages.</td>
+</tr>
+<tr class="row-odd"><td>var</td>
+<td>Defines variables that can be reused inside the same file.</td>
+</tr>
+</tbody>
+</table>
+
+
+
+<div class="slide-no">5</div>
+
+
+</article>
+<article class="slide level-2" id="regular-expressions-in-wazuh">
+
+<h2>Regular Expressions in Wazuh</h2>
+
+<ul class="simple">
+<li>The &lt;prematch&gt; and &lt;regex&gt; options present in stock Wazuh decoders use a simple high-performance regular expression (regex) syntax:</li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">OS RegEx</span></div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>\w -&gt; A-Z, a-z, 0-9, &#39;-&#39;, &#39;@&#39;, &#39;_&#39; characters
+\d -&gt; 0-9 characters
+\s -&gt; Spaces &quot; &quot;
+\t -&gt; Tabs
+\p -&gt; ()*+,-.:;&lt;=&gt;?[]!&quot;&#39;#$%&amp;|{}
+\W -&gt; Anything not w
+\D -&gt; Anything not d
+\S -&gt; Anything not s
+\. -&gt; Anything
+</pre></div>
+</div>
+</div>
+<ul class="simple">
+<li>Starting with Wazuh 4.1.0, you can optionally use full PCRE2 expressions by specifying &lt;prematch type=”pcre2”&gt; and &lt;regex type=”pcre2”&gt;.  For details on using the old and new Wazuh regex expression formats, see: <a class="reference external" href="https://documentation.wazuh.com/current/user-manual/ruleset/ruleset-xml-syntax/regex.html">Documentation</a></li>
+</ul>
+
+
+
+<div class="slide-no">6</div>
+
+
+</article>
+<article class="slide level-2" id="simple-decoder-example">
+
+<h2>Simple decoder example</h2>
+
+<p>Let’s write a simple decoder for this log event:</p>
+<p>Example of a simple log event:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">2016</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">29</span><span class="n">T10</span><span class="p">:</span><span class="mi">01</span><span class="p">:</span><span class="mf">04.600374</span><span class="o">-</span><span class="mi">04</span><span class="p">:</span><span class="mi">00</span> <span class="n">manager</span> <span class="n">myprogram</span><span class="p">[</span><span class="mi">9123</span><span class="p">]:</span> <span class="n">test</span> <span class="n">connection</span>
+<span class="kn">from</span> <span class="mf">192.168.1.1</span> <span class="n">via</span> <span class="n">test</span><span class="o">-</span><span class="n">protocol1</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Example of our new decoder:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">decoder</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;myprogram&quot;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">program_name</span><span class="o">&gt;</span><span class="n">myprogram</span><span class="o">&lt;/</span><span class="n">program_name</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">decoder</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+
+
+
+<div class="slide-no">7</div>
+
+
+</article>
+<article class="slide level-2" id="child-decoder">
+
+<h2>Child Decoder</h2>
+
+<p>Example of our Child decoder:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;decoder name=&quot;myprogram-test-connection&quot;&gt;
+  &lt;parent&gt;myprogram&lt;/parent&gt;
+  &lt;prematch&gt;^test connection &lt;/prematch&gt;
+  &lt;regex offset=&quot;after_prematch&quot;&gt;^from (\S+) via (\S+)$&lt;/regex&gt;                  &lt;order&gt;srcip, protocol&lt;/order&gt;
+&lt;/decoder&gt;
+</pre></div>
+</div>
+</div></blockquote>
+<p>We’re referencing the decoder from before “myprogram” and adding new parameters to extract the SRC IP address and the protocol field.</p>
+<p>Let’s see how Wazuh processes this …</p>
+
+
+
+<div class="slide-no">8</div>
+
+
+</article>
+<article class="slide level-2" id="running-it-through-wazuh-logtest">
+
+<h2>Running it through wazuh-logtest</h2>
+
+<ul class="simple">
+<li>Pre-Decoding</li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Full_event</span><span class="p">:</span> <span class="s1">&#39;2017-09-02T10:01:04.600374-04:00 manager myprogram[9123]: test connection</span>
+  <span class="kn">from</span> <span class="mf">192.168.1.1</span> <span class="n">via</span> <span class="n">test</span><span class="o">-</span><span class="n">protocol1</span><span class="s1">&#39;</span>
+
+<span class="o">-</span> <span class="n">hostname</span><span class="p">:</span> <span class="s1">&#39;manager&#39;</span>
+
+<span class="o">-</span> <span class="n">program_name</span><span class="p">:</span> <span class="s1">&#39;myprogram&#39;</span>
+
+<span class="o">-</span> <span class="n">log</span><span class="p">:</span> <span class="s1">&#39;test connection from 192.168.1.1 via test-protocol1&#39;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Decoding</li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">decoder</span><span class="p">:</span>  <span class="s1">&#39;myprogram&#39;</span>
+
+<span class="o">-</span> <span class="n">srcip</span><span class="p">:</span> <span class="s1">&#39;192.168.1.1&#39;</span>
+
+<span class="o">-</span> <span class="n">protocol</span><span class="p">:</span> <span class="s1">&#39;test-protocol1&#39;</span>
+</pre></div>
+</div>
+
+
+
+<div class="slide-no">9</div>
+
+
+</article>
+<article class="slide level-2" id="lab-exercise-set">
+
+<h2>Lab Exercise Set</h2>
+
+<div class="admonition-definition admonition">
+<p class="first admonition-title">Lab Exercise 3A: Write a custom decoder</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Lab Objective:</th><td class="field-body">Write a custom decoder that extracts the result, username and source IP address from the following log message.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Dec</span>  <span class="mi">4</span> <span class="mi">17</span><span class="p">:</span><span class="mi">07</span><span class="p">:</span><span class="mi">01</span> <span class="n">myserver</span> <span class="n">Fakeinc</span><span class="p">:</span> <span class="n">Accepted</span> <span class="n">password</span> <span class="k">for</span> <span class="n">user</span> <span class="n">test2</span><span class="p">,</span> <span class="n">IP</span><span class="p">:</span> <span class="mf">1.2.3.4</span>
+</pre></div>
+</div>
+<div class="admonition-definition admonition">
+<p class="first admonition-title">Lab Exercise 3B: Write a custom rule family</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Lab Objective:</th><td class="field-body">Create specific rules to categorize the log messages provided. Assign the appropriate alert levels according to the previously presented “Rule Severity Levels” table.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Dec</span>  <span class="mi">4</span> <span class="mi">17</span><span class="p">:</span><span class="mi">07</span><span class="p">:</span><span class="mi">01</span> <span class="n">myserver</span> <span class="n">Fakeinc</span><span class="p">:</span> <span class="n">Accepted</span> <span class="n">password</span> <span class="k">for</span> <span class="n">user</span> <span class="n">test2</span><span class="p">,</span> <span class="n">IP</span><span class="p">:</span> <span class="mf">1.2.3.4</span>
+<span class="n">Dec</span>  <span class="mi">4</span> <span class="mi">17</span><span class="p">:</span><span class="mi">07</span><span class="p">:</span><span class="mi">01</span> <span class="n">myserver</span> <span class="n">Fakeinc</span><span class="p">:</span> <span class="n">Failed</span> <span class="n">password</span> <span class="k">for</span> <span class="n">user</span> <span class="n">test</span><span class="p">,</span> <span class="n">IP</span><span class="p">:</span> <span class="mf">1.2.3.4</span>
+<span class="n">Dec</span>  <span class="mi">4</span> <span class="mi">17</span><span class="p">:</span><span class="mi">07</span><span class="p">:</span><span class="mi">01</span> <span class="n">myserver</span> <span class="n">Fakeinc</span><span class="p">:</span> <span class="n">Application</span> <span class="ow">is</span> <span class="n">shutting</span> <span class="n">down</span><span class="p">:</span> <span class="n">Internal</span> <span class="n">error</span>
+<span class="n">Dec</span>  <span class="mi">4</span> <span class="mi">17</span><span class="p">:</span><span class="mi">07</span><span class="p">:</span><span class="mi">01</span> <span class="n">myserver</span> <span class="n">Fakeinc</span><span class="p">:</span> <span class="n">DEBUG</span><span class="p">:</span> <span class="n">Received</span> <span class="n">OK</span><span class="o">.</span>
+</pre></div>
+</div>
+
+
+
+<div class="slide-no">10</div>
+
+
+</article>
+<article class="slide level-2" id="lab-exercise-set-continued">
+
+<h2>Lab Exercise Set (Continued)</h2>
+
+<div class="admonition-definition admonition">
+<p class="first admonition-title">Lab Exercise 3C: Write a more advanced custom rule</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Lab Objective:</th><td class="field-body">Create a custom rule that triggers an alert when a particular user logs into a specific server within a designated time window. Base this rule on an existing SSHD rule.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+<div class="slide-no">11</div>
+
+
+</article>
+<article class="slide level-1" id="wazuh-dynamic-decoders">
+
+<h1>Wazuh Dynamic Decoders</h1>
+
+
+
+
+<div class="slide-no">12</div>
+
+
+</article>
+<article class="slide level-2" id="windows-eventchannel-dynamic-decoder">
+
+<h2>Windows Eventchannel Dynamic Decoder</h2>
+
+<ul class="simple">
+<li>The Wazuh Windows’ Agent collects Eventchannel events using the full Windows Event Schema.</li>
+<li>The <em>windows-eventchannel</em> decoder will automatically extract all available fields from these events.</li>
+<li>Default Windows rules include the <strong>no_full_log</strong> option since all available fields are already parsed.</li>
+<li>The Ruleset Test or wazuh-logtest capabilities cannot be used to test these events (a few workarounds can be used for this).</li>
+</ul>
+
+
+
+<div class="slide-no">13</div>
+
+
+</article>
+<article class="slide level-2" id="json-dynamic-decoder">
+
+<h2>JSON Dynamic Decoder</h2>
+
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>In addition to analyzing plain text logs and Windows event channel logs, Wazuh Server can also take JSON-formatted logs as input:</dt><dd><ul>
+<li>Just like the <em>eventchannel</em> decoder, the <em>JSON</em> decoder is also able to automatically extract all available fields from the event.</li>
+<li>Wazuh can process JSON log records, utilizing the predefined fields within the records for rule evaluation and displaying them in the Wazuh dashboard.</li>
+<li>Many applications, such as Snort and Suricata IDS engines, and most cloud service providers can write alerts to JSON files.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+
+
+
+<div class="slide-no">14</div>
+
+
+</article>
+<article class="slide level-2" id="lab-exercise">
+
+<h2>Lab Exercise</h2>
+
+<div class="admonition-definition admonition">
+<p class="first admonition-title">Lab Exercise 3D: Integrate Suricata</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Lab Objective:</th><td class="field-body">Deploy Suricata on an agent, configure it to write JSON, and Wazuh to collect the logs so it may dynamically decode them.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+<div class="slide-no">15</div>
+
+
+</article>
+<article class="slide level-1" id="wazuh-rules">
+
+<h1>Wazuh Rules</h1>
+
+
+
+
+<div class="slide-no">16</div>
+
+
+</article>
+<article class="slide level-2" id="id2">
+
+<h2>Wazuh Rules</h2>
+
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>Rules files locations:</dt><dd><ul>
+<li><strong>/var/ossec/ruleset/rules/</strong> - for Wazuh’s default rules.</li>
+<li><strong>/var/ossec/etc/rules/</strong> - for custom rules.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li>Rules use the fields extracted by the decoders from the events to generate alerts when their conditions are met.</li>
+<li>Custom rules ID numbers should be kept in the range from 100,000 to 120,000 to avoid conflicts with the official Wazuh Ruleset.</li>
+<li>Rule severity levels range between 0 to 15 (0 being the lowest).</li>
+</ul>
+
+
+
+<div class="slide-no">17</div>
+
+
+</article>
+<article class="slide level-2" id="wazuh-rules-continued">
+
+<h2>Wazuh Rules (Continued)</h2>
+
+<ul>
+<li><dl class="first docutils">
+<dt>There are two types of rules:</dt><dd><ul>
+<li><dl class="first docutils">
+<dt><strong>Atomic Rules</strong> will match based on a single event, without any correlation.</dt><dd><ul class="simple">
+<li>Examples: Authentication failure, alert on unique event, etc.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>Composite Rules</strong> are triggered by a sequence of events. Easily recognizable by the parameters:</dt><dd><ul class="simple">
+<li><strong>frequency</strong>: specifies how many times an event or pattern must occur.</li>
+<li><strong>timeframe</strong>: determines how far back (in seconds) it should search for the matching events.</li>
+</ul>
+<p>Composite rules look for <strong>frequency</strong> events in the last <strong>timeframe</strong> seconds.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+
+
+
+<div class="slide-no">18</div>
+
+
+</article>
+<article class="slide level-2" id="rule-severity-levels">
+
+<h2>Rule Severity Levels</h2>
+
+<table border="1" class="long-table docutils align-default">
+<colgroup>
+<col width="6%" />
+<col width="29%" />
+<col width="65%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Level</th>
+<th class="head">Title</th>
+<th class="head">Examples</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>Ignored</td>
+<td>No action taken. Can be used to avoid false positives.</td>
+</tr>
+<tr class="row-odd"><td>2</td>
+<td>Low priority notification</td>
+<td>System notification with no security relevance.</td>
+</tr>
+<tr class="row-even"><td>3</td>
+<td>Authorized events</td>
+<td>Successful login attempts, firewall allow events, etc.</td>
+</tr>
+<tr class="row-odd"><td>4</td>
+<td>System low priority error</td>
+<td>Errors related to bad configurations or unused applications.</td>
+</tr>
+<tr class="row-even"><td>5</td>
+<td>User generated error</td>
+<td>Missed passwords, denied actions, etc.</td>
+</tr>
+<tr class="row-odd"><td>6</td>
+<td>Low relevance attack</td>
+<td>An attack that does not affect the system.</td>
+</tr>
+<tr class="row-even"><td>7</td>
+<td>“Bad word” matching</td>
+<td>Events that have words like “bad”, “error”, etc.</td>
+</tr>
+<tr class="row-odd"><td>8</td>
+<td>First time seen</td>
+<td>First time an IDS event is fired or the first time an user logged in.</td>
+</tr>
+<tr class="row-even"><td>9</td>
+<td>Error from invalid source</td>
+<td>Attempts to login as an unknown user or from an invalid source.</td>
+</tr>
+<tr class="row-odd"><td>10</td>
+<td>Multiple user errors</td>
+<td>Multiple bad passwords, multiple failed logins, etc.</td>
+</tr>
+<tr class="row-even"><td>11</td>
+<td>Integrity checking warning</td>
+<td>Modification of binaries or the presence of rootkits.</td>
+</tr>
+<tr class="row-odd"><td>12</td>
+<td>High relevance event</td>
+<td>Error or warning messages from the system, kernel, etc.</td>
+</tr>
+<tr class="row-even"><td>13</td>
+<td>Unusual error</td>
+<td>Most of the times it matches a common attack pattern.</td>
+</tr>
+<tr class="row-odd"><td>14</td>
+<td>High security event</td>
+<td>Most of the times done with correlation and it indicates an attack.</td>
+</tr>
+<tr class="row-even"><td>15</td>
+<td>Severe attack</td>
+<td>Immediate attention is necessary.</td>
+</tr>
+</tbody>
+</table>
+
+
+
+<div class="slide-no">19</div>
+
+
+</article>
+<article class="slide level-2" id="atomic-rule-options">
+
+<h2>Atomic Rule Options</h2>
+
+<table border="1" class="long-table docutils align-default">
+<colgroup>
+<col width="11%" />
+<col width="29%" />
+<col width="60%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Option</th>
+<th class="head">Values</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>rule</td>
+<td>id, level, overwrite</td>
+<td>It starts a new rule and its defining options.</td>
+</tr>
+<tr class="row-odd"><td>if_sid</td>
+<td>List of rule ids</td>
+<td>Matches when a rule on the list has previously matched.</td>
+</tr>
+<tr class="row-even"><td>if_group</td>
+<td>List of rule groups</td>
+<td>Matches when a group on the list has previously matched.</td>
+</tr>
+<tr class="row-odd"><td>match</td>
+<td>Sregex <a class="reference external" href="https://documentation.wazuh.com/current/user-manual/ruleset/ruleset-xml-syntax/regex.html">regular expression</a></td>
+<td>Matches anywhere on the log using simple SRegex.</td>
+</tr>
+<tr class="row-even"><td>regex</td>
+<td>Any <a class="reference external" href="https://documentation.wazuh.com/current/user-manual/ruleset/ruleset-xml-syntax/regex.html">regular expression</a></td>
+<td>Matches with the OS Regex syntax.</td>
+</tr>
+<tr class="row-odd"><td>decoded_as</td>
+<td>Any decoder’s name</td>
+<td>Matches logs decoded by a specific decoder.</td>
+</tr>
+<tr class="row-even"><td>field</td>
+<td>Any <a class="reference external" href="https://documentation.wazuh.com/current/user-manual/ruleset/ruleset-xml-syntax/regex.html">regular expression</a></td>
+<td>Matches a specific dynamic field using Regex.</td>
+</tr>
+<tr class="row-odd"><td>srcip</td>
+<td>Any IP address</td>
+<td>Matches the value decoded as <code class="docutils literal notranslate"><span class="pre">srcip</span></code>.</td>
+</tr>
+<tr class="row-even"><td>dstip</td>
+<td>Any IP address</td>
+<td>Matches the value  decoded as <code class="docutils literal notranslate"><span class="pre">dstip</span></code>.</td>
+</tr>
+<tr class="row-odd"><td>user</td>
+<td>Any <a class="reference external" href="https://documentation.wazuh.com/current/user-manual/ruleset/ruleset-xml-syntax/regex.html">regular expression</a></td>
+<td>Matches a value decoded as <code class="docutils literal notranslate"><span class="pre">user</span></code>.</td>
+</tr>
+<tr class="row-even"><td>program_name</td>
+<td>Any <a class="reference external" href="https://documentation.wazuh.com/current/user-manual/ruleset/ruleset-xml-syntax/regex.html">regular expression</a></td>
+<td>Matches the value pre-decoded as <code class="docutils literal notranslate"><span class="pre">program_name</span></code>.</td>
+</tr>
+<tr class="row-odd"><td>hostname</td>
+<td>Any <a class="reference external" href="https://documentation.wazuh.com/current/user-manual/ruleset/ruleset-xml-syntax/regex.html">regular expression</a></td>
+<td>Matches the value pre-decoded as <code class="docutils literal notranslate"><span class="pre">hostname</span></code>.</td>
+</tr>
+<tr class="row-even"><td>time</td>
+<td>Any time range</td>
+<td>Matches if the event is seen within a specific time range.</td>
+</tr>
+<tr class="row-odd"><td>weekday</td>
+<td>Monday - Sunday, weekends</td>
+<td>Matches if the event was observed on certain weekdays.</td>
+</tr>
+<tr class="row-even"><td>list</td>
+<td>Path to the CDB file</td>
+<td>Performs a lookup using the CDB list.</td>
+</tr>
+<tr class="row-odd"><td>options</td>
+<td>no_full_log, etc</td>
+<td>Additional rule options that can be used.</td>
+</tr>
+<tr class="row-even"><td>check_diff</td>
+<td>None</td>
+<td>Determines when the output of a command changes.</td>
+</tr>
+<tr class="row-odd"><td>group</td>
+<td>Any String</td>
+<td>Add the rule to additional groups.</td>
+</tr>
+</tbody>
+</table>
+
+
+
+<div class="slide-no">20</div>
+
+
+</article>
+<article class="slide level-2" id="composite-rule-options">
+
+<h2>Composite Rule Options</h2>
+
+<table border="1" class="long-table docutils align-default">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Option</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>rule</td>
+<td>For composite rules it will specify the <code class="docutils literal notranslate"><span class="pre">frequency</span></code>, <code class="docutils literal notranslate"><span class="pre">timeframe</span></code>, and <code class="docutils literal notranslate"><span class="pre">ignore</span></code> parameters.</td>
+</tr>
+<tr class="row-odd"><td>if_matched_sid</td>
+<td>Matches if events with an ID have been triggered in a period of time.</td>
+</tr>
+<tr class="row-even"><td>if_matched_group</td>
+<td>Matches if events within a group have been triggered in a period of time.</td>
+</tr>
+<tr class="row-odd"><td>same_srcip</td>
+<td>The decoded <code class="docutils literal notranslate"><span class="pre">srcip</span></code> must be the same.</td>
+</tr>
+<tr class="row-even"><td>different_srcip</td>
+<td>The decoded <code class="docutils literal notranslate"><span class="pre">srcip</span></code> must be different.</td>
+</tr>
+<tr class="row-odd"><td>same_dstip</td>
+<td>The decoded <code class="docutils literal notranslate"><span class="pre">dstip</span></code> must be the same.</td>
+</tr>
+<tr class="row-even"><td>different_dstip</td>
+<td>The decoded <code class="docutils literal notranslate"><span class="pre">dstip</span></code> must be different.</td>
+</tr>
+<tr class="row-odd"><td>same_location</td>
+<td>The <code class="docutils literal notranslate"><span class="pre">location</span></code> must be the same.</td>
+</tr>
+<tr class="row-even"><td>different_location</td>
+<td>The <code class="docutils literal notranslate"><span class="pre">location</span></code> must be different.</td>
+</tr>
+<tr class="row-odd"><td>same_srcuser</td>
+<td>The decoded <code class="docutils literal notranslate"><span class="pre">srcuser</span></code> must be the same.</td>
+</tr>
+<tr class="row-even"><td>different_srcuser</td>
+<td>The decoded <code class="docutils literal notranslate"><span class="pre">srcuser</span></code> must be different.</td>
+</tr>
+<tr class="row-odd"><td>same_field</td>
+<td>The decoded <code class="docutils literal notranslate"><span class="pre">field</span></code> must be the same as the previous ones.</td>
+</tr>
+<tr class="row-even"><td>different_field</td>
+<td>The decoded <code class="docutils literal notranslate"><span class="pre">field</span></code> must be different than the previous ones.</td>
+</tr>
+</tbody>
+</table>
+
+
+
+<div class="slide-no">21</div>
+
+
+</article>
+<article class="slide level-2" id="composite-rules-design-scope">
+
+<h2>Composite rules design scope</h2>
+
+<ul class="simple">
+<li>The Wazuh analysis engine is optimized for high performance.</li>
+<li>Aproximately 7% of all stock Wazuh rules are composite.</li>
+<li>Composite rules allow the Server to recognize repeated activity over short durations.</li>
+<li>The correlation is only done per Server and for the most recent 8192 events.</li>
+<li>For broader correlation you may use:<ul>
+<li>The indexer’s Alerting capability.</li>
+</ul>
+</li>
+</ul>
+
+
+
+<div class="slide-no">22</div>
+
+
+</article>
+<article class="slide level-2" id="rule-example">
+
+<h2>Rule Example</h2>
+
+<ul class="simple">
+<li>Example:</li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">rule</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;100102&quot;</span> <span class="n">level</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">decoded_as</span><span class="o">&gt;</span><span class="n">fakeinc_custom</span><span class="o">&lt;/</span><span class="n">decoded_as</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">description</span><span class="o">&gt;</span><span class="n">Parent</span> <span class="n">rule</span> <span class="k">for</span> <span class="n">Fakeinc</span> <span class="n">custom</span><span class="o">&lt;/</span><span class="n">description</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">rule</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>Notice:</dt><dd><ul>
+<li>The unique Rule ID: 100102.</li>
+<li>The rule level: 0 (generates no alert).</li>
+<li>A clear <em>description</em> on what the rule is intended for.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+
+
+
+<div class="slide-no">23</div>
+
+
+</article>
+<article class="slide level-2" id="id3">
+
+<h2>Lab Exercise</h2>
+
+<div class="admonition-definition admonition">
+<p class="first admonition-title">Lab Exercise 3E: Modify an existing rule.</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Lab Objective:</th><td class="field-body">Modify an existing rule by altering its level.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>sshd rule:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">rule</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;5706&quot;</span> <span class="n">level</span><span class="o">=</span><span class="s2">&quot;6&quot;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">if_sid</span><span class="o">&gt;</span><span class="mi">5700</span><span class="o">&lt;/</span><span class="n">if_sid</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">match</span><span class="o">&gt;</span><span class="n">Did</span> <span class="ow">not</span> <span class="n">receive</span> <span class="n">identification</span> <span class="n">string</span> <span class="n">from</span><span class="o">&lt;/</span><span class="n">match</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">description</span><span class="o">&gt;</span><span class="n">SSH</span> <span class="n">insecure</span> <span class="n">connection</span> <span class="n">attempt</span> <span class="p">(</span><span class="n">scan</span><span class="p">)</span><span class="o">.&lt;/</span><span class="n">description</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">group</span><span class="o">&gt;</span><span class="n">recon</span><span class="p">,</span><span class="n">pci_dss_11</span><span class="mf">.4</span><span class="p">,</span><span class="o">&lt;/</span><span class="n">group</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">rule</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+
+
+
+<div class="slide-no">24</div>
+
+
+</article>
+<article class="slide level-1" id="the-wazuh-ruleset">
+
+<h1>The Wazuh Ruleset</h1>
+
+
+
+
+<div class="slide-no">25</div>
+
+
+</article>
+<article class="slide level-2" id="ruleset-components">
+
+<h2>Ruleset Components</h2>
+
+<p>There are three categories of items that make up the full ruleset that the Wazuh Server uses to analyse log events.</p>
+<ul>
+<li><p class="first">Decoders:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Stock decoder files, located at <em>/var/ossec/ruleset/decoders/</em>.</li>
+<li>Local (custom) decoder files, located at <em>/var/ossec/etc/decoders/</em>.</li>
+<li>Decoders are grouped in files by family with parent-child relationships, and are identified by decoder name.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+
+
+
+<div class="slide-no">26</div>
+
+
+</article>
+<article class="slide level-2" id="id4">
+
+<h2>Ruleset Components</h2>
+
+<ul>
+<li><p class="first">Rules:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Stock rule files can be found in <em>/var/ossec/ruleset/rules/</em>.</li>
+<li>Local (custom) rule files can be found in <em>/var/ossec/etc/rules/</em>.</li>
+<li>Rules are identified by a unique rule id number, and grouped in files by family with parent-child relationships.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Lists:</p>
+<blockquote>
+<div><ul class="simple">
+<li>CDB (Constant Data Base) lists are referenced by various rules as matching criteria.</li>
+<li>Stock and local lists are stored in individual files in <em>/var/ossec/etc/lists/</em>.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+
+
+
+<div class="slide-no">27</div>
+
+
+</article>
+<article class="slide level-2" id="the-ruleset-in-the-server-s-ossec-conf">
+
+<h2>The Ruleset in the Server’s <em>ossec.conf</em></h2>
+
+<p>This section of <strong>ossec.conf</strong> on the Wazuh Server identifies the various sources making up your full ruleset, with the locations always relative to the <strong>/var/ossec/</strong> directory.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;ruleset&gt;
+  &lt;!-- Default ruleset --&gt;
+  &lt;decoder_dir&gt;ruleset/decoders&lt;/decoder_dir&gt;
+  &lt;rule_dir&gt;ruleset/rules&lt;/rule_dir&gt;
+  &lt;rule_exclude&gt;0215-policy_rules.xml&lt;/rule_exclude&gt;
+  &lt;list&gt;etc/lists/audit-keys&lt;/list&gt;
+  &lt;list&gt;etc/lists/amazon/aws-eventnames&lt;/list&gt;
+  &lt;list&gt;etc/lists/security-eventchannel&lt;/list&gt;
+  &lt;!-- User-defined ruleset --&gt;
+  &lt;decoder_dir&gt;etc/decoders&lt;/decoder_dir&gt;
+  &lt;rule_dir&gt;etc/rules&lt;/rule_dir&gt;
+&lt;/ruleset&gt;
+</pre></div>
+</div>
+
+
+
+<div class="slide-no">28</div>
+
+
+</article>
+<article class="slide level-2" id="the-stock-wazuh-ruleset">
+
+<h2>The Stock Wazuh Ruleset</h2>
+
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>Wazuh continues to improve and expand its stock ruleset, and you can track or contribute changes and additions on Github:</dt><dd><ul>
+<li><a class="reference external" href="https://github.com/wazuh/wazuh/tree/master/ruleset">github.com/wazuh/wazuh/tree/master/ruleset</a></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Rule families for many types of logs are included:</dt><dd><ul>
+<li><a class="reference external" href="https://www.wazuh.com/resources/Wazuh_Ruleset.pdf">www.wazuh.com/resources/Wazuh_Ruleset.pdf</a></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Wazuh maintains compliance mappings in the stock rules, corresponding to PCI DSS, GDPR, and many other regulatory compliance standards:</dt><dd><ul>
+<li><a class="reference external" href="https://documentation.wazuh.com/current/compliance.html">documentation.wazuh.com/current/compliance.html</a></li>
+<li><a class="reference external" href="https://www.wazuh.com/resources/PCI_Tagging.pdf">www.wazuh.com/resources/PCI_Tagging.pdf</a></li>
+<li><a class="reference external" href="https://wazuh.com/resources/Wazuh_GDPR_White_Paper.pdf">wazuh.com/resources/Wazuh_GDPR_White_Paper.pdf</a></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+
+
+
+<div class="slide-no">29</div>
+
+
+</article>
+<article class="slide level-2" id="updating-the-stock-wazuh-ruleset">
+
+<h2>Updating the Stock Wazuh Ruleset</h2>
+
+<ul class="simple">
+<li>The Wazuh default ruleset is updated during a Server upgrade.</li>
+<li>Future ruleset content may be downloaded and added as custom rules and decoders.</li>
+<li>Important notes:<ul>
+<li>Some syntax of future versions may not be understood by an older Server.</li>
+<li>After upgrading, you must remove the custom rules to avoid duplicate content.</li>
+</ul>
+</li>
+</ul>
+<p>Wazuh encourages everyone to contribute new rules &amp; decoders to the Wazuh GitHub repo.</p>
+
+
+
+<div class="slide-no">30</div>
+
+
+</article>
+<article class="slide level-2" id="ruleset-propagation-across-the-server-cluster">
+
+<h2>Ruleset Propagation Across the Server Cluster</h2>
+
+<ul class="simple">
+<li><dl class="first docutils">
+<dt><strong>Rules and Decoders</strong></dt><dd><ul>
+<li>The <em>stock</em> decoders and rules are not propagated from the master node to the worker nodes.</li>
+<li>Local (custom) decoders and rules files are propagated from the master node to the worker nodes.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>Lists</strong></dt><dd><ul>
+<li>All list files (stock or local) in <em>/var/ossec/etc/lists/</em> are propagated from the master node to the worker nodes.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>Server restart requirement</strong></dt><dd><ul>
+<li>Though local rules and decoders, and all lists are rapidly propagated across the cluster, servers do not automatically restart to reload the newly changed ruleset files.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+
+
+
+<div class="slide-no">31</div>
+
+
+</article>
+<article class="slide level-2" id="traversing-the-ruleset">
+
+<h2>Traversing the Ruleset</h2>
+
+<ul class="simple">
+<li>How the ruleset is traversed during the analysis of an event or set of similar events.</li>
+</ul>
+<a class="custom-width reference internal image-reference" href="_images/traversing.svg"><img alt="_images/traversing.svg" class="custom-width align-center" src="_images/traversing.svg" width="100%" /></a>
+
+
+
+<div class="slide-no">32</div>
+
+
+</article>
+<article class="slide level-1" id="file-integrity-monitoring">
+
+<h1>File Integrity Monitoring</h1>
+
+
+
+
+<div class="slide-no">33</div>
+
+
+</article>
+<article class="slide level-2" id="file-integrity-monitoring-fim">
+
+<h2>File Integrity Monitoring (FIM)</h2>
+
+<p>How does FIM work?</p>
+<p>FIM periodically calculates and records the unique cryptographic checksum and other attributes of specified files, and alerts when they are modified.</p>
+<ul class="simple">
+<li>In Wazuh, the Syscheck module performs FIM.</li>
+<li>FIM is a key requirement for PCI DSS (Req. 11.5).</li>
+<li>In addition to checksums, Syscheck also watches for changes to file ownership, size, POSIX file permissions, and Windows ACLs.</li>
+</ul>
+
+
+
+<div class="slide-no">34</div>
+
+
+</article>
+<article class="slide level-2" id="id5">
+
+<h2>File Integrity Monitoring (FIM)</h2>
+
+<ol class="arabic simple">
+<li>The Wazuh agent scans security relevant areas of the file system.</li>
+<li>Checksums and other attibutes are stored locally if they didn’t previously exist.</li>
+<li>Attributes of previously seen objects are compared.</li>
+<li>If there is any difference a FIM event is sent to the Wazuh Server.</li>
+</ol>
+<ul class="simple">
+<li>Locally stored information is synchronized with the Server for inventory purposes.</li>
+<li>A copy of monitored text files can be mantained to provide <em>diff</em> (change details) output in the events.<ul>
+<li>This is limited by default to 50MB per file and 1GB in total.</li>
+</ul>
+</li>
+</ul>
+
+
+
+<div class="slide-no">35</div>
+
+
+</article>
+<article class="slide level-2" id="wazuh-syscheck-options-for-fim">
+
+<h2>Wazuh Syscheck options for FIM</h2>
+
+<p>Wazuh Syscheck options</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">syscheck</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">frequency</span><span class="o">&gt;</span><span class="mi">21600</span><span class="o">&lt;/</span><span class="n">frequency</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">directories</span> <span class="n">realtime</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span> <span class="n">check_all</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span><span class="o">&gt;/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="p">,</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">sbin</span><span class="o">&lt;/</span><span class="n">directories</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">directories</span> <span class="n">whodata</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span> <span class="n">check_all</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span><span class="o">&gt;/</span><span class="n">etc</span><span class="p">,</span><span class="o">/</span><span class="nb">bin</span><span class="p">,</span><span class="o">/</span><span class="n">sbin</span><span class="o">&lt;/</span><span class="n">directories</span><span class="o">&gt;</span>
+ <span class="o">&lt;/</span><span class="n">syscheck</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><strong>frequency</strong> sets the frequency of a Syscheck run, measured in seconds.</li>
+<li><strong>realtime</strong> enables the realtime or continuous monitoring on Linux and Windows systems.</li>
+<li><strong>check_all</strong> checks the md5/sha1/sha256 hashes, size, owner, group, and permission of files.</li>
+<li><strong>report_changes</strong> includes a diff report of changes to text files.</li>
+<li><strong>whodata</strong> reports on the user and process that actually performed the file change. This uses its own special realtime engine so when whodata is enabled, there is no need to use the <em>realtime</em> option.</li>
+</ul>
+
+
+
+<div class="slide-no">36</div>
+
+
+</article>
+<article class="slide level-2" id="id6">
+
+<h2>Lab Exercise</h2>
+
+<div class="admonition-definition admonition">
+<p class="first admonition-title">Lab Exercise 4A: Set up and test syscheck</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Lab Objective:</th><td class="field-body">Configure Syscheck to do periodic scans and realtime monitoring.  Generate various file change events and observe the resulting alerts.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+<div class="slide-no">37</div>
+
+
+</article>
+<article class="slide level-2" id="notes-on-fim-scheduled-scans-after-an-agent-restarts">
+
+<h2>Notes on FIM Scheduled Scans After an Agent Restarts</h2>
+
+<ul class="simple">
+<li>FIM scans are performed every 12 hours by default.</li>
+<li>FIM database is discarded when the agent is restarted.</li>
+<li>Changes that ocurred after a scan and before a restart are not reported.</li>
+<li>This is a design choice to reduce the amount of alerts during system upgrades.</li>
+<li>Using <strong>realtime</strong> or <strong>whodata</strong> will provide guaranteed visibility.</li>
+</ul>
+
+
+
+<div class="slide-no">38</div>
+
+
+</article>
+<article class="slide level-1" id="vulnerability-detection">
+
+<h1>Vulnerability Detection</h1>
+
+
+
+
+<div class="slide-no">39</div>
+
+
+</article>
+<article class="slide level-2" id="vulnerability-detector">
+
+<h2>Vulnerability Detector</h2>
+
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>Common Vulnerabilities and Exposures (CVE) database:</dt><dd><ul>
+<li>Around 300.000 Known CVEs exist.</li>
+<li>Around 5.000 CVEs are published monthly.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li>Wazuh’s Syscollector gathers all necessary information.</li>
+<li>The Server keeps an up-to-date, centralized DB updated from many sources, such as NIST and vendor specific feeds.</li>
+<li>This module includes specialized alerts and visualizations.</li>
+<li>To get more information on CVEs please visiti <a class="reference external" href="https://cti.wazuh.com/vulnerabilities/cves">cti.wazuh.com</a></li>
+</ul>
+
+
+
+<div class="slide-no">40</div>
+
+
+</article>
+<article class="slide level-2" id="id7">
+
+<h2>Lab Exercise</h2>
+
+<div class="admonition-definition admonition">
+<p class="first admonition-title">Lab Exercise 4B: Scan for vulnerable software</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Lab Objective:</th><td class="field-body">Use syscollector and vulnerability-detector to find known vulnerable versions of software on agents and the Server.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+<div class="slide-no">41</div>
+
+
+</article>
+<article class="slide level-1" id="rootkit-detection">
+
+<h1>Rootkit Detection</h1>
+
+
+
+
+<div class="slide-no">42</div>
+
+
+</article>
+<article class="slide level-2" id="what-is-a-rootkit">
+
+<h2>What is a Rootkit?</h2>
+
+<div class="admonition-definition admonition">
+<p class="first admonition-title">Definition</p>
+<p>A rootkit is a program that can hide itself as well as running processes, file or network connections from the host where it’s running.</p>
+<p class="last">It can change access rights of files and directories.</p>
+</div>
+<ul class="simple">
+<li>aim:  to run “incognito” in the background for as long as possible so that an intruder has access to the system.</li>
+</ul>
+
+
+
+<div class="slide-no">43</div>
+
+
+</article>
+<article class="slide level-2" id="kinds-of-rootkits">
+
+<h2>Kinds of Rootkits?</h2>
+
+<p>There are two kinds of rootkits:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>User-mode (user level) rootkit:</strong> covertly replaces common UNIX binaries or libraries with infected versions to hide its existence and to gain root privileges if needed.</li>
+<li><strong>Kernel-mode (system level) rootkit:</strong> modifies or replaces the kernel.</li>
+</ul>
+</div></blockquote>
+
+
+
+<div class="slide-no">44</div>
+
+
+</article>
+<article class="slide level-1" id="how-to-detect-a-rootkit-with-wazuh">
+
+<h1>How to detect a Rootkit with Wazuh?</h1>
+
+
+
+
+<div class="slide-no">45</div>
+
+
+</article>
+<article class="slide level-2" id="detecting-rootkits">
+
+<h2>Detecting Rootkits</h2>
+
+<ul class="simple">
+<li><strong>Syscheck Module:</strong> The Wazuh FIM monitors changes of files such as binaries that a user level rootkit might replace.</li>
+<li><strong>Rootcheck Module:</strong> Wazuh scans for inconsistent reporting across system calls about processes, sockets, files, etc…</li>
+</ul>
+
+
+
+<div class="slide-no">46</div>
+
+
+</article>
+<article class="slide level-2" id="detection-of-kernel-level-rootkits">
+
+<h2>Detection of Kernel Level Rootkits</h2>
+
+<img alt="_images/detectionrootkits.svg" src="_images/detectionrootkits.svg" /><p>The rootcheck module looks for possible intercepted system calls that may be hiding files or processes.</p>
+
+
+
+<div class="slide-no">47</div>
+
+
+</article>
+<article class="slide level-2" id="id8">
+
+<h2>Lab Exercise</h2>
+
+<div class="admonition-definition admonition">
+<p class="first admonition-title">Lab Exercise 4C: Rootkit Detection</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Lab Objective:</th><td class="field-body">Install a rootkit on the linux-agent machine and see how Wazuh detects it.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+<div class="slide-no">48</div>
+
+
+</article>
+<article class="slide level-1" id="questions">
+
+<h1>Questions</h1>
+
+
+
+
+<div class="slide-no">49</div>
+
+
+</article>
+
+</section>
+
+<section id="slide_notes">
+
+</section>
+
+  </body>
+</html>

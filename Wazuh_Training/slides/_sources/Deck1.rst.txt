@@ -1,0 +1,870 @@
+.. Wazuh for Security Engineers documentation master file, created by
+   sphinx-quickstart on Thu May 20 19:21:40 2021.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+   
+.. _Deck1:
+
+Wazuh Training for Security Engineers
+=====================================
+
+
+Introduction
+============
+
+
+=====
+Wazuh
+=====
+
+* Built on the OSSEC project (GPLv2 fork).
+
+  * `Publicly recommended by original author of OSSEC <https://mobile.twitter.com/danielcid/status/897958679378395136>`_
+
+* 8+ years of aggressive development. 
+* Massive expansions to legacy OSSEC functionality.
+* Integration with other major tools and service.
+* Constant improvement and support.
+
+|
+
+.. image:: /_static/img/Wazuhlogo.png
+  :width: 80%
+  :align: center
+
+==============
+What is Wazuh?
+==============
+
+ * A situational awareness tool to monitor your electronic assets.
+ 
+ * An important resource for achieving **Security Regulatory Compliance**.
+
+
+.. admonition:: Main Components
+  :class: admonition-definition
+
+    - Log Collection.
+    - Log Analysis (customizable set of over 4300 alert rules).
+    - Alert/Event Storage (Wazuh Indexer document database).
+    - Web Dashboard (Wazuh Dashboard).
+    - File Integrity Monitoring.
+    - System Inventory and Vulnerability Detection.
+    - Security Configuration Assessment.
+    - Integrations, Active Response, and Email.
+
+
+
+========================================================
+The Wazuh Agent is available for the following platforms
+========================================================
+
+* Linux (Debian, Ubuntu, RedHat, CentOS, Fedora, SUSE, Amazon Linux, Raspbian...)
+* Solaris (10 & 11)
+* AIX (6.1 or greater)
+* MacOS
+* Windows
+* HP-UX (11v3)
+
+* Note: For downloading and installing the latest Wazuh and related packages:  https://wazuh.com/start/ 
+
+
+
+Wazuh Dashboard
+===============
+
+
+
+==============
+Wazuh Dashboad
+==============
+
+Its the main user interface and its main purpose is to provide a centralized real-time view of all security related incidents and activities.
+ 
+Key features include:
+
+- **Real-Time Monitoring**: Displays alerts, agent status, and system health.
+- **Data Visualization**: Offers out-of-the-box dashboards for security events, FIM, and compliance.
+- **Incident Management**: Enables threat hunting with MITRE ATT&CK integration.
+
+
+
+===============
+Main Wazuh Menu
+===============
+
+- **Explore**: Custom content like visualizations, dashboards, notifications, alerting, and reporting features.
+- **Endpoint Security**: Dashboards for configuration assessment, malware detection, and file integrity monitoring.
+- **Threat Intelligence**: Dashboards for threat hunting, vulnerability detection, and MITRE framework.
+- **Security Operations**: Dashboards for compliance with PCI DSS, GDPR, and other security standards.
+- **Cloud Security**: Monitors cloud providers like AWS, GCP, and Office 365.
+- **Agents & Server Management**: Options for managing agents, groups, and Wazuh server settings (e.g., decoders, rules) via the Wazuh Server API.
+- **Indexer Management** (Only on on-prem deployments): Manages indexes, documents, policies, and snapshots via the Indexer API.
+- **Dashboard Management**: Options for dashboard setup, including timezone and importing/exporting saved objects.
+
+
+
+========================
+Wazuh Dashboard Overview
+========================
+
+First Look and Feel after login.
+
+.. image:: /_static/img/overview.png
+  :align: center
+  :class: custom-width
+  :width: 90%
+
+================
+Lab Exercise Set
+================
+
+.. admonition:: Lab Exercise 1A: Wazuh Web UI
+  :class: admonition-definition
+  
+  :Lab Objective: Get familiar with the layout of the Wazuh Dashboard.
+
+
+======================
+Wazuh Stock Dashboards
+======================
+
+Pre-built, out-of-the-box dashboards that aggregate specific data for real-time visualization and analysis of security incidents.
+
+Examples:
+
+**Threat Hunting**: Lists all security alerts.
+
+**PCI DSS**: Displays security alerts related to PCI DSS requirements and controls.
+
+**System Inventory**: Shows endpoint details, such as installed software packages, hardware, network interfaces, and more.
+
+
+=======================
+Wazuh Custom Dashboards
+=======================
+
+* User-created dashboards designed to visualize security data for specific purposes.
+* Stored in the **Saved Objects** section, allowing export and import to other dashboards.
+* Beyond dashboards, custom searches and table layouts (e.g., in the **Discover** tab) can also be saved.
+
+================
+Lab Exercise Set
+================
+
+.. admonition:: Lab Exercise 1B: Wazuh Custom Dashboard
+  :class: admonition-definition
+  
+  :Lab Objective: Generate some custom visualizations and a custom dashboard.
+
+=========================
+Wazuh Dashboard Reporting
+=========================
+
+* Allows for the on-demand or scheduled generation of pdf or png reports, based on any custom dashboard, visualization, or saved search. 
+
+* Custom layout elements (such as headers and footers) and time ranges can be implemented for each report.
+
+==================
+WazuhApp Reporting
+==================
+
+* Allows for the on-demand generation of pdf reports. Available for mayor stock dashboards such as Threat hunting and SCA.
+
+* Branding elements such as company logos and trademark information can also be included.
+
+.. image:: /_static/img/wazuhapp_report.png
+  :align: center
+  :class: custom-width
+  :width: 35%
+
+================
+Lab Exercise Set
+================
+
+.. admonition:: Lab Exercise 1C: Wazuh Dashboard Reporting
+  :class: admonition-definition
+  
+  :Lab Objective: Generate an automated weekly report.
+
+
+
+Wazuh Architecture
+==================
+
+
+==================
+Wazuh Architecture
+==================
+
+.. image:: /_static/img/wazuh_architecture.png
+  :align: center
+  :class: custom-width
+  :width: 900px
+
+
+
+===============
+Main Components
+===============
+
+.. image:: /_static/img/main_components.svg
+  :align: center
+  :class: custom-width
+  :width: 900px
+
+======================
+Network Communications
+======================
+
+.. image:: /_static/img/network_communications.svg
+  :class: custom-width
+  :width: 900px
+
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+
+* Agent-Manager connections are compressed and encrypted with per-agent pre-shared keys (AES) over TCP or UPD 1514.
+* The Remoted daemon can directly accept TCP and/or UDP port 514 messages from syslog-sending devices.
+* For a more robust Syslog collection, Syslog server(s) can be used on agent(s) or the manager.
+
+==========================
+Wazuh Secure Communication
+==========================
+
+* All communication between Wazuh components is secured and encrypted using AES and TLS.
+
+* The **Wazuh Server Worker** nodes use TLS to sync configuration and state data with the **Master** node.
+
+* Each Wazuh agent is assigned a unique key for reporting to the manager.
+
+* Significant privilege separation and isolation is built into the solution.
+
+
+.. admonition:: Having said this, access to the Wazuh central components should be limited since:
+  :class: admonition-definition
+
+    * They centralize priviledged security information of all monitored assets.
+    * The Wazuh manager can trigger Active Responses or other remote commands if enabled.
+
+================
+Flood Protection
+================
+
+.. image:: /_static/img/leaky_bucket.svg
+  :align: center
+  :class: custom-width
+  :width: 800px
+
+|
+
+==============
+Flood Scenario
+==============
+
+.. image:: /_static/img/flood_scenario.png
+  :align: center
+  :width: 700px
+
+         
+* A Leaky bucket buffer flooding scenario with alerts and final recovery. 
+
+================
+Lab Exercise Set
+================
+
+
+.. admonition:: Lab Exercise 1D: Wazuh server Configuration
+  :class: admonition-definition
+  
+  :Lab Objective: Perform some basic configuration on the Wazuh Manager, authenticate with the Wazuh API and query it for the first time.
+
+
+Agent Enrollment
+================
+
+          
+============
+Authd Daemon
+============
+
+* The **Wazuh Agents** must complete the enrollment process with the **Wazuh Server** before they can start reporting in.
+
+* These enrollment requests are handled by the authd daemon running on the **Wazuh Servers**.
+
+* In a clustered environment, the enrollment requests are processed by the Master node ONLY. Worker nodes can receive them but they will be forwarded to the Master node.
+
+* Using password authentication for the enrollment process is not required but it is recommended.
+
+* It is also possible to use certificates to validate agent/manager identity.
+
+========================
+Agent Enrollment Methods
+========================
+
+#. With agent installer via deployment variables.
+#. Using agent-auth tool.
+#. Agent auto-enrollment.
+#. Requesting registration directly from Wazuh API (rare).
+
+=================
+Lab Exercise Set 
+=================
+
+.. admonition:: Lab Exercise 1E: Deployment Variables
+  :class: admonition-definition
+  
+  :Lab Objective: Install and register your windows-agent with deployment variables.
+
+
+.. admonition:: Lab Exercise 1F: Agent-auth tool
+  :class: admonition-definition
+  
+  :Lab Objective: Register your indexer agent with the agent-auth tool. 
+
+
+.. admonition:: Lab Exercise 1G: Auto enrollment
+  :class: admonition-definition
+  
+  :Lab Objective: Register your linux-agent with your Wazuh manager using auto enrollment.
+
+
+Remotely Upgrading Wazuh Agents
+===============================
+
+
+=====================================
+Ways To Remotely Upgrade Wazuh Agents
+=====================================
+
+Wazuh agent upgrades can be pushed from **Wazuh Servers** to outdated agents that are currently active. The same connection used for communication between the agent and the **Wazuh Server** will be used to send the upgrade package.
+
+* Wazuh API via Wazuh Dashboard:
+        * From the Endpoints Summary Dashboard in the Server management section, you can select agents and upgrade them.
+        * By going to Server management -> Dev Tools users may interact with the API to initiate the agent upgrade process.
+* Wazuh API directly:
+        * Automatically routes upgrade tasks to the right **Wazuh Servers**. This could be used to Invoke regular push upgrades of connected outdated agents via a custom script/cron job.
+
+================
+Lab Exercise  
+================
+
+.. admonition:: Lab Exercise 1H: Agent remote upgrade
+  :class: admonition-definition
+  
+  :Lab Objective: From the Wazuh Dashboard, push an upgrade to the outdated Wazuh Agent on the indexer system. 
+  
+   Do this with the Wazuh API both through the web interface's *Dev Tools* in the *Server management* section.
+
+
+General Configuration
+=====================
+          
+=====================
+The "ossec.conf" File
+=====================
+
+* It is the main configuration file for Wazuh Servers and agents.
+* File location: 
+        * Linux (Agent/Manager): */var/ossec/etc/ossec.conf*
+
+        * Windows (Agent): *C:\\Program Files (x86)\\ossec-agent\\ossec.conf*
+
+        * MacOS (Agent): */Library/Ossec/etc/ossec.conf*
+ 
+* This file contains the configuration for:
+
+        * Log collection and analysis.
+
+        * File integrity monitoring (Syscheck).
+
+        * Active response.
+
+        * Wazuh integrations.
+
+        * Cluster, Agent enrollment/connection.
+
+        * Agent buffer (Leaky bucket).
+
+        * Other capabilites such as: email notifications, alerts threshold, etc.
+
+================================
+The "internal_options.conf" File
+================================
+
+Low-level configuration file for agents. It is mainly used for debugging and troubleshooting issues.
+
+* File location: 
+        * */var/ossec/etc/internal_options.conf*
+
+        It contains all the available options, but it is overwritten during Wazuh upgrades.
+
+        * */var/ossec/etc/local_internal_options.conf*
+
+        Used to keep customized options during upgrades.
+
+
+* These internal options allow:
+
+        • Setting the verbosity level for specific modules' logs.
+
+        * Enabling remote commands.
+
+        * Other settings for specific purposes.
+
+
+=========================================
+The "agent.conf" Group Configuration File
+=========================================
+
+By creating different agent groups and adding agents to these groups, we can manage their configuration centrally from the **Wazuh Server** or from the **Wazuh Dashboard**. These configurations are pushed to the agents and they take precedence over the agents' own configuration file ("ossec.conf").
+
+* File location: */var/ossec/etc/shared/*\ **<GROUP_NAME>**\ */agent.conf*.
+* Agents are automatically restarted after receiving the group configuration.
+* Agents can belong to multiple groups.
+* If no group is specified when enrolling the agent, they will be added to the "default" group. 
+* Group names are case sensitive and they can't include spaces.
+* Specific agent config sections are possible on a per-OS, per-profile, and per-agent basis, allowing great flexibility.
+
+
+=========================
+Agent Groups and Profiles
+=========================
+
+When not all agents from the same group should apply the same configurations, you can specify different agent_config blocks.
+
+The *agent_config* configuration block accepts the following options: 
+
+        * **os** only agents on specific operating systems will use this block.
+        * **profile** only agents with specific profiles defined in client configuration will use this block.
+        * **name** only agents with specific names will use this block.
+
+=====================
+Agent Profile Example
+=====================
+
+In the agent's ossec.conf, the <config-profile> setting can include multiple profiles:
+
+.. code-block:: 
+    :caption: Local *ossec.conf* file on the **Wazuh Agent**.
+
+    <client>
+        <config-profile>amzn,amzn2,indexer</config-profile>
+        <server>
+          <address>wazuh-manager.company.com</address>
+        </server>
+    </client>
+
+.. code-block::
+    :caption: *agent.conf* file on the **Wazuh Server** (in the sca agent group folder)
+
+    <agent_config profile="^amzn$">
+      <sca>
+        <policies>
+          <policy>cis_amazon_linux_2.yml</policy>
+        </policies>
+      </sca>
+    </agent_config>
+
+=========================
+"agent.conf" File Example
+=========================
+
+.. code-block::
+    :caption: *agent.conf* (on the **Wazuh Server**)
+
+    <agent_config>
+      ...
+    </agent_config>
+
+    <agent_config os="Linux">
+      ...
+    </agent_config>
+
+    <agent_config os="Windows">
+      ...
+    </agent_config>
+
+    <agent_config profile="indexer">
+      ...
+    </agent_config>
+
+    <agent_config name="linux-agentX5">
+      ...
+    </agent_config>
+
+
+============
+Lab Exercise
+============
+
+.. admonition:: Lab Exercise 1I - Centralized agent configuration
+  :class: admonition-definition
+  
+  :Lab Objective: Configure two agent groups, each with a multi-level agent.conf file. Verify that the agents are using the correct configurations.
+
+=============================
+Considerations for Deployment 
+=============================
+
+  - Mapping out the required agent groups.
+  - Preparing a custom local agent configuration.
+  - Evaluating the need for additional software to be installed alongside Wazuh.
+  - Custom SCA policies, Active Response scripts, configurations, etc.
+  - Enabling settings through the *local_internal_options.conf* file, such as remote_comands.
+
+
+
+Log Analysis
+============
+
+
+======================================
+Log Analysis and Regulatory Compliance
+======================================
+
+ - Computer-aided log analysis is a potent tool for identifying threats or potential problems within a vast stream of collected log events.
+ - Many regulatory compliance requirements mandate regular review of security logs.
+ - This task is often impractical and unsustainable without the assistance of machine analysis and categorization.
+ - It aids in classifying which events should be retained to meet regulatory requirements, leading to reduced storage costs.
+
+=================
+Why Analyze Logs?
+=================
+
++----------------------------------+----------------------------------+----------------------------------+
+|.. image:: /_static/img/PCI.png   |.. image:: /_static/img/GDPR.png  |.. image:: /_static/img/NIST.png  |
+|  :height: 100px                  |  :height: 150px                  |  :height: 80px                   |
++----------------------------------+----------------------------------+----------------------------------+
+|.. image:: /_static/img/SOX.png   |.. image:: /_static/img/SOC2.png  |.. image:: /_static/img/HIPAA.png |
+|  :height: 150px                  |  :height: 150px                  |  :height: 150px                  |
++----------------------------------+----------------------------------+----------------------------------+
+| .. image:: /_static/img/FIS.png  |.. image:: /_static/img/ISO.svg   |                                  |
+|   :height: 150px                 |  :height: 150px                  |                                  |
++----------------------------------+----------------------------------+----------------------------------+
+
+
+=================================
+Compliance Mapping in Wazuh Rules
+=================================
+
+- The ruleset maintained by Wazuh contains mappings to specific compliance requirements.
+- A list of all related Wazuh rules can be found here: 
+        - https://wazuh.com/resources/Wazuh_PCI_DSS_Guide.pdf 
+        - https://wazuh.com/resources/Wazuh_GDPR_White_Paper.pdf 
+
+PCI-tagged Wazuh rule :
+
+.. code::
+
+         <rule id="5402" level="3">
+          <if_sid>5400</if_sid>
+          <regex> ; USER=root ; COMMAND=| ; USER=root ; TSID=\S+ ; COMMAND=</regex>
+          <description>Successful sudo to ROOT executed.</description>
+          <group>pci_dss_10.2.5,pci_dss_10.2.2,gpg13_7.6,gpg13_7.8,gpg13_7.13,
+          gdpr_IV_32.2,hipaa_164.312.b,nist_800_53_AU.14,nist_800_53_AC.7
+          nist_800_53_AC.6,</group>
+         </rule>   
+
+=======================
+Log Analysis with Wazuh
+=======================   
+
+Wazuh’s log analysis engine is capable of:
+
+                - Using decoders to extract key values from a log message into named fields.
+
+                - Analyzing the decoded log message against a heirarchy of alert rules.
+
+                - Generating alerts according to the matching rule level.
+
+                - Triggering other real time actions in response to specific alerts.
+
+
+
+========
+Log Flow
+========
+
+.. image:: /_static/img/network_communications.svg
+  :class: custom-width
+  :width: 900px
+
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+
+        * The *wazuh-logcollector* module on the Wazuh Agent collects the logs.
+        * The *wazuh-analysisd* module on the Wazuh Server analyzes the log entries.
+
+        * The *wazuh-execd* module is used for executing Active Responses.
+
+        * The *wazuh-maild* module sends alerts via email.
+
+======================
+Stages of Log Analysis
+======================
+
+* Log collection on agents is defined using *<localfile>* sections
+                - The *<log_format>* field sets the format of the log to be read.
+                - The *<location>* field specifies the source of the log. 
+* Pre-decoding
+                - Extracts fields based on the *<log_format>* value, like *program_name* from the Syslog header.
+* Decoding
+                - Extracts program-specific fields like *srcip* or *username*.
+* Rule-based analysis of the decoded log
+                - One or more instances and types of matching criteria can be compared against individual log fields or the whole log.
+                - Matching field values to CDB lists also supported.
+
+================================
+Examples of <localfile> Sections
+================================
+
+Collecting a Windows *EventChannel*, a *Syslog* file, and a wildcarded set of *JSON* files:
+
+.. code:: 
+
+  <localfile>
+    <log_format>eventchannel</log_format>
+    <location>Application</location>
+  </localfile>
+
+.. code::
+
+        <localfile>
+           <log_format>syslog</log_format>
+           <location>/var/log/messages</location>
+        </localfile>
+
+.. code::
+
+        <localfile>
+          <log_format>json</log_format>
+          <location>/var/log/suricata/eve-*.json</location>
+          <label key="@source">suricata</label>
+        </localfile>
+
+
+===================================
+<localfile> Sections Using Commands
+===================================
+
+Configuration to collect the output of a command:
+
+.. code::
+
+        <localfile>
+           <log_format>full_command</log_format>
+           <command>netstat -natp | grep '^tcp .*LISTEN ' | sort | sed 's/LISTEN \+[0-9]\+\///g'
+           | grep -v "127.0.0.1:" | awk '{print $4"\t"$6}'</command>
+           <frequency>300</frequency>
+           <alias>netstat listening ports</alias>
+        </localfile>
+
+Related rule:
+
+.. code::
+
+  <rule id="533" level="7">
+    <if_sid>530</if_sid>
+    <match>ossec: output: 'netstat listening ports</match>
+    <check_diff />
+    <description>Listened ports status (netstat) changed (new port opened or closed).
+    </description>
+    <group>pci_dss_10.2.7,pci_dss_10.6.1,gpg13_10.1,gdpr_IV_35.7.d,hipaa_164.312.b,
+    nist_800_53_AU.14,nist_800_53_AU.6,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,</group>
+  </rule>
+
+
+=================
+Other Log Samples
+=================
+
+PAM: 
+
+        .. code::
+
+                2016-03-15T15:22:10.078830+01:00 tron su:pam_unix(su-l:auth)
+                :authentication  failure;logname=tm uid=500 euid=0 tty=pts/0 
+                ruser=tm rhost= user=root
+
+Squid:
+
+        .. code::
+         
+                1265939281.764 1 172.16.167.228 TCP_DENIED/403 734 POST 
+                "http://lbcore1.metacafe.com/test/SystemInfoManager.php" 
+                - NONE/- text/html 
+
+Apache:
+
+        .. code::
+         
+                [Sun Mar 06 08:52:16 2016] [error] [client 187.172.181.57] 
+                Invalid URI in request GET: index.php HTTP/1.0
+
+====================
+Log Analysis Example
+====================
+
+Log: 
+
+.. code::
+
+        Dec  5 00:08:49 manager6 sshd[25467]: Failed password for root from 
+        113.195.145.13 port 19044 ssh2
+
+Pre-decoding:
+
+.. code::
+ 
+        timestamp: 'Dec  5 00:08:49'
+        hostname: 'manager6'
+        program_name: 'sshd'
+
+Decoding : 
+
+.. code::
+
+        name: 'sshd'
+        parent: 'sshd'
+        dstuser: 'root'
+        srcip: '113.195.145.13'
+        srcport: '19044'
+
+====================
+Log Analysis Example       
+====================
+
+Rule matching: 
+
+.. code::
+
+        id: '5760'
+        level: '5'
+        description: 'sshd: authentication failed.'
+        groups: '["syslog","sshd","authentication_failed"]'
+        firedtimes: '2'
+        gdpr: '["IV_35.7.d","IV_32.2"]'
+        gpg13: '["7.1"]'
+        hipaa: '["164.312.b"]'
+        mail: 'false'
+        mitre.id: '["T1110.001","T1021.004"]'
+        mitre.tactic: '["Credential Access","Lateral Movement"]'
+        mitre.technique: '["Password Guessing","SSH"]'
+        nist_800_53: '["AU.14","AC.7"]'
+        pci_dss: '["10.2.4","10.2.5"]'
+        tsc: '["CC6.1","CC6.8","CC7.2","CC7.3"]'
+ **Alert to be generated.
+
+
+
+==================
+Alerts JSON format
+==================
+
+* When events are processed and become alerts, the Manager will generate alerts in a JSON format, as we can see below:
+
+.. code::
+
+        {"timestamp":"2024-12-07T21:44:37.313+0000","rule":{"level":5,
+        "description":"sshd: Reverse lookup error (bad ISP or attack).
+        ","id":"5702","firedtimes":58,"mail":false,"groups":["syslog"
+        ,"sshd"],"pci_dss":["11.4"],"gpg13":["4.12"],"gdpr":
+        ["IV_35.7.d"],"nist_800_53":["SI.4"],"tsc":["CC6.1","CC6.8",
+        "CC7.2","CC7.3"]},"agent":{"id":"000","name":"manager1"},
+        "manager":{"name":"manager1"},"id":"1607377477.3731351",
+        "cluster":{"name":"wazuh","node":"master"},"full_log":"Dec  
+        7 21:44:37 ip-10-0-1-1 sshd[22566]: reverse mapping checking 
+        getaddrinfo for 190.202.147.253.estatic.cantv.net [190.202.147.253] 
+        failed - POSSIBLE BREAK-IN ATTEMPT!","predecoder":
+        {"program_name":"sshd","timestamp":"Dec  7 21:44:37","hostname"
+        :"ip-10-0-1-1"},"decoder":{"parent":"sshd","name":"sshd"},"data"
+        :{"srcip":"190.202.147.253"},"location":"/var/log/secure"}
+
+
+
+
+==========================================
+Logging alerts and events to archives.json
+==========================================
+
+* Alternatively, when the *<logall_json>* setting is enabled, all the events are logged to the *archives.json* file whether or not they match a rule.  
+
+Sample log:
+
+.. code:: 
+
+        {"timestamp":"2017-12-05T02:51:36+0000","agent":{"id":"000"
+        ,"name":"manager6"},"manager":{"name":"manager6"},"id":"1512442296.
+        149532","full_log":"Dec  5 02:51:35 manager6 sshd[382]: Disconnected
+        from 113.195.145.13 port 48727 [preauth]","predecoder":{"program_name"
+        :sshd","hostname":"manager6"},"decoder":{"name":"sshd"},"location":
+        "/var/log/secure"}
+
+
+
+================
+Lab Exercise Set 
+================
+
+.. admonition:: Lab Exercise 2A: Generate a brute-force attack
+  :class: admonition-definition
+  
+  :Lab Objective: Repeatedly attempt to login using wrong passwords. Verify the generation of the brute-force alert.
+
+.. admonition:: Lab Exercise 2B: Log analysis
+  :class: admonition-definition
+  
+  :Lab Objective: Assess the alerts resulting from the previous exercise. What is shown and what does it mean? How can you distinguish an attack from a harmless log event?
+
+
+.. admonition:: Lab Exercise 2C: Looking up rules
+  :class: admonition-definition
+  
+  :Lab Objective: Looking up and tracing Wazuh rules for better understanding of alerts.
+
+
+=====================================
+Wazuh Indexer, Dashboard and Filebeat
+=====================================
+ 
++---------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| .. figure:: /_static/img/Indexer.svg        | The Wazuh Indexer is a highly scalable full-text search and analytics engine, that receives data shipped by Filebeat, indexes it and allows the Wazuh dashboard                     |
+|                                             |   access as its primary data source. It is a version of OpenSearch built and maintained by the Wazuh team.                                                                          |
++---------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| .. figure:: /_static/img/Dashboard.svg      | The Wazuh Dashboard is the web front-end to the data in the Wazuh indexer. This customized package forked from OpenSearch dashboards                                                |
+|                                             | includes the Wazuh plugin which on top of solution specific dashboards interacts with the Wazuh API to provide visibility and control over the solution's configuration and status. |
++---------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| .. figure:: /_static/img/beats.png          | Filebeat belongs to the Beats family of data shippers. It is used to ship Wazuh's alerts.json or archives.json records to the Wazuh Indexer.                                        |
+|                                             | It also can do some data transformation and/or enrichment, but generally those are best done at the ingest pipeline level on the Wazuh Indexer side.                                |
++---------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+
+=====================================
+Wazuh indexer, dashboard and Filebeat
+=====================================
+
+.. image:: /_static/img/indexer_integration.svg
+   :class: custom-width
+   :width: 900px
+
+Questions
+=========

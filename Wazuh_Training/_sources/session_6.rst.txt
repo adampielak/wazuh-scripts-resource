@@ -1,0 +1,38 @@
+##########
+Session 6
+##########
+
+Osquery Integration with Wazuh
+******************************
+
+Lab 6A - Set up Osquery across two agents
+-----------------------------------------
+
+  .. include:: ./lab_rst/6a-SetUpOsquery.rst
+
+
+Sysmon Integration with Wazuh
+*****************************
+
+Lab 6B- Set up Sysmon on Windows agent
+---------------------------------------
+
+  .. include:: ./lab_rst/6b-SetUpSysmon.rst
+
+
+
+Docker
+******
+
+Lab 6C - Monitoring docker activity
+------------------------------------
+
+.. include:: ./lab_rst/6c-DockerLab.rst
+
+
+CloudTrail 
+----------
+
+We will have some discussion about AWS Cloudtrail audit log collection if time permits.
+
+https://documentation.wazuh.com/current/amazon/services/supported-services/cloudtrail.html

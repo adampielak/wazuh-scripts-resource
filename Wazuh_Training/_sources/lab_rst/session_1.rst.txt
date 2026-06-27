@@ -1,0 +1,193 @@
+#########
+Session 1
+#########
+
+Wazuh Server Configuration
+**************************
+
+Lab 1A - Take first look at the Wazuh Web UI
+--------------------------------------------
+   
+   .. include:: ./lab_rst/1a-PrepareComponents.rst
+
+
+Lab 1B - Wazuh Custom Dashboard
+-------------------------------
+
+  .. include:: ./lab_rst/1b-MeetWazuhDashboard.rst
+
+Lab 1C - Wazuh Dashboard Reporting
+----------------------------------
+
+  .. include:: ./lab_rst/7b-Reporting.rst
+
+
+Agent Registration and Connection to Manager
+*********************************************
+
+Lab 1D - Wazuh Server Configuration
+-----------------------------------
+
+  .. include:: ./lab_rst/1d-bis.rst
+
+Agent Registration and Connection to Manager
+*********************************************
+
+Lab 1E - Deployment Variables
+-----------------------------
+
+  .. include:: ./lab_rst/1c-ManualAgentRegistration.rst
+
+Lab 1F - Agent-auth tool
+------------------------
+
+  .. include:: ./lab_rst/1d-WindowsAgent.rst
+
+
+Lab 1G - Auto enrollment
+------------------------
+
+ .. include:: ./lab_rst/1e-RegisterIndexeragent.rst
+
+Pushing Agent Upgrades
+**********************
+
+Lab 1H - Push Wazuh agent upgrade from manager
+----------------------------------------------
+
+  .. include:: ./lab_rst/1h.rst
+
+
+Centralized Agent Configuration
+*******************************
+
+Meet agent.conf
+---------------
+
+This file contains agent configuration material that would otherwise be locatedin agents' local :file:`ossec.conf` file.  Agents can be membered into one or more agent
+groups, and each agent group has its own :file:`agent.conf` file on the manager that is
+shared with agents in that group.  The path to a particular :file:`agent.conf` is as
+follows, where **GROUP** is the name of the relevant agent group:
+
+:file:`/var/ossec/etc/shared/*GROUP*/agent.conf`
+
+Each agent is by default assigned to the "default" agent group, which has :file:`agent.conf` here:
+
+:file:`/var/ossec/etc/shared/default/agent.conf`
+
+Agents periodically check with the manager for a new version of this file and
+pull it down to the local :file:`/var/ossec/etc/shared/` directory if there are changes.
+Agents automatically restart upon acquiring a new :file:`agent.conf` so that changes
+propagate quickly.
+
+Never edit agent.conf on an agent, as it will be automatically overwritten by
+:file:`agent.conf` from the manager.
+
+When the Wazuh agent service starts or restarts, it scans its local copy of the:file:`agent.conf` file(s) and merges it's own :file:`ossec.conf` file togetherwith all config sections in the :file:`agent.conf` file(s) that apply to that
+agent.
+
+Watch :file:`/var/ossec/logs/ossec.log` on an agent for evidence that the
+intended config sections in :file:`agent.conf` actually were applied to that
+agent.  By default, syscheck-monitored directories are listed in the log, as
+well as items monitored by logcollector.  Many other settings in
+:file:`agent.conf` are not reflected in ossec.log unless debugging is turned up.
+
+Procedure for changing the shared agent.conf file and deploying it to agents
+----------------------------------------------------------------------------
+1. Edit :file:`/var/ossec/etc/shared/*GROUP*/agent.conf` on the manager
+2. If you edit this file with the Wazuh dashboard app, then it will be validated
+   automatically.  If you edited it from the command line with a text editor, then
+   run :command:`/var/ossec/bin/verify-agent-conf` on manager to confirm all
+   :file:`agent.conf` files are valid.  Invalid agent.conf files are not
+   propagated to agents.
+3. Very shortly after an :file:`agent.conf` is changed on a manager, if it passes
+   automatic validation, it will be pushed out to all agents connected to that
+   manager.  By default agents will automatically restart their wazuh-agent
+   service to apply the new version of agent.conf received.
+4. To see if an agent has acquired the revised agent.conf, consult this file on   the agent which is an ordered concatenation of all agent.conf files belonging
+   to the agent groups to which the agent is membered.
+5. Why might some agents not have the latest yet?  Perhaps they are not
+   connected.  Use :file:`agent_control -l` and :file:`agent_control -i NNN`  on the manager to follow up.
+   Is Status "Active"?  When was "Last keep alive"?
+
+Enumerating agents connected to the manager
+-------------------------------------------
+
+Registered agent may be seen in the web interface by selecting the Agents section under the Wazuh menu. 
+
+You may also list agents by querying the `/agents` API endpoint:
+
+.. code-block:: bash
+
+     APIUSER="wazuh"
+
+     APIPASS="%%PASSWORD%%"
+     TOKEN=$(curl -sS -u $APIUSER:$APIPASS -k -X POST "https://<cloudID>.cloud.wazuh.com/api/wazuh/security/user/authenticate?raw=true")
+     curl -sS -k -X GET "https://<cloudID>.cloud.wazuh.com/api/wazuh/agents?select=id,name" -H "Authorization: Bearer $TOKEN" | jq
+
+
+.. code-block:: json
+    :class: output
+
+     {
+      "data": {
+        "affected_items": [
+          {
+            "name": "wazuh-manager%%LABLETTER%%%%LABNUMBER%%",
+            "id": "000"
+          },
+          {
+            "name": "linux-agent%%LABLETTER%%%%LABNUMBER%%",
+            "id": "001"
+          },                                                         
+          {                                                          
+            "name": "windows-agent%%LABLETTER%%%%LABNUMBER%%",                                        
+            "id": "002"
+          },
+          {
+            "name": "indexer%%LABLETTER%%%%LABNUMBER%%",
+            "id": "003"
+          }
+        ],
+        "total_affected_items": 4,
+        "total_failed_items": 0,
+        "failed_items": []
+      },
+      "message": "All selected agents information was returned",
+      "error": 0
+    }   
+
+
+Lab 1I - deploy agent groups and agent.conf files
+-------------------------------------------------
+
+  .. include:: ./lab_rst/1i.rst
+
+Mass Deployment Considerations
+******************************
+
+While Wazuh agent mass deployment strategies vary widely from one environment to
+the next, the basic steps would be
+
+1. Prepare centralized configuration file content at least involving agent.conf   files, across as many agent groups and/or other kinds of agent config sections,
+   as needed to manage your quantity and diversity of agents.
+2. Prepare a stock :file:`ossec.conf` and possibly also a stock
+   :file:`local_internal_options.conf` file to serve at least as a config
+   template on all agents.
+3. Get the relevant agent installation package to each system and then invoke it
+   with the right settings to make it self register as part of the install.
+4. Push your stock :file:`ossec.conf` and possibly :file:`local_internal_options.conf`
+   file to each agent, possibly with some dynamic changes if agent labels or
+   config profiles are to be used, followed by restarting the Wazuh agent service.
+
+To make the process of mass deploying Wazuh agents even more streamlined, the
+Wazuh installation packages for Windows, Redhat/Centos, Debian/Ubuntu, and Mac
+OSX allow you to control many aspects of the installation via Windows MSI
+command parameters and Linux/OSX environment variables; This includes settings
+to invoke self-registration as part of the install without need for a separate
+call to agent-auth.  It also includes settings impacting how agent ossec.conf
+files will be configured.  Read more here:
+
+https://documentation.wazuh.com/current/installation-guide/wazuh-agent/wazuh_agent_package_windows.html
+
+https://documentation.wazuh.com/current/installation-guide/wazuh-agent/deployment_variables/deployment_variables_windows.html

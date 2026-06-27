@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Wazuh Training for Security Engineers &mdash; Wazuh for Security Engineers  documentation</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/styles.css" type="text/css" />
+    <link rel="stylesheet" href="_static/slides.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <link rel="stylesheet" href="_static/css/style.css" type="text/css" />
+    
+    
+    
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/common.js"></script>
+    
+    <script type="text/javascript" src="_static/slides.js"></script>
+    <script type="text/javascript" src="_static/sync.js"></script>
+    <script type="text/javascript" src="_static/controller.js"></script>
+    <script type="text/javascript" src="_static/init.js"></script>
+    
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="Wazuh for Security Engineers  documentation" href="index.html" />
+    <link rel="prev" title="Wazuh Training for Security Engineers" href="Deck2.html" /> 
+  </head>
+  <body>
+
+<section
+   id="slide_container"
+   class='slides layout-regular'>
+
+
+  
+<article class="slide level-1" id="wazuh-training-for-security-engineers">
+
+<h1>Wazuh Training for Security Engineers</h1>
+
+
+
+
+<div class="slide-no">1</div>
+
+
+</article>
+<article class="slide level-1" id="cdb-lists">
+
+<h1>CDB Lists</h1>
+
+
+
+
+<div class="slide-no">2</div>
+
+
+</article>
+<article class="slide level-2" id="wazuh-cdb-lists">
+
+<h2>Wazuh CDB Lists</h2>
+
+<div class="admonition-definition admonition">
+<p class="first admonition-title">Definition</p>
+<p class="last">The CDB (constant database) feature allows Wazuh to look up key values extracted from rule-matching log entries, to use as criteria in rules.</p>
+</div>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>Classic types of CDB lists:</dt><dd><ul>
+<li>Usernames.</li>
+<li>IP addresses.</li>
+<li>Domain names.</li>
+<li>File hashes.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+
+
+
+<div class="slide-no">3</div>
+
+
+</article>
+<article class="slide level-2" id="cdb-rule-example">
+
+<h2>CDB Rule Example</h2>
+
+<ul class="simple">
+<li>Here is an example of a custom rule that could be used for threat intel lookups of the queried domains in DNS requests sent to your DNS server.</li>
+</ul>
+<p>CDB rule:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;rule id=&quot;100334&quot; level=&quot;10&quot;&gt;
+        &lt;!-- child rule of rule 100330 which matches the DNS query log from your
+corporate DNS server --&gt;
+        &lt;if_sid&gt;100330&lt;/if_sid&gt;
+        &lt;list field=&quot;domain&quot; lookup=&quot;match_key&quot;&gt;lists/baddomains&lt;/list&gt;
+        &lt;description&gt;DNS query for malicious domain!&lt;/description&gt;
+&lt;/rule&gt;
+</pre></div>
+</div>
+
+
+
+<div class="slide-no">4</div>
+
+
+</article>
+<article class="slide level-2" id="cdb-lists-with-values">
+
+<h2>CDB Lists with Values</h2>
+
+<p>We are not limited to only checking fields for their presence or absence in a given list.  CDB Lists can contain both a key (the part to look up) and a value (the part to return). The looked up values can then be used as criteria in rules.</p>
+<ul class="simple">
+<li>The possibilities are endless:<ul>
+<li>Account names with department name.<ul>
+<li>Alert when user not in finance department logs into finance server.</li>
+</ul>
+</li>
+<li>IP addresses with threat level.<ul>
+<li>Take escalated action if a web connection is seen going to an IP with a threat reputation level of “critical”.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+
+<div class="slide-no">5</div>
+
+
+</article>
+<article class="slide level-2" id="lab-exercise">
+
+<h2>Lab Exercise</h2>
+
+<div class="admonition-definition admonition">
+<p class="first admonition-title">Lab Exercise 5A: Advanced CDB IP Lookups</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Lab Objective:</th><td class="field-body">Use a CDB list containing attacker IPs and attacker severity level values for a more granular ssh failure alert escalation.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+<div class="slide-no">6</div>
+
+
+</article>
+<article class="slide level-1" id="wazuh-active-response">
+
+<h1>Wazuh Active Response</h1>
+
+
+
+
+<div class="slide-no">7</div>
+
+
+</article>
+<article class="slide level-2" id="active-response-flow">
+
+<h2>Active Response Flow</h2>
+
+<img alt="_images/arflow.svg" class="align-center" src="_images/arflow.svg" />
+
+
+<div class="slide-no">8</div>
+
+
+</article>
+<article class="slide level-2" id="id1">
+
+<h2>Wazuh Active Response</h2>
+
+<div class="admonition-definition admonition">
+<p class="first admonition-title">Definition</p>
+<p class="last">Active Response (AR) is an automated remediation to security violations and threats.</p>
+</div>
+<ul>
+<li><p class="first">Configured primarily on the Wazuh Server in:</p>
+<blockquote>
+<div><ul class="simple">
+<li>/var/ossec/etc/ossec.conf</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">On agents, AR can be enabled or disabled in:</p>
+<blockquote>
+<div><ul class="simple">
+<li>/var/ossec/etc/ossec.conf</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">AR has its own log (on the server and the agents):</p>
+<blockquote>
+<div><ul class="simple">
+<li>/var/ossec/logs/active-responses.log</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">A number of useful AR scripts are included in Wazuh.</p>
+</li>
+<li><p class="first"><strong>Handle with care!</strong></p>
+</li>
+</ul>
+
+
+
+<div class="slide-no">9</div>
+
+
+</article>
+<article class="slide level-2" id="id2">
+
+<h2>Wazuh Active Response</h2>
+
+<ul>
+<li><dl class="first docutils">
+<dt>An active response will invoke a command when an alert matches one of the following types of criteria:</dt><dd><ul class="simple">
+<li>The alert’s rule ID is specified in <code class="docutils literal notranslate"><span class="pre">&lt;rules_id&gt;</span></code>.</li>
+<li>Rule severity being at or above the level specified in <code class="docutils literal notranslate"><span class="pre">&lt;level&gt;</span></code>.</li>
+<li>Alert’s groups include one of the groups specified in <code class="docutils literal notranslate"><span class="pre">&lt;rules_group&gt;</span></code>.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p class="first">An active response has several parts:</p>
+<blockquote>
+<div><ul class="simple">
+<li>The criteria that triggers the response.</li>
+<li>The command that we want to execute as the response.</li>
+<li>The location(s) where to execute the command.</li>
+<li>The length of time until the action is optionally undone (like unblocking an attacking IP).</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+
+
+
+<div class="slide-no">10</div>
+
+
+</article>
+<article class="slide level-2" id="wazuh-active-responses">
+
+<h2>Wazuh Active Responses</h2>
+
+<ul class="simple">
+<li><strong>firewall-drop:</strong> adds an IP to the iptables deny list (Linux, Solaris, FreeBSD, and AIX only).</li>
+<li><strong>firewalld-drop:</strong> adds an IP to the iptables deny list via firewall-cmd (Redhat/CentOS Linux).</li>
+<li><strong>netsh.exe:</strong> blocks an IP with native Windows firewall (works on Windows).</li>
+<li><strong>disable-account:</strong> disables an account by setting “passwd -l” (Linux, Solaris, AIX only).</li>
+<li><strong>wazuh-slack:</strong> posts a message to a Slack channel.</li>
+<li><strong>kaspersky:</strong> runs an on-demand scan with Kaspersky AV.</li>
+<li>More included, plus room for you to build your own!</li>
+</ul>
+
+
+
+<div class="slide-no">11</div>
+
+
+</article>
+<article class="slide level-2" id="uses-for-active-response">
+
+<h2>Uses for Active Response</h2>
+
+<p>AR is more than just for reacting to attacks or abuse.  Use it wherever you want to take a custom action in response to events that trigger specific Wazuh rules.</p>
+<ul class="simple">
+<li>Security countermeasures: block attacking IPs, disable abused account names, etc.</li>
+<li>Custom alerting: collect and assemble detailed information for an email alert about a specific situation.</li>
+<li>Recovery actions: respond to certain error logs with automated action to fix the problem.</li>
+</ul>
+
+
+
+<div class="slide-no">12</div>
+
+
+</article>
+<article class="slide level-2" id="commands-configuration">
+
+<h2>Commands Configuration</h2>
+
+<p>Commands Configuration Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">command</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">firewall</span><span class="o">-</span><span class="n">drop</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">executable</span><span class="o">&gt;</span><span class="n">firewall</span><span class="o">-</span><span class="n">drop</span><span class="o">&lt;/</span><span class="n">executable</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">timeout_allowed</span><span class="o">&gt;</span><span class="n">yes</span><span class="o">&lt;/</span><span class="n">timeout_allowed</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">command</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+
+
+
+<div class="slide-no">13</div>
+
+
+</article>
+<article class="slide level-2" id="response-configuration">
+
+<h2>Response Configuration</h2>
+
+<p>Response Configuration example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">active</span><span class="o">-</span><span class="n">response</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">command</span><span class="o">&gt;</span><span class="n">firewall</span><span class="o">-</span><span class="n">drop</span><span class="o">&lt;/</span><span class="n">command</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">location</span><span class="o">&gt;</span><span class="n">local</span><span class="o">&lt;/</span><span class="n">location</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">rules_id</span><span class="o">&gt;</span><span class="mi">5712</span><span class="o">&lt;/</span><span class="n">rules_id</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="n">timeout</span><span class="o">&gt;</span><span class="mi">600</span><span class="o">&lt;/</span><span class="n">timeout</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">active</span><span class="o">-</span><span class="n">response</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+
+
+
+<div class="slide-no">14</div>
+
+
+</article>
+<article class="slide level-2" id="id3">
+
+<h2>Lab Exercise</h2>
+
+<div class="admonition-definition admonition">
+<p class="first admonition-title">Lab Exercise 5B: Linux active response</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Lab Objective:</th><td class="field-body">Set up Wazuh to have your Linux agents block ssh brute force attackers, and then test the setup.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+<div class="slide-no">15</div>
+
+
+</article>
+<article class="slide level-1" id="wazuh-integrations">
+
+<h1>Wazuh Integrations</h1>
+
+
+
+
+<div class="slide-no">16</div>
+
+
+</article>
+<article class="slide level-2" id="id4">
+
+<h2>Wazuh Integrations</h2>
+
+<ul class="simple">
+<li>Wazuh integrations are run exclusively on the Wazuh Servers.</li>
+<li>They are not built to have a timeout or “undo” mechanism.</li>
+<li>Simpler to code because all input is done via a temporary alert file.</li>
+<li>Built in integrations include: Slack, Virustotal and PagerDuty.</li>
+<li>Configuration includes a criteria for running and optional parameters.</li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;integration&gt;
+        &lt;name&gt; &lt;/name&gt;
+        &lt;hook_url&gt; &lt;/hook_url&gt; &lt;!-- Required for Slack --&gt;
+        &lt;api_key&gt; &lt;/api_key&gt; &lt;!-- Required for PagerDuty and VirusTotal --&gt;
+        &lt;!-- Optional filters --&gt;
+        &lt;rule_id&gt; &lt;/rule_id&gt;
+        &lt;level&gt; &lt;/level&gt;
+        &lt;group&gt; &lt;/group&gt;
+        &lt;event_location&gt; &lt;/event_location&gt;
+&lt;/integration&gt;
+</pre></div>
+</div>
+
+
+
+<div class="slide-no">17</div>
+
+
+</article>
+<article class="slide level-1" id="sca">
+
+<h1>SCA</h1>
+
+
+
+
+<div class="slide-no">18</div>
+
+
+</article>
+<article class="slide level-2" id="security-configuration-assessment">
+
+<h2>Security Configuration Assessment</h2>
+
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>Continuous vs cyclical or episodic auditing.</dt><dd><ul>
+<li>Assessment that is automated rather than manual.</li>
+<li>It produces very current results.</li>
+<li>It can be applied to all systems rather than a sample set.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Policy-based security compliance self-scans.</dt><dd><ul>
+<li>There are numerous SCA policies available.</li>
+<li>Most SCA policies are aligned with CIS industry benchmarks.</li>
+<li>It uses a feature-rich and modern scanning engine.</li>
+<li>Policies can be centrally distributed.</li>
+<li>Custom policies can augment or replace stock policies.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+
+
+
+<div class="slide-no">19</div>
+
+
+</article>
+<article class="slide level-2" id="sca-engine">
+
+<h2>SCA Engine</h2>
+
+<ul>
+<li><p class="first">Wazuh built the SCA scanner as a major refactor of the legacy OSSEC rootcheck policy scanning module, vastly improving it.</p>
+</li>
+<li><p class="first">The SCA scanning engine can look for patterns in:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Registry keys, values, and data.</li>
+<li>Text files.</li>
+<li>Directories.</li>
+<li>The list of running processes.</li>
+<li>The output of custom commands.</li>
+<li>Compound, regex, &amp; numeric value comparisons supported.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+
+
+
+<div class="slide-no">20</div>
+
+
+</article>
+<article class="slide level-1" id="osquery">
+
+<h1>Osquery</h1>
+
+
+
+
+<div class="slide-no">21</div>
+
+
+</article>
+<article class="slide level-2" id="id5">
+
+<h2>Lab Exercise</h2>
+
+<div class="admonition-definition admonition">
+<p class="first admonition-title">Lab Exercise 6A: Osquery integration with Wazuh</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Lab Objective:</th><td class="field-body">Configure Osquery on both Linux and Windows and manage it through Wazuh centralized configuration.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+<div class="slide-no">22</div>
+
+
+</article>
+<article class="slide level-1" id="sysmon">
+
+<h1>Sysmon</h1>
+
+
+
+
+<div class="slide-no">23</div>
+
+
+</article>
+<article class="slide level-2" id="id6">
+
+<h2>Lab Exercise</h2>
+
+<div class="admonition-definition admonition">
+<p class="first admonition-title">Lab Exercise 6B: Sysmon integration with Wazuh</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Lab Objective:</th><td class="field-body">Configure Sysmon on your Windows machine to gain further security awareness over this endpoint.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+<div class="slide-no">24</div>
+
+
+</article>
+<article class="slide level-1" id="docker">
+
+<h1>Docker</h1>
+
+
+
+
+<div class="slide-no">25</div>
+
+
+</article>
+<article class="slide level-2" id="id7">
+
+<h2>Lab Exercise</h2>
+
+<div class="admonition-definition admonition">
+<p class="first admonition-title">Lab Exercise 6C: Monitoring docker activity</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Lab Objective:</th><td class="field-body">Install a docker server on the Indexer instance and monitor its activity with Wazuh.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+<div class="slide-no">26</div>
+
+
+</article>
+<article class="slide level-1" id="cloud-monitoring">
+
+<h1>Cloud Monitoring</h1>
+
+
+
+
+<div class="slide-no">27</div>
+
+
+</article>
+<article class="slide level-2" id="id8">
+
+<h2>Cloud Monitoring</h2>
+
+<blockquote>
+<div><ul class="simple">
+<li>Wazuh is capable of monitoring the accounts of cloud based services such as AWS, GCP, Azure, Office 365 and GitHub.</li>
+<li>Privilege separation is highly encouraged, so a dedicated account with only the permissions needed to collect the logs should be created.</li>
+<li>Wazuh periodically collects the logs and analyzes them.</li>
+<li>Monitoring cloud based assets and security alerts is crucial.</li>
+</ul>
+</div></blockquote>
+
+
+
+<div class="slide-no">28</div>
+
+
+</article>
+<article class="slide level-1" id="wazuh-manager-cluster">
+
+<h1>Wazuh Manager Cluster</h1>
+
+
+
+
+<div class="slide-no">29</div>
+
+
+</article>
+<article class="slide level-2" id="wazuh-cluster">
+
+<h2>Wazuh Cluster</h2>
+
+<a class="custom-width reference internal image-reference" href="_images/wazuh_architecture.png"><img alt="_images/wazuh_architecture.png" class="custom-width align-center" src="_images/wazuh_architecture.png" style="width: 900px;" /></a>
+
+
+
+<div class="slide-no">30</div>
+
+
+</article>
+<article class="slide level-1" id="questions">
+
+<h1>Questions</h1>
+
+
+
+
+<div class="slide-no">31</div>
+
+
+</article>
+<article class="slide level-1" id="certificates">
+
+<h1>Certificates</h1>
+
+
+
+
+<div class="slide-no">32</div>
+
+
+</article>
+<article class="slide level-2" id="share-your-certificate">
+
+<h2>Share your Certificate!</h2>
+
+<blockquote>
+<div><img alt="_images/certificate.png" src="_images/certificate.png" />
+</div></blockquote>
+
+
+
+<div class="slide-no">33</div>
+
+
+</article>
+
+</section>
+
+<section id="slide_notes">
+
+</section>
+
+  </body>
+</html>

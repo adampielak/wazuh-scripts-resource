@@ -1,0 +1,21 @@
+The Wazuh indexer and dashboard components are preconfigured for this training.  
+
+
+1. Surf to the following: ``https://dashboard%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info``
+   and login to the Wazuh dashboard for the first time (credentials **user:** ``admin`` **password:** ``%%PASSWORD%%``).
+
+   .. image:: images/dashboard_login.png
+      :align: center
+      :alt: Wazuh dashboard Login prompt
+
+|
+
+2. The navigation panel will appear on the left when you click on the three line **Hamburger** menu ( ☰ ).
+
+   These navigation items include *Wazuh Dashboard* and *Wazuh Indexer* options and settings as well as Wazuh-specific dashboards that show information about alerts or content accessible only via the Wazuh API.
+3. Click the **Server management** section to access configurations, logs and status information related to the Wazuh Manager, Rules and Decoders. This is achieved by connecting to the Wazuh API. 
+4. Various Wazuh-specific dashboards can be reached from the **Threat intelligence** and **Security operations** sections.
+5. Take some time to explore the *Wazuh Dashboard* now. The **Summary** option inside the **Agents management** section will be more interesting once we have agents registered.
+6. Select the **Discover** option inside the **Explore** section.  Now you will be able to poke around in the indexed data using the standard facilities of the Wazuh dashboard.
+
+There will be more to see once we have enrolled a few agents.

@@ -1,0 +1,18 @@
+.. Wazuh for Security Engineers documentation master file, created by
+   sphinx-quickstart on Thu May 20 19:21:40 2021.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+   
+.. toctree::
+   :hidden:
+
+   Deck1
+   Deck2
+   Deck3
+
+Wazuh Training for Security Engineers
+=====================================
+
+  - :ref:`Presentation deck #1 <Deck1>`
+  - :ref:`Presentation deck #2 <Deck2>`
+  - :ref:`Presentation deck #3 <Deck3>`

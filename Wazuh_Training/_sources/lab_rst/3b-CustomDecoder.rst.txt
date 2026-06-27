@@ -1,0 +1,107 @@
+
+Write a custom decoder that extracts the result, username and source IP
+address from this log message:
+
+.. code::
+
+	Dec  4 17:07:01 myserver Fakeinc: Accepted password for user test2, IP: 1.2.3.4
+	
+|
+
+**Lab Exercise Resolution**
+
+1.	From the **Hamburger** menu ( ☰ ) go into the **Server management** section, select the **Decoders** option and then use the **Custom Decoders** button.
+
+2.	Click on the :file:`local_decoder.xml` file and append the new parent and child decoder:
+
+.. code::
+
+	<decoder name="fakeinc_custom">
+	  <program_name>Fakeinc</program_name>
+	</decoder>
+
+	<decoder name="fakeinc_custom_message">
+	  <parent>fakeinc_custom</parent>
+	  <prematch> password for user </prematch>
+	  <regex>^(\w+) password for user (\w+), IP: (\S+)</regex>
+	  <order>result, user, srcip</order>
+	</decoder>
+
+
+The decoder's "name" is a mandatory field. It has a child decoder **"fakeinc_custom_message"** that refers to **"fakeinc_custom"** as its parent. 
+
+The parent decoder will match any event with a predecoded program name of "Fakeinc".
+
+The child decoder looks specifically among those Fakeinc logs for messages containing the phrase ``password for user`` and then attempts to extract fields result, user, and srcip via regex.
+Other child decoders could be written that extract field data from other types of Fakeinc messages.
+
+Once we have finished our new decoder family, we will want to see if it actually works.
+
+3. Click on **Save**, then on **Decoders Test**, paste the original log and click on **Test**
+
+.. wazuh_image:: images/decodertest.png
+   :align: center
+   :alt: Ruleset Test utility with our first decoder
+
+Success!! We can see our new decoder is working as expected! During the ``**Phase 2: Completed decoding`` we can see 
+the user **test2** and the source IP **1.2.3.4** address were successfully extracted
+
+For more advanced details about Wazuh decoders, see this fine blog posting on the topic:
+https://documentation.wazuh.com/current/user-manual/ruleset/decoders/sibling-decoders.html
+
+**Alternatively** this exercise can be done through the command line:
+
+1. Log into the Wazuh manager in your lab environment.
+
+2. Open the :file:`/var/ossec/etc/decoders/local_decoder.xml` file with your favorite text editor.
+
+3. Append our new parent and child decoder to the end
+
+.. code:: 
+
+	<decoder name="fakeinc_custom">
+	  <program_name>Fakeinc</program_name>
+	</decoder>
+
+	<decoder name="fakeinc_custom_message">
+	  <parent>fakeinc_custom</parent>
+	  <prematch> password for user </prematch>
+	  <regex>^(\w+) password for user (\w+), IP: (\S+)</regex>
+	  <order>result, user, srcip</order>
+	</decoder>
+
+4. Call ``wazuh-logtest`` and paste in your log message (highlighted) to see if the new decoder is able to extract the information from it.
+
+.. code-block:: bash
+
+        /var/ossec/bin/wazuh-logtest
+
+.. code-block:: bash
+  :class: output
+  :emphasize-lines: 4
+
+        Starting wazuh-logtest v4.3.9
+        Type one log per line
+        
+        Dec  4 17:07:01 myserver Fakeinc: Accepted password for user test2, IP: 1.2.3.4
+        
+        **Phase 1: Completed pre-decoding.
+                full event: 'Dec  4 17:07:01 myserver Fakeinc: Accepted password for user test2, IP: 1.2.3.4'
+                timestamp: 'Dec  4 17:07:01'
+                hostname: 'myserver'
+                program_name: 'Fakeinc'
+        
+	**Phase 2: Completed decoding.
+		   decoder: 'fakeinc_custom'
+		   result: 'Accepted'
+		   dstuser: 'test2'
+		   srcip: '1.2.3.4'
+
+
+You may also test logs by piping messages to the ``wazuh-logtest`` utility:
+
+.. code:: 
+
+	echo "Dec  4 17:07:01 myserver Fakeinc: Accepted password for user test2, IP: 1.2.3.4" | /var/ossec/bin/wazuh-logtest
+
+By piping the messages to the utility you ensure everytime the command is run the ruleset is reloaded.

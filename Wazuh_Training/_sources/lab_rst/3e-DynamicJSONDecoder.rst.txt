@@ -1,0 +1,222 @@
+
+Suricata is an open source NIDS solution similar to Snort, and can be quickly deployed either on dedicated hardware 
+for monitoring one or more transit points on your network, or directly on existing \*nix hosts to monitor just their own 
+network traffic. Because Suricata is capable of generating JSON logs of NIDS events, it integrates beautifully with 
+Wazuh which is capable of dynamically decoding JSON records.
+   
+#. Set up Suricata on ``linux-agent`` system
+
+      As root, install Suricata and its dependencies, along with the Emerging Threats Open ruleset.  Copy and paste each of the following blocks
+      into your terminal separately:
+      
+      .. code:: 
+      
+      	sudo su -
+      	cd /root
+      	add-apt-repository -y ppa:oisf/suricata-stable
+      
+      .. code:: 
+      
+      	apt-get update
+      	apt install suricata -y
+      
+      .. code:: 
+      
+      	wget https://rules.emergingthreats.net/open/suricata-6.0/emerging.rules.tar.gz
+      	tar zxvf emerging.rules.tar.gz
+      	rm /etc/suricata/rules/* -f
+         mkdir /etc/suricata/rules
+      	mv rules/*.rules /etc/suricata/rules/
+      	mv /var/tmp/suricata.yaml /etc/suricata/suricata.yaml
+      	IFACE=`route -n | grep "^0\.0\.0\.0" | awk '{print $8}'`
+      	sed -i "s/interface: .*/interface: "$IFACE"/g" /etc/suricata/suricata.yaml
+      	sed -i 's/RUN=no/RUN=yes/' /etc/default/suricata
+      	systemctl daemon-reload; systemctl enable suricata; systemctl restart suricata
+      
+   
+#. Trigger a NIDS alert on agent and see the output
+
+   Generate a specific web request known to trip NIDS rules:
+   
+   .. code:: 
+   
+   	dig a 3wzn5p2yiumh7akj.onion @8.8.8.8
+   	
+   
+   Look at the latest alert in both the standard Suricata alert log and also in the JSON alert log.
+   
+   .. code::
+   
+   	grep Trojan /var/log/suricata/fast.log | tail -1
+   	
+   
+   Observe that the standard log is fairly simple with limited information.
+   
+   .. code-block:: bash
+    :class: output
+    
+    	06/09/2022-10:20:24.825361  [**] [1:2022048:3] ET MALWARE Cryptowall .onion Proxy Domain [**] [Classification: A Network Trojan was detected] [Priority: 1] {UDP} 10.0.1.85:44485 -> 10.0.0.2:53
+    	
+    
+   See how much more data is provided in the JSON output, and how field names are provided.
+    
+   .. code:: 
+ 
+ 	  grep Trojan /var/log/suricata/eve.json | tail -1 | jq
+ 
+   .. code-block:: bash
+     :class: output
+    
+       {
+         "timestamp": "2022-06-09T10:20:24.825361+0000",
+         "flow_id": 1816126005219691,
+         "in_iface": "eth0",
+         "event_type": "alert",
+         "src_ip": "10.0.1.85",
+         "src_port": 44485,
+         "dest_ip": "10.0.0.2",
+         "dest_port": 53,
+         "proto": "UDP",
+         "tx_id": 6,
+         "alert": {
+           "action": "allowed",
+           "gid": 1,
+           "signature_id": 2022048,
+           "rev": 3,
+           "signature": "ET MALWARE Cryptowall .onion Proxy Domain",
+           "category": "A Network Trojan was detected",
+           "severity": 1,
+           "metadata": {
+             "created_at": [
+               "2015_11_09"
+             ],
+             "updated_at": [
+               "2020_08_18"
+             ]
+           }
+         },
+         "dns": {
+           "query": [
+             {
+               "type": "query",
+               "id": 1041,
+               "rrname": "3wzn5p2yiumh7akj.onion",
+               "rrtype": "A",
+               "tx_id": 6
+             }
+           ]
+         },
+         "app_proto": "dns",
+         "flow": {
+           "pkts_toserver": 4,
+           "pkts_toclient": 3,
+           "bytes_toserver": 350,
+           "bytes_toclient": 445,
+           "start": "2022-06-09T10:20:24.823659+0000"
+         }
+       }
+   
+   
+#. Get the Suricata JSON data to Wazuh
+   
+   Suricata is configured to write alerts to :file:`/var/log/suricata/eve.json` which Wazuh does not monitor by default.   
+   Create a ``suricata`` agent group in the Wazuh UI, **add** the ``linux-agent`` into that group, and edit :file:`agent.conf` file of that new group to look exactly like this:
+   
+   .. code::
+   
+   	<agent_config>
+   		<localfile>
+   			<log_format>json</log_format>
+   			<location>/var/log/suricata/eve.json</location>
+   		</localfile>
+   	</agent_config>
+   
+   |
+   
+#. See Suricata NIDS events in Wazuh dashboard
+
+    #.	On the linux-agent system, rerun the NIDS-tripping curl command again
+      
+         .. code::
+      
+      	  dig a 3wzn5p2yiumh7akj.onion @8.8.8.8
+      
+      
+      
+    #.	Search in Wazuh dashboard for ``rule.id:86601``. That is the rule that notices Suricata alerts. Pick these fields for readability:
+      	
+         * agent.name
+         * data.alert.signature
+         * data.proto
+         * data.src_ip
+         * data.dest_ip
+         * data.dest_port
+      
+    #.	Expand one of the events and look over the vast amount of information available.
+      
+      Observe how Wazuh decodes Suricata events
+      
+      Note that since rule 86601 has the ``no_full_log`` option the original event is parsed onto various fields. From :file:`/var/log/suricata/eve.json` you can retrieve the original event:
+      
+      .. code-block:: bash
+      
+      	{"timestamp":"2022-06-09T10:55:41.373375+0000","flow_id":1420465166724025,"in_iface":"eth0","event_type":"alert","src_ip":"10.0.1.85","src_port":49050,"dest_ip":"10.0.0.2","dest_port":53,"proto":"UDP","tx_id":6,"alert":{"action":"allowed","gid":1,"signature_id":2022048,"rev":3,"signature":"ET MALWARE Cryptowall .onion Proxy Domain","category":"A Network Trojan was detected","severity":1,"metadata":{"created_at":["2015_11_09"],"updated_at":["2020_08_18"]}},"dns":{"query":[{"type":"query","id":51185,"rrname":"3wzn5p2yiumh7akj.onion","rrtype":"A","tx_id":6}]},"app_proto":"dns","flow":{"pkts_toserver":4,"pkts_toclient":3,"bytes_toserver":350,"bytes_toclient":445,"start":"2022-06-09T10:55:41.371641+0000"}}
+      
+    
+      
+      Use the **Ruleset Test** Tool to test how Wazuh analyzes the event:
+      
+     .. code-block:: bash
+        :class: output
+
+        
+        **Phase 1: Completed pre-decoding.
+        
+        **Phase 2: Completed decoding.
+        	name: 'json'
+        	alert.action: 'allowed'
+        	alert.category: 'A Network Trojan was detected'
+        	alert.gid: '1'
+        	alert.metadata.created_at: '["2015_11_09"]'
+        	alert.metadata.updated_at: '["2020_08_18"]'
+        	alert.rev: '3'
+        	alert.severity: '1'
+        	alert.signature: 'ET MALWARE Cryptowall .onion Proxy Domain'
+        	alert.signature_id: '2022048'
+        	app_proto: 'dns'
+        	dest_ip: '10.0.0.2'
+        	dest_port: '53'
+        	dns.query: '[{"type":"query","id":51185,"rrname":"3wzn5p2yiumh7akj.onion","rrtype":"A","tx_id":6}]'
+        	event_type: 'alert'
+        	flow.bytes_toclient: '445'
+        	flow.bytes_toserver: '350'
+        	flow.pkts_toclient: '3'
+        	flow.pkts_toserver: '4'
+        	flow.start: '2022-06-09T10:55:41.371641+0000'
+        	flow_id: '1420465166724025.000000'
+        	in_iface: 'eth0'
+        	proto: 'UDP'
+        	src_ip: '10.0.1.85'
+        	src_port: '49050'
+        	timestamp: '2022-06-09T10:55:41.373375+0000'
+        	tx_id: '6'
+        
+        **Phase 3: Completed filtering (rules).
+        	id: '86601'
+        	level: '3'
+        	description: 'Suricata: Alert - ET MALWARE Cryptowall .onion Proxy Domain'
+        	groups: '["ids","suricata"]'
+        	firedtimes: '1'
+        	mail: 'false'
+        **Alert to be generated.
+      
+|
+
+Notice the decoder used is just called “json”. This decoder is used whenever Wazuh detects JSON records. 
+With Wazuh's ability to natively decode incoming JSON log records, you do not have to build your own decoders 
+for applications that support JSON logging.
+
+It is also possible to add your own custom child decoders of the JSON decoder in case you want to further 
+break down one of the fields in the original JSON log record. For more information please review our guide in the following link:
+
+https://documentation.wazuh.com/current/user-manual/ruleset/json-decoder.html

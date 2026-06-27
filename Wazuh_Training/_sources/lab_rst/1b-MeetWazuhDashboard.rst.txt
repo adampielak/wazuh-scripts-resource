@@ -1,0 +1,35 @@
+.. role:: raw-html(raw)  
+   :format: html
+
+In this following exercise, we will create a custom dashboard with some sample visualizations.
+First, we will create each of the visualizations and then the dashboard that will contain them.
+
+Our first visualization will be a data table that will show the amount of alerts for a given description by agent. To do this, first navigate in your hamburger menu (☰) > Explore > Visualize and select the *+ Create visualization* button.
+
+Select Data Table from the New Visualization menu and choose the wazuh-alerts-* pattern as the data source.
+
+.. image:: images/new_visualization.gif  
+   :align: center
+   :alt: Selecting a new visualization
+
+In the Metrics settings keep the default Count aggregation and click on the *Add* button for the Buckets section and select split rows. Select the Terms sub aggregation and agent.name field. Then, select the *Add* button once again for a new Bucket with split rows. On this new bucket, select the Terms sub aggregation, and then the rule.description field. Click on Update on the bottom of the page. Finally, click on Save on the top of the page and give the table a descriptive name to save the changes.
+
+.. image:: images/generating_table_visualization.gif  
+   :align: center  
+   :alt: Generating a new visualization 
+
+Our next visualization will be a histogram that will show us the distribution of the level (severity) of the rules in our dataset.
+
+Go back to the New visualization menu (located at hamburger menu > Explore > Visualize > *+ Create visualization* button) and select a Line visualization. Select the wazuh-alerts-* as the data source. Keep the default Count aggregation and create a new bucket by selecting the *Add* button and the *X-axis* option. The Aggregation will be Histogram and for the Field select rule.level. Finally, select Update and then Save.
+
+Our last example visualization will be a bar chart that will show us the total amount of alerts by originating city (this is for all alerts that have been enriched with geo location data based on them having a public origin IP address).
+
+In the Create new visualization menu, select the Horizontal Bar Chart and wazuh-alerts-* as the data source.
+
+Add a Split series bucket with the Terms Aggregation and the GeoLocation.city_name Field. Update and Save.
+
+Now that all the intended visualizations have been created, create the dashboard that will contain them. To do this, navigate to Explore > Dashboards in your hamburger menu. Select the *+ Create Dashboard* button. Then use the *Add* button on the top of the page, and from the *Add panels* menu, choose the relevant visualizations by name. Once all that apply have been selected, will click on the left side of the screen to close the add menu.
+
+.. image:: images/new_dashboard.gif  
+   :align: center  
+   :alt: Generating a new dashboard 

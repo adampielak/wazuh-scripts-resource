@@ -1,0 +1,80 @@
+.. role:: raw-html(raw)
+   :format: html
+
+* Register linux-agent with your Wazuh manager using auto enrollment:
+
+**On the Linux endpoint** (``wazuh-user@linux-agent%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info``) create an agent registration password file
+(This must match what is in ``/var/ossec/etc/authd.pass`` on the Wazuh Server Master node.)
+
+   .. code-block:: bash
+
+     echo "secret" > /var/ossec/etc/agent.pass
+
+In ``/var/ossec/etc/ossec.conf``, change the value of the ``<address>`` line from ``MANAGER_IP`` to ``manager%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info``.
+This is the Wazuh Server Node address the agent will report to once it has been enrolled.
+
+By default, unregistered agents will attempt to enroll with the Wazuh Server Node specified above. In order for the agent to be added to the ``linux`` group and use a custom path for the registration password file, we must also insert the following configuration options inside the **client** section. You can paste it right **before** the closing tag ``</client>`` line in the same file:
+
+   .. code-block:: bash
+
+     <enrollment>
+       <authorization_pass_path>/var/ossec/etc/agent.pass</authorization_pass_path>
+       <groups>linux</groups>
+     </enrollment>
+
+This section not only tells the agent to use the password file, but also tells it to member itself into the linux agent group.
+Additionally you can optionally specify here which specific manager to use for self registration when there is a manager node cluster.
+
+
+Restart the agent and confirm success of the enrollment by checking the log:
+
+   .. code-block:: bash
+
+     systemctl restart wazuh-agent
+     grep "Requesting a key" /var/ossec/logs/ossec.log -A 5
+
+"Valid key received" confirms it enrolled successfully.
+
+**On the agent** check the agent's state file to confirm it is now connected to the manager.
+
+.. code::
+
+    cat /var/ossec/var/run/wazuh-agentd.state 
+   
+You shoud get an output similar to the following one:   
+   
+.. code-block:: bash
+  :class: output
+   
+   # State file for wazuh-agentd
+   
+   # Agent status:
+   # - pending:      waiting to get connected.
+   # - connected:    connection established with manager in the last 10 seconds.
+   # - disconnected: connection lost or no ACK received in the last 60 seconds.   status='connected'
+   
+   # Last time a keepalive was sent
+   last_keepalive='2022-06-07 10:49:09'
+   
+   # Last time a control message was received
+   last_ack='2022-06-07 10:49:09'
+   
+   # Number of generated events
+   msg_count='764'
+   
+   # Number of messages (events + control messages) sent to the manager
+   msg_sent='769'
+   
+   # Number of events currently buffered
+   # Empty if anti-flooding mechanism is disabled
+   msg_buffer='0'
+
+
+If it is not connected, then examine ``/var/ossec/logs/ossec.log`` for hints about the problem.
+In this log, a successful connection to the manager should be accounted for like this:
+
+.. code-block:: none
+  :class: output
+
+        2022/06/07 10:48:48 wazuh-agentd: INFO: (4102): Connected to the server (manager%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info/3.133.158.115:1514/tcp).
+

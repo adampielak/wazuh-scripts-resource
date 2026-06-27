@@ -1,0 +1,73 @@
+For sshd invalid user login attempts where the attacker's IP is in our custom ssh-watch-list file, cause a higher priority rule to fire than the standard rule ``5710`` and classifies attacker IPs as "bad" or "terrible".  Make sshd invalid user login attempts where the attacker's IP is listed in our custom ssh-watch-list file with a value of "terrible", cause an even higher priority rule to fire.
+
+Example log entries
+
+.. code::
+
+        Jan 19 04:17:54 agent sshd[2365]: Failed password for invalid user blabla from 1.2.3.4 port 55969 ssh2
+        Jan 19 04:17:54 agent sshd[2365]: Failed password for invalid user root from 99.99.99.99 port 55969 ssh2
+        Jan 19 04:17:54 agent sshd[2365]: Failed password for invalid user admin from 10.10.10.10 port 55969 ssh2
+        Jan 19 04:17:54 agent sshd[2365]: Failed password for invalid user bill from 12.12.14.14 port 55969 ssh2
+
+|
+
+Initial Wazuh alert pattern for any of the above:
+
+.. code::
+
+        ** Alert 1484799474.4188056: - syslog,sshd,invalid_login,authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,pci_dss_10.6.1,
+        2017 Jan 19 04:17:54 (linux-agent) 10.0.0.20->/var/log/secure
+        Rule: 5710 (level 5) -> 'Attempt to login using a non-existent user'
+        Src IP: 45.55.186.244
+        Jan 19 04:17:54 agent sshd[2365]: Failed password for invalid user blabla from 55.55.186.244 port 55969 ssh2
+
+|
+
+We want to make a special rule of higher severity fire if this rule ``5710`` is tripped by an attacker on our special list of IPs of concern (``ssh-watch-list``)
+
+
+On you PC, create a file named :file:`ssh-watch-list` which will be our CDB list (do not include a file extension such as .txt) and fill it with this content:
+
+.. code::
+
+        1.2.3.4:bad
+        55.55.186.244:bad
+        2.2.2.2:terrible
+        5.5.5.5:bad
+        10.10.10.10:terrible
+        23.32.23.32:bad
+
+In your interface Navigate to Hamburger menu > Server management > CDB lists and click on the 'Import files' button. Drag and drop you CDB list file into the dialog box. You should see the :file:`ssh-watch-list` show up in the list after refreshing.
+
+
+Add to the ``<ruleset>`` section of the manager's :file:`ossec.conf` file:
+
+.. code::
+
+        <list>etc/lists/ssh-watch-list</list>
+
+|
+
+Add these rules to the :file:`local_rules.xml`:
+
+.. code::
+
+          <rule id="100112" level="10">
+                        <if_sid>5710</if_sid>
+                        <list field="srcip" lookup="address_match_key">etc/lists/ssh-watch-list</list>
+                        <description>SSH attacker on ssh-watch-list attempted to login using a non-existent user</description>
+          </rule>
+
+        <rule id="100111" level="15">
+           <if_sid>5710</if_sid>
+           <list field="srcip" lookup="match_key_value" check_value="terrible">etc/lists/ssh-watch-list</list>
+           <description>A truly terrible SSH attacker on ssh-watch-list attempted to login using a non-existent user</description>
+        </rule>
+
+
+Feed the example log entries into wazuh-logtest and observe that those involving a listed IP fire rule ``100112`` instead of rule ``5710``, 
+unless they have a value of "terrible", in which case they fire the even more severe rule ``100111``. 
+
+**Also, to see a great blog on importing the OSINT list of malicious IPs into a CDB:**
+
+https://wazuh.com/blog/cdb-lists

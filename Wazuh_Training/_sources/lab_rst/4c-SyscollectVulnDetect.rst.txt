@@ -1,0 +1,119 @@
+.. role:: raw-html(raw)  
+   :format: html
+
+Of the many software packages installed on each of your endpoints, which ones have known vulnerabilities that might impact your security posture? Wazuh helps you answer this question with the ``syscollector`` and ``vulnerability-detection`` modules. 
+
+On each agent, ``syscollector`` can scan the system for the presence and version of all software packages. This information is submitted to the Wazuh manager where it is stored in an agent-specific database for later assessment.
+
+Within the Wazuh server, the ``Vulnerability Detection`` module correlates the software inventory data with vulnerability content documents to detect vulnerable software on the monitored endpoint. These documents are Common Vulnerabilities and Exposures (CVE) records that are available in our Cyber Threat Intelligence (CTI) platform. On the CTI platform, we aggregate vulnerability data from diverse sources like operating system vendors and vulnerability databases, consolidating it into a unified, reliable repository. 
+
+On the **Wazuh Server**, the ``vulnerability-detection`` module is enabled by default to periodically scan the collected inventory data for known vulnerabilities. 
+
+Wazuh includes a dedicated *Dashboard* for the **Vulnerability Detection** capability, as well as an *Inventory* tab (that shows current vulnerabilites for all the agents) and an *Events* tab(which shows the alerts generated when a new vulnerability is detected or solved). 
+
+For the full documentation concerning this feature, see:
+
+https://documentation.wazuh.com/current/user-manual/reference/ossec-conf/vuln-detector.html
+
+https://documentation.wazuh.com/current/user-manual/capabilities/vulnerability-detection
+
+#. On your Wazuh interface, navigate to **Agent Management** and select **Groups**. Click on the edit (pencil) icon from your windows group, and set the ``syscollector`` interval to 2 minutes, as shown in the following example. Click on the Save button to set the changes and have the agent restart automatically.
+
+   .. code::
+        
+    <!-- System inventory -->
+    <wodle name="syscollector">
+      <disabled>no</disabled>
+      <interval>2m</interval>
+      <scan_on_start>yes</scan_on_start>
+      <hardware>yes</hardware>
+      <os>yes</os>
+      <network>yes</network>
+      <packages>yes</packages>
+      <ports all="no">yes</ports>
+      <processes>yes</processes>
+
+      <!-- Database synchronization settings -->
+      <synchronization>
+        <max_eps>10</max_eps>
+      </synchronization>
+    </wodle>
+
+   	
+#. Ensure your windows-agent is running a vulnerable package: using Chrome, **download** and **install** this known vulnerable outdated version of VLC:
+   
+   .. code::
+   
+      https://get.videolan.org/vlc/3.0.0/win32/vlc-3.0.0-win32.exe
+   	
+
+
+#. Review the **Wazuh Manager** logs:
+
+   The ``vulnerability-detection`` module generates logs on the Manager and they can be seen by going to the **Hamburger** menu ( ☰ ), selecting the **Server management** section, clicking on **Logs**, and selecting  ``wazuh-modulesd:vulnerability-scanner`` option from the first drop down list.
+   
+
+   .. code-block:: bash
+     :class: output
+   
+      Oct 10, 2024 @ 10:06:36.000 wazuh-modulesd:vulnerability-scanner INFO  Initiating update feed process
+      Oct 10, 2024 @ 10:28:16.000 wazuh-modulesd:vulnerability-scanner INFO  Triggered a re-scan after content update
+      Oct 10, 2024 @ 10:28:16.000 wazuh-modulesd:vulnerability-scanner INFO  Feed update process completed
+   
+   
+   You may also see the syscollector activity on the agents' logs:
+   
+   .. code::
+   
+   	grep "syscollector:" /var/ossec/logs/ossec.log
+   
+   .. code-block:: bash
+     :class: output
+   
+      2022/06/10 15:45:58 wazuh-modulesd:syscollector: INFO: Module started.
+      2022/06/10 15:45:58 wazuh-modulesd:syscollector: INFO: Starting evaluation.
+      2022/06/10 15:45:58 wazuh-modulesd:syscollector: INFO: Evaluation finished.
+   
+#. Review the alerts in the **Wazuh Dashboard**:
+
+   From the **Hamburger** menu ( ☰ ) go into the **Threat intelligence** section, select the  **Vulnerability Detection** option. You can use the *Explore agent* button on the top right corner to apply a filter.
+  
+   
+   .. image:: images/vulnerability-detector.png
+      :align: center
+   
+   
+   
+#. Click on the Inventory tab to view current Vulnerabilities.
+   
+   
+   .. image:: images/vulnerability-inventory.png
+      :align: center
+   
+#. Select the Events tab to view the related alerts.
+
+
+   .. image:: images/vulnerability-expanded.png
+      :align: center
+   
+From the **Hamburger** menu ( ☰ ) go into the **Server management** section, and click on **Dev Tools**. Explore possible Wazuh API syscollector-related queries based on these examples:
+   
+   
+   .. code::
+   
+   	GET /syscollector/002/os
+   	GET /syscollector/001/netiface
+   	GET /syscollector/002/netproto
+   	GET /syscollector/000/netaddr
+   	GET /syscollector/003/ports
+   	GET /syscollector/003/processes?select=pid,name
+   	GET /syscollector/002/packages
+   
+   Each request must be submitted by pressing on the green triangle that appears on the right edge of the highlighted request line.
+   
+   Take time to look over the online documentation about the syscollection section of the Wazuh API:
+   
+   https://documentation.wazuh.com/current/user-manual/api/reference.html#tag/Syscollector
+   
+   This is a powerful tool that puts all sorts of data, configuration details, and state information at your fingertips once you know how to ask for it.  With 
+   the right parameters, not only can you query these data sources, but you can select, filter, sort, and limit the results.

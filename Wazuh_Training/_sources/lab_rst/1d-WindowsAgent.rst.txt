@@ -1,0 +1,27 @@
+.. role:: raw-html(raw)
+   :format: html
+
+
+**Configure and register the "indexer" machine with agent-auth**
+
+**On the indexer machine** (``wazuh-user@indexer%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info``) navigate to ``/var/ossec/etc/ossec.conf`` and change the value of the ``<address>`` line from ``MANAGER_IP`` to ``manager%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info``.
+
+Then prompt (as root) and do self registration as follows:
+
+.. code:: bash
+
+  /var/ossec/bin/agent-auth -m manager%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info -P secret -G linux
+
+.. code-block:: bash
+  :class: output
+
+    2022/06/07 11:31:53 agent-auth: INFO: Started (pid: 23115).
+    2022/06/07 11:31:53 agent-auth: INFO: Requesting a key from server: manager%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info
+    2022/06/07 11:31:53 agent-auth: INFO: Using agent name as: indexer%%LABLETTER%%%%LABNUMBER%%
+    2022/06/07 11:31:53 agent-auth: INFO: Waiting for server reply
+    2022/06/07 11:31:53 agent-auth: INFO: Valid key received
+
+
+Then restart the agent with ``systemctl restart wazuh-agent``. It should successfully connect.
+
+Confirm the connection with ``cat /var/ossec/var/run/wazuh-agentd.state`` just as you did for linux-agent.

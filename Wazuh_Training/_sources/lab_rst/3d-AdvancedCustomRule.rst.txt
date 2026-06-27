@@ -1,0 +1,57 @@
+Now want Wazuh to alert when the server **finance** is accessed outside of office hours by the user **Rob**.
+
+**Lab Exercise Resolution**
+
+#. Log into the Wazuh manager in your lab environment.
+
+#. Search for the rule that we are going to base our rule on, the already existing SSHD rule with the ID ``5715``, which is triggered when an SSH connection is accepted. 
+
+   See the original SSHD rule below, which is in :file:`0095-sshd_rules.xml` file. **Do not copy this rule** into :file:`local_rules.xml`.  It is part of the stock Wazuh ruleset.
+
+   .. code:: 
+
+      <rule id="5715" level="3">
+        <if_sid>5700</if_sid>
+        <match>^Accepted|authenticated.$</match>
+        <description>sshd: authentication success.</description>
+        <mitre>
+          <id>T1078</id>
+          <id>T1021</id>
+        </mitre>
+        <group>authentication_success,gdpr_IV_32.2,gpg13_7.1,gpg13_7.2,hipaa_164.312.b,nist_800_53_AU.14,nist_800_53_AC.7,pci_dss_10.2.5,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,</group>
+      </rule>
+   
+
+#. Below is our new custom rule that should alert when the user **Rob** logs into the machine **finance** only in a specific time window.
+
+   Add this rule to the :file:`local_rules.xml` and the rule's time range to **include the current time of the manager**. 
+   
+   The timestamp in the text of the event itself is not compared to the ``<time>`` criteria at all, only the manager's local system time at the moment the event is being analyzed.  
+   
+   The manager machine in our lab is using UTC time. You may determine the manager's current time by executing ``date``.
+   
+   .. code-block:: python
+      :emphasize-lines: 3
+   
+   	<rule id="100110" level="12">
+   		<if_sid>5715</if_sid>
+   		<time>3pm - 10am</time>
+   		<user>Rob</user>
+   		<hostname>finance</hostname>
+   		<description>Accessing critical machine 'finance' outside of regular business hours.</description>
+   		<group>policy_violation,login_time</group>
+   	</rule>
+   
+#. Test this rule with the **Ruleset Test** utility and the following event:
+
+   .. code:: 
+   
+   	Apr 18 19:02:01 finance sshd[21488]: Accepted publickey for Rob from 1.2.3.4 port 33030 ssh2: RSA a6:4a:d4:6a:24:25:df:3c:2d:fd:8d:41:f1:d1:84:34
+   
+   |
+   
+   Rule ``100110`` should match now.
+
+**References:**
+
+https://documentation.wazuh.com/current/user-manual/ruleset/index.html

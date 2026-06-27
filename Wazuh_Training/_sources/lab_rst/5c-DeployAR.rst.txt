@@ -1,0 +1,131 @@
+Configure Wazuh to make you Linux agents firewall-block ssh brute force offenders.
+
+
+1. On the manager, edit the :file:`ossec.conf` file, find the following comment:
+
+.. code::
+
+	<!-- Files to monitor (localfiles) -->
+
+And above it add the following: 
+
+.. code::
+
+	<active-response>
+	   <command>firewall-drop</command>
+	   <location>local</location>
+	   <rules_id>5712</rules_id>
+	   <timeout>120</timeout>
+	</active-response>
+
+
+The command "firewall-drop" referenced above is already defined in ossec.conf on the manager here as seen here below.  **You do not need to add it in**.
+
+.. code::
+
+	  <command>
+		<name>firewall-drop</name>
+		<executable>firewall-drop</executable>
+		<timeout_allowed>yes</timeout_allowed>
+	  </command>
+
+
+
+When invoked by an active response, this command will call the "/var/ossec/active-response/bin/firewall-drop" script on the agent, 
+passing an IP number to it to be blocked via the local iptables firewall.  Then after a timeout period it will be called again to 
+un-firewall the offending IP.  If you wish, take a moment to `examine the source of this script <https://github.com/wazuh/wazuh/blob/master/src/active-response/firewalld-drop.c>`_.  It can serve as an excellent template for you to build your own custom active responses later.
+
+2. Restart the Wazuh manager to apply this change.
+
+3.  From your linux-agent, verify that you can ping the indexer agent:
+
+.. code:: bash
+
+        ping indexer%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info
+    
+4.  perform an ssh dictionary attack against your indexer agent using hydra that was installed during exercise 2A as well as the password list created then:
+
+
+.. code:: bash
+
+        hydra -l badguy -P pass.list indexer%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info ssh -I
+
+
+
+5.  verify that you have now lost connectivity to the indexer agent from the linux agent by performing another ping to it:
+
+.. code:: bash
+
+        ping indexer%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info
+    
+
+6.  After the 120 second timeout passes, we should also be able to see the record of the active response being performed and then 
+    later reversed on your linux-agent:
+
+	- Inspect the AR log with Wazuh dashboard with this search:   
+	
+		.. code::	
+			
+			decoder.name:"ar_log_json"
+
+7. Confirm that your linux-agent is again able to reach your indexer system.
+
+.. code:: bash
+
+        ping indexer%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info
+    
+8. Check Wazuh dashboard later today for active response activity (see step 6) and you will probably see real attackers in the wild being blocked by one or more of your Linux lab systems.
+
+
+Alternatively you may also configure the active response on Windows:
+
+1. On the manager add the following configuration after the <command> section:
+
+.. code::   
+
+   <active-response>
+     <command>netsh</command>
+     <rules_group>authentication_failures</rules_group>
+     <location>all</location>
+     <timeout>120</timeout>
+   </active-response>
+
+Note that this will trigger the `netsh` command on all endpoints whenever an event of the `authentication_failures` group is observed. This will only be executed on endpoints that have this command (Windows) but it will be done even if the event is observed on a different endpoint.
+
+2. Restart the Wazuh manager to apply this change by clicking on the restart button of the web interface.
+
+3. From the linux-agent, verify that you can connect to the Windows 3389 port:
+
+.. code-block:: bash
+
+       nc -tvz windows-agent%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info 3389
+
+If successful you should see:
+
+.. code-block:: bash
+  :class: output
+
+   Connection to windows-agent%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info 3389 port [tcp/*] succeeded!
+
+4. Given that the hydra RDP module has been reported to be unreliable we can verify the active response by attacking the indexer agent instead:
+
+.. code:: bash
+
+        hydra -l badguy -P pass.list indexer%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info ssh -I
+
+
+5. Verify that you have lost connectivity to the windows agent:
+
+.. code-block:: bash
+
+       nc -tvz windows-agent%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info 3389
+
+After some time you should see the command time out:
+
+.. code-block:: bash
+  :class: output
+
+    nc: connect to windows-agent%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info port 3389 (tcp) failed: Connection timed out
+
+
+Alternatively you may block your own IP by failing to log via RDP into Windows multiple times.

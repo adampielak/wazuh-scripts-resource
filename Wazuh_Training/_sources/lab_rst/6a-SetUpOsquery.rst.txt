@@ -1,0 +1,191 @@
+**Install osquery on the indexer agent**
+
+Install osquery on the indexer system by running these as root:
+
+
+.. code::
+
+        wget https://pkg.osquery.io/rpm/osquery-5.7.0-1.linux.x86_64.rpm
+	rpm -ivh osquery-5.7.0-1.linux.x86_64.rpm
+
+
+.. code-block:: none
+  :class: output
+
+	warning: osquery-3.3.2-1.linux.x86_64.rpm: Header V4 RSA/SHA256 Signature, key ID c9d8b80b: NOKEY
+	Preparing...                          ################################# [100%]
+	Updating / installing...
+	   1:osquery-3.3.2-1.linux            ################################# [100%]
+
+
+(Optional) You may also install osquery on the linux-agent by running the following as root:
+
+.. code::
+
+    curl -sLO https://pkg.osquery.io/deb/osquery_5.7.0-1.linux_amd64.deb
+    dpkg -i osquery_5.7.0-1.linux_amd64.deb
+
+.. code-block:: none
+  :class: output
+
+      Selecting previously unselected package osquery.
+      (Reading database ... 94120 files and directories currently installed.)
+      Preparing to unpack osquery_5.7.0-1.linux_amd64.deb ...
+      Unpacking osquery (5.7.0-1.linux) ...
+      Setting up osquery (5.7.0-1.linux) ...
+      20408 1
+      Processing triggers for systemd (237-3ubuntu10.50) ...
+      Processing triggers for ureadahead (0.100.0-21) ...
+
+
+
+**Install osquery on Windows agent**
+
+Install osquery on windows-agent by downloading this MSI via Chrome and running it
+
+.. code::
+
+	https://pkg.osquery.io/windows/osquery-5.7.0.msi
+	
+|
+
+Then open Powershell as administrator and run this command to remove the Windows service
+
+.. code::
+
+        &"C:\Program Files\osquery\osqueryd\osqueryd.exe" --uninstall
+	
+|
+
+This particular MSI creates a Windows service we don't want when we are exclusively running osquery as a subprocess of the Wazuh agent.
+A more ideal deployment might involve pushing osquery to all Windows systems via a custom built WPK package that installs Osquery without 
+creating a Windows service.  Or in a more robust deployment of Osquery you might want it running as a standard service that is independent 
+from Wazuh agent so it can be interactively queried via something like Kolide Fleet, while still allowing Wazuh agent to run scheduled queries.
+
+
+On your manager, replace the Osquery Wodle section in **/var/ossec/etc/shared/windows/agent.conf** with this:
+
+.. code::
+
+	  <wodle name="osquery">
+		<disabled>no</disabled>
+		<run_daemon>yes</run_daemon>
+		<bin_path>C:\Program Files\osquery\osqueryd</bin_path>
+		<log_path>C:\Program Files\osquery\log\osqueryd.results.log</log_path>
+		<config_path>C:\Program Files (x86)\ossec-agent\shared\osquery.conf</config_path>
+		<add_labels>yes</add_labels>
+	  </wodle>
+
+|
+
+And replace the Osquery Wodle section in the Linux's group  **agent.conf** with this:
+
+.. code::
+
+	  <wodle name="osquery">
+		<disabled>no</disabled>
+		<run_daemon>yes</run_daemon>
+		<bin_path>/usr/bin</bin_path>
+		<log_path>/var/log/osquery/osqueryd.results.log</log_path>
+		<config_path>/var/ossec/etc/shared/osquery.conf</config_path>
+		<add_labels>yes</add_labels>
+	  </wodle>
+
+|
+
+The only variation from the defaults here is that ``<config_path>`` points at an osquery.conf file in the same centralized distribution directory as agent.conf.
+
+On manager, create :file:`/var/ossec/etc/shared/windows/osquery.conf`. For cloud-based environments, this will be handled by support.
+
+.. code::
+
+	{
+		"options": {
+			"config_plugin": "filesystem",
+			"logger_plugin": "filesystem",
+			"utc": "true"
+		},
+		"schedule": {
+			"chrome_extension": {
+			  "query": "SELECT name FROM chrome_extensions WHERE uid IN (SELECT uid FROM users);",
+			  "interval": 120
+			}
+		}
+	}
+
+On manager, create :file:`/var/ossec/etc/shared/linux/osquery.conf`
+
+.. code::
+
+	{
+		"options": {
+			"config_plugin": "filesystem",
+			"logger_plugin": "filesystem",
+			"utc": "true"
+		},
+		"schedule": {
+			"users_list": {
+				"query": "select username,description from users;",
+				"interval": 120
+			}
+		}
+	}
+
+|
+
+Then change the permissions as follows:
+
+.. code::
+
+	chown wazuh:wazuh /var/ossec/etc/shared/linux/osquery.conf
+	chown wazuh:wazuh /var/ossec/etc/shared/windows/osquery.conf
+
+|
+
+Use Wazuh dashboard to search for:
+
+.. code::
+
+	rule.id:24010
+	
+|
+
+You should soon see enumerated users from the Linux systems but nothing about Chrome extensions as none are presently installed.
+
+Install Google Keep Chrome extension in Windows (skip configuring it)
+
+Search within Wazuh dashboard for:
+
+.. code::
+
+	rule.id:24010
+
+|
+
+And you should see the Chrome extension accounted for now.
+
+Next add a new user to the Linux systems that are running osquery and remove the Google Keep Chrome extension from the Windows system.
+
+Search in Wazuh dashboard again for:
+
+.. code::
+
+	rule.id:24010
+
+|
+
+This time you should see the new user mentioned with **data.osquery.action = added** and the Chrome extension mentioned with **data.osquery.action = removed**
+
+After the initial query results are collected by Osquery, future findings, which in this lab are being queried for every 2 minutes, are only 
+reported if something new appears in the results or something that formerly was in the results ceases to appear there.
+
+This only touches the tip of the iceberg of Osquery and the ability to integrate it with Wazuh.  You can also distribute entire directories 
+of Osquery "packs" consisting of groups of related queries.  These can simply be maintained as a subdirectory of each agent-group's shared directory, 
+like this on the manager:
+
+.. code::
+
+	/var/ossec/etc/shared/windows/osquery-packs/
+
+|
+

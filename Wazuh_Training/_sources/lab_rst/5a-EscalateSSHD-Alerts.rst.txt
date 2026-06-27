@@ -1,0 +1,63 @@
+For sshd invalid user login attempts where the attacker's IP is in our custom ssh-watch-list file, cause a higher priority 
+rule to fire than the standard rule ``5710``.
+
+Example log entries
+
+.. code::
+
+	Jan 19 04:17:54 agent sshd[2365]: Failed password for invalid user blabla from 1.2.3.4 port 55969 ssh2
+	Jan 19 04:17:54 agent sshd[2365]: Failed password for invalid user root from 99.99.99.99 port 55969 ssh2
+	Jan 19 04:17:54 agent sshd[2365]: Failed password for invalid user admin from 10.10.10.10 port 55969 ssh2
+	Jan 19 04:17:54 agent sshd[2365]: Failed password for invalid user bill from 12.12.14.14 port 55969 ssh2
+
+|
+
+Initial Wazuh alert pattern for any of the above:
+
+.. code::
+
+	** Alert 1484799474.4188056: - syslog,sshd,invalid_login,authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,pci_dss_10.6.1,
+	2017 Jan 19 04:17:54 (linux-agent) 10.0.0.20->/var/log/secure
+	Rule: 5710 (level 5) -> 'Attempt to login using a non-existent user'
+	Src IP: 45.55.186.244
+	Jan 19 04:17:54 agent sshd[2365]: Failed password for invalid user blabla from 55.55.186.244 port 55969 ssh2
+
+|
+
+We want to make a special rule of higher severity fire if this rule ``5710`` is tripped by an attacker on our special list of IPs of concern (``ssh-watch-list``)
+
+
+Create :file:`/var/ossec/etc/lists/ssh-watch-list` file with this content:
+
+.. code::
+
+	1.2.3.4:
+	55.55.186.244:
+	2.2.2.2:
+	5.5.5.5:
+	10.10.10.10:
+	23.32.23.32:
+
+Add to the ``<ruleset>`` section of the manager's :file:`ossec.conf` file:
+
+.. code::
+
+	<list>etc/lists/ssh-watch-list</list>
+	
+|
+
+Add this rule to the :file:`local_rules.xml`
+
+.. code::
+
+	  <rule id="100112" level="10">
+			<if_sid>5710</if_sid>
+			<list field="srcip" lookup="address_match_key">etc/lists/ssh-watch-list</list>
+			<description>SSH attacker on ssh-watch-list attempted to login using a non-existent user</description>
+	  </rule>
+
+
+
+Feed the example log entries into the Wazuh Ruleset Test tool and observe that those involving a listed IP fire rule ``100112`` instead of rule ``5710``.  
+The higher severity of this rule could be used to trigger a more severe active response action.
+

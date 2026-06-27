@@ -1,0 +1,160 @@
+Sysmon (System Monitor) is a persistent system service that monitors and logs system activity to the Windows event log providing detailed information about process and network connection creation. 
+
+
+* Centrally distributing and monitoring Sysmon
+
+The Sysmon configuration can be centrally distributed as follows:
+
+* Create a sysmon agent group via web interface.
+
+* Download the SwiftonSecurity config into the directory of this new agent group. Note the second command below is a line-wrapped one line command:
+
+		.. code::
+
+			wget -O /var/ossec/etc/shared/sysmon/sysmonconfig.xml https://raw.githubusercontent.com/SwiftOnSecurity/sysmon-config/master/sysmonconfig-export.xml
+
+NOTE: for cloud based environments this needs to be performed by support.
+
+* From the **Hamburger** menu ( ☰ ) go into the **Agents management** section, click on **Groups** and Add the Windows agent to the previously created ``sysmon`` group by selecting it and then clicking on **Manage agents**. 
+
+Once it is added into this group, the Wazuh Manager will automatically distribute this configuration file along with the information from the Sysmon agent group's agent.conf file.  
+This will also restart the agent on the target host, thus applying the new agent and Sysmon configuration.
+
+• Replace  the sysmon's group :file:`agent.conf` with this content.  
+	
+		.. code::
+		
+			<agent_config>
+			   <localfile>
+				  <location>Microsoft-Windows-Sysmon/Operational</location>
+				  <log_format>eventchannel</log_format>
+			   </localfile>
+
+			   <localfile>
+				  <log_format>full_command</log_format>
+				  <alias>reload_sysmon_config</alias>
+				  <command>powershell.exe -Command "If ([Environment]::Is64BitProcess){c:\progra~2\sysmon-wazuh\Sysmon64.exe -c c:\progra~2\ossec-agent\shared\sysmonconfig.xml} else {c:\progra~2\sysmon-wazuh\Sysmon.exe -c c:\progra~2\ossec-agent\shared\sysmonconfig.xml}"</command>
+				  <frequency>86400</frequency>
+			   </localfile>
+
+			   <localfile>
+				  <log_format>command</log_format>
+				  <alias>get_sysmon_versions</alias>
+				  <command>powershell.exe -Command "$x=[System.Diagnostics.FileVersionInfo]::GetVersionInfo('c:\windows\SysmonDrv.sys').FileVersion.Trim(); $y=[System.Diagnostics.FileVersionInfo]::GetVersionInfo('C:\Program Files (x86)\sysmon-wazuh\Sysmon.exe').FileVersion.Trim(); Write-Output \"driver $x, exe $y\""</command>
+				  <frequency>86400</frequency>
+			   </localfile>
+			</agent_config>
+
+|
+
+Note that the first ``<localfile>`` section above is what you previously placed into the Windows agent.conf file in the above lab.  
+This should only be in one place.
+
+Also, note that the second ``<localfile>`` section above initiates a powershell command to check the driver and executable versions.  
+This command runs on the specified frequency, which in this case is once every 24 hours.
+
+* Fetch custom rules optimized for the latest Sysmon and the SwiftOnSecurity config
+
+Also on your manager, fetch the custom rules I use with the latest Sysmon version in conjunction with the above config file.  
+This also is a line-wrapped one-line command:
+
+.. code::
+
+	wget -O /var/ossec/etc/rules/1100_sysmon.xml https://raw.githubusercontent.com/branchnetconsulting/wazuh-tools/master/sysmon/1100_sysmon.xml
+	
+|
+NOTE: In cloud based environments, this should be done thru the interface, by creating a new rules file, naming it and pasting the contents of this file.
+
+
+• You will then need to create rules to alert on the output of this command, which will allow you to monitor the sysmon installation.  Below are a set of rules that will watch for the correct version and a missing driver and/or executable, 
+
+
+		.. code::
+
+			<rule id="102001" level="12">
+				<if_sid>530</if_sid>
+				<match>'get_sysmon_versions'</match>
+				<description>Sysmon version(s) are wrong.</description>
+			</rule>
+
+			<rule id="102002" level="1">
+				<if_sid>102001</if_sid>
+				<match>driver 12.03, exe 12.03</match>
+				<description>Sysmon versions are right.</description>
+			</rule>
+
+			<rule id="102003" level="12">
+				<if_sid>102001</if_sid>
+				<regex>driver , exe $</regex>
+				<description>Sysmon driver and exe are missing.</description>
+			</rule>
+
+			<rule id="102004" level="12">
+				<if_sid>102001</if_sid>
+				<match>driver , </match>
+				<description>Sysmon driver is missing.</description>
+			</rule>
+
+			<rule id="102005" level="12">
+				<if_sid>102001</if_sid>
+				<regex>, exe $</regex>
+				<description>Sysmon exe is missing.</description>
+			</rule>
+	
+Restart the Wazuh manager so that the new rules are loaded.
+
+.. code::
+
+        systemctl restart wazuh-manager
+	
+|
+
+* Fetch and Install Sysmon on Windows agent
+
+
+On your Windows system, download Sysmon from:
+
+	.. code::
+
+		https://download.sysinternals.com/files/Sysmon.zip 
+
+
+|
+
+Create a directory ``C:\Program Files (x86)\sysmon-wazuh\`` and then extract Sysmon.exe from the downloaded zip file into that new directory.
+
+Open command prompt as Administrator and run this command.  This will install the Sysmon service, import the xml config file into the registry, and then start the Sysmon service.  
+
+	.. code::
+
+		C:\Progra~2\sysmon-wazuh\Sysmon.exe -i C:\progra~2\ossec-agent\shared\sysmonconfig.xml -accepteula
+
+|
+	
+Note that Sysmon uses the configuration that is stored in the registry which is why we specify it above as part of the install process.  Changes to the xml 
+config file will have no impact on Sysmon unless the updated xml file in reimported with the ``-c`` option like this:
+
+	.. code::
+
+		C:\Progra~2\sysmon-wazuh\Sysmon.exe -c C:\progra~2\ossec-agent\shared\sysmonconfig.xml
+	
+|
+
+.. note::
+
+   Since we configured the agent to monitor Sysmon's channel before the process had run for the first time, it will not immediately capture its events but instead periodically verify if the channel exists and start monitoring once it is detected. To speed up log collection you may **restart the agent's service** through the user interface or by making a modification to the group's centralized configuration.
+
+Run something evil-looking from the Windows command shell.  Here we use the standard Microsoft certutil.exe tool as a covert channel file downloader.
+
+.. code::
+
+	certutil.exe -urlcache -split -f "https://download.sysinternals.com/files/PSTools.zip" pstools.zip
+	
+|
+
+Use the following query in Wazuh dashboard:
+
+.. code::
+
+	sysmon and *certutil*
+

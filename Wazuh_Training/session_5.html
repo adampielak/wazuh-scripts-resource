@@ -1,0 +1,771 @@
+<!DOCTYPE html><html lang="en-US"class="auto-theme">
+  <head>
+    
+    
+    <meta name="robots" content="noindex" />
+    
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="author" content="Wazuh">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="color-scheme" content="dark light">
+    <meta property="og:image" content="https://documentation.wazuh.com/current/_static/images/wazuh-docs-card.png">
+    <meta property="og:url" content="https://documentation.wazuh.com/current/session_5.html">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Session 5 · Wazuh Training">
+    <meta property="og:description" content="User manual, installation and configuration guides. Learn how to get the most out of the Wazuh platform.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@wazuh">
+    <meta name="twitter:creator" content="@wazuh">
+    <meta name="twitter:title" content="Session 5 · Wazuh Training">
+    <meta name="twitter:description" content="User manual, installation and configuration guides. Learn how to get the most out of the Wazuh platform.">
+    <meta name="twitter:image" content="https://documentation.wazuh.com/current/_static/images/wazuh-docs-card.png">
+    <title>Session 5 · Wazuh Training</title>
+    <style media="prefers-color-scheme: light">
+      html, body {
+        color: black;
+        background-color: #fff;
+      }
+    </style>  
+    <style media="prefers-color-scheme: dark">
+      html, body {
+        background-color: #2b303a!important;
+      }
+    </style>
+    <script>
+    const prefersDarkScheme=window.matchMedia("(prefers-color-scheme: dark)"),currentTheme=document.documentElement.classList.contains("auto-theme")?"":localStorage.getItem("theme");"dark"==currentTheme||"light"!=currentTheme&&prefersDarkScheme.matches?document.documentElement.classList.toggle("dark-theme"):document.documentElement.classList.toggle("light-theme");
+    </script>
+  <style type="text/css">@font-face{font-family:Manrope;font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggqxSuXd.woff2") format("woff2");unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:Manrope;font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggOxSuXd.woff2") format("woff2");unicode-range:U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:Manrope;font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggSxSuXd.woff2") format("woff2");unicode-range:U+0370-03FF}@font-face{font-family:Manrope;font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggixSuXd.woff2") format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+1EA0-1EF9,U+20AB}@font-face{font-family:Manrope;font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggmxSuXd.woff2") format("woff2");unicode-range:U+0100-024F,U+0259,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:Manrope;font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggexSg.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:Manrope;font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggqxSuXd.woff2") format("woff2");unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:Manrope;font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggOxSuXd.woff2") format("woff2");unicode-range:U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:Manrope;font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggSxSuXd.woff2") format("woff2");unicode-range:U+0370-03FF}@font-face{font-family:Manrope;font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggixSuXd.woff2") format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+1EA0-1EF9,U+20AB}@font-face{font-family:Manrope;font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggmxSuXd.woff2") format("woff2");unicode-range:U+0100-024F,U+0259,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:Manrope;font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggexSg.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:Manrope;font-style:normal;font-weight:600;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggqxSuXd.woff2") format("woff2");unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:Manrope;font-style:normal;font-weight:600;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggOxSuXd.woff2") format("woff2");unicode-range:U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:Manrope;font-style:normal;font-weight:600;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggSxSuXd.woff2") format("woff2");unicode-range:U+0370-03FF}@font-face{font-family:Manrope;font-style:normal;font-weight:600;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggixSuXd.woff2") format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+1EA0-1EF9,U+20AB}@font-face{font-family:Manrope;font-style:normal;font-weight:600;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggmxSuXd.woff2") format("woff2");unicode-range:U+0100-024F,U+0259,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:Manrope;font-style:normal;font-weight:600;font-display:swap;src:url("https://fonts.gstatic.com/s/manrope/v8/xn7gYHE41ni1AdIRggexSg.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bX2SlFPv1weGeLZDtgK_7SodY.woff2") format("woff2");unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bX2SlFPv1weGeLZDtgIv7SodY.woff2") format("woff2");unicode-range:U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bX2SlFPv1weGeLZDtgKv7SodY.woff2") format("woff2");unicode-range:U+1F00-1FFF}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bX2SlFPv1weGeLZDtgJf7SodY.woff2") format("woff2");unicode-range:U+0370-03FF}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bX2SlFPv1weGeLZDtgKP7SodY.woff2") format("woff2");unicode-range:U+0100-024F,U+0259,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:400;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bX2SlFPv1weGeLZDtgJv7S.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bS2SlFPv1weGeLZDto1d3Hk_fUWZA.woff2") format("woff2");unicode-range:U+0460-052F,U+1C80-1C88,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bS2SlFPv1weGeLZDto1d3HmvfUWZA.woff2") format("woff2");unicode-range:U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bS2SlFPv1weGeLZDto1d3HkvfUWZA.woff2") format("woff2");unicode-range:U+1F00-1FFF}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bS2SlFPv1weGeLZDto1d3HnffUWZA.woff2") format("woff2");unicode-range:U+0370-03FF}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bS2SlFPv1weGeLZDto1d3HkPfUWZA.woff2") format("woff2");unicode-range:U+0100-024F,U+0259,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:"Fira Mono";font-style:normal;font-weight:500;font-display:swap;src:url("https://fonts.gstatic.com/s/firamono/v9/N0bS2SlFPv1weGeLZDto1d3HnvfU.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}</style>
+    <link rel="preload" href="./_static/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="./_static/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Wazuh Training" href="index.html"/>
+    <link rel="next" title="Session 6" href="session_6.html"/>
+    <link rel="prev" title="Session 4" href="session_4.html"/>
+    <link rel="stylesheet" href="_static/css/min/bootstrap.min.css?ver=1749453341.2702713" type="text/css"><link rel="stylesheet" href="_static/css/fontawesome.min.css?ver=1749453341.2692714" type="text/css"><link rel="stylesheet" href="_static/wazuh-doc-images/wazuh-light-box.css" type="text/css"><link rel="stylesheet" href="_static/css/min/wazuh-documentation.min.css?ver=1749453341.2702713" type="text/css"><link rel="mask-icon" href="_static/images/favicon.svg" color="#000000">
+    <link rel="icon" href="_static/images/favicon.png" media="(prefers-color-scheme:no-preference)" sizes="any" type="image/png"/>
+    <link rel="icon" href="_static/images/dark-favicon.png" media="(prefers-color-scheme:dark)" sizes="any" type="image/png"/>
+    <link rel="icon" href="_static/images/favicon.png" media="(prefers-color-scheme:light)" sizes="any" type="image/png"/>
+    <link rel="apple-touch-icon" href="_static/images/favicon.svg"></head><body class="document"  data-path="session_5" data-spy="scroll" data-target="#local-toc" data-offset="200">
+<header id="header" class="fixed-top">
+  <nav class="d-xl-flex align-items-center justify-content-between"> 
+    <div class="mobile-primary-header navbar navbar-expand-xl d-flex">
+        <div class="navbar-brand">
+  
+    <a class="logo-link docs d-flex align-items-baseline" href="index.html">
+  
+      <span class="sr-only">Wazuh documentation index</span>
+      <svg height="29" width="150" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="10 0 600.252 121.191">
+        <g>
+          <polygon points="93.182,89.822 74.016,27.521 58.884,27.521 39.712,89.822 20.714,27.479 3.307,27.479 31.052,118.326 
+            45.177,118.326 66.45,52.575 87.637,118.326 101.761,118.326 129.507,27.521 112.187,27.521"/>
+          <polygon points="252.707,43.244 299.532,43.244 247.995,115.547 247.995,118.326 324.927,118.326 324.927,102.604 
+            275.995,102.604 327.445,30.381 327.445,27.521 252.707,27.521"/>
+          <path d="M212.985,37.093c-7.786-8.124-18.408-12.399-30.906-12.399c-26.449,0-46.391,20.767-46.391,48.304
+            c0,27.534,19.942,48.298,46.391,48.298c12.469,0,23.091-4.249,30.906-12.318v10.414h17.777V26.604h-17.777V37.093z
+             M183.891,104.566c-17.459,0-30.136-13.276-30.136-31.569c0-18.234,12.677-31.47,30.136-31.47
+            c17.407,0,30.043,13.236,30.043,31.47C213.935,91.29,201.298,104.566,183.891,104.566z"/>
+          <path d="M410.246,78.913c0,16.301-8.972,25.653-24.608,25.653c-15.693,0-24.695-9.352-24.695-25.653v-52.31h-17.783v53.739
+            c0,30.226,22.883,40.952,42.477,40.952c19.554,0,42.385-10.726,42.385-40.952V26.604h-17.777V78.913z"/>
+          <path d="M530.848,58.126c-0.504-3.702-1.459-7.485-2.86-11.352c-1.401-3.867-3.433-7.441-6.095-10.721
+            c-2.663-3.276-6.124-5.925-10.379-7.945c-4.26-2.017-9.534-3.025-15.809-3.025c-8.185,0-15.161,1.766-20.932,5.297
+            c-3.534,2.16-6.558,4.845-9.082,8.044V3.183h-15.722v115.143h17.823V71.073c0-5.381,0.602-9.948,1.806-13.705
+            c1.21-3.754,2.86-6.781,4.961-9.08c2.101-2.298,4.556-3.965,7.357-5.001c2.802-1.039,5.771-1.557,8.915-1.557
+            c4.816,0,8.729,0.981,11.728,2.944c2.999,1.962,5.326,4.538,6.975,7.734c1.656,3.195,2.779,6.657,3.363,10.385
+            c0.59,3.728,0.886,7.355,0.886,10.886v44.648h17.823V67.877C531.606,65.076,531.352,61.825,530.848,58.126z"/>
+        </g>
+        <ellipse transform="matrix(0.3827 -0.9239 0.9239 0.3827 251.1053 587.4084)" fill="#007AFF" cx="565.113" cy="105.801" rx="14.331" ry="14.331"/>
+      </svg>
+      
+      Training
+      
+      
+  
+    </a>
+  
+  </div>
+      <div class="toggle-buttons d-flex d-xl-none">
+        <button class="navbar-toggler search-toggler" type="button" data-toggle="collapse" data-target="#search-box-wrapper" aria-controls="search-box-wrapper" aria-expanded="false" aria-label="Toggle search bar">
+          <span class="search-toggler-icon"></span>
+        </button>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#global-toc" aria-controls="global-toc" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
+    </div>
+    
+    <div class="mobile-secondary-header version-zone">
+    
+      <div class="d-none d-xl-block">
+        <div class="search-box" role="search">
+  <form method="get" class="search-form" action="search.html" id="search-form">
+    <label class="sr-only" for="search-input">Search term</label>
+    <input id="search-input" type="text" class="form-control" name="q" placeholder="Search"></input>
+    <span id="search-btn-label" class="sr-only">Search now!</span>
+    <button aria-labelledby="search-btn-label" type="submit" class="btn-search"></button>
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+    
+  </div>
+  </nav>
+</header>
+<div class="inner-body">
+      <div id="left-sidebar" class="sidebar">
+  <div class="sidebar-container">
+    
+    <div id="search-box-wrapper" class="collapse navbar-collapse d-xl-none"><div class="search-box" role="search">
+  <form method="get" class="search-form" action="search.html" id="search-form">
+    <label class="sr-only" for="search-input">Search term</label>
+    <input id="search-input" type="text" class="form-control" name="q" placeholder="Search"></input>
+    <span id="search-btn-label" class="sr-only">Search now!</span>
+    <button aria-labelledby="search-btn-label" type="submit" class="btn-search"></button>
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+    </div>
+    <nav id="global-toc" class="collapse navbar-collapse">
+      <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="pre_lab.html">Pre-lab</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pre_lab.html#student-roster">Student Roster</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pre_lab.html#linux-manager">Linux Manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pre_lab.html#linux-agent">Linux Agent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pre_lab.html#windows-agent">Windows Agent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pre_lab.html#indexer-system">Indexer System</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pre_lab.html#dashboard-system">Dashboard System</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="session_1.html">Session 1</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="session_1.html#wazuh-server-configuration">Wazuh Server Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_1.html#lab-1a-take-first-look-at-the-wazuh-web-ui">Lab 1A - Take first look at the Wazuh Web UI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_1.html#lab-1b-wazuh-custom-dashboard">Lab 1B - Wazuh Custom Dashboard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_1.html#lab-1c-wazuh-custom-dashboard">Lab 1C - Wazuh Custom Dashboard</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_1.html#agent-registration-and-connection-to-manager">Agent Registration and Connection to Manager</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_1.html#lab-1d-wazuh-server-configuration">Lab 1D - Wazuh Server Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_1.html#id1">Agent Registration and Connection to Manager</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_1.html#lab-1e-deployment-variables">Lab 1E - Deployment Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_1.html#lab-1f-agent-auth-tool">Lab 1F - Agent-auth tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_1.html#lab-1g-auto-enrollment">Lab 1G - Auto enrollment</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_1.html#pushing-agent-upgrades">Pushing Agent Upgrades</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_1.html#lab-1h-push-wazuh-agent-upgrade-from-manager">Lab 1H - Push Wazuh agent upgrade from manager</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_1.html#centralized-agent-configuration">Centralized Agent Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_1.html#meet-agent-conf">Meet agent.conf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_1.html#procedure-for-changing-the-shared-agent-conf-file-and-deploying-it-to-agents">Procedure for changing the shared agent.conf file and deploying it to agents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_1.html#enumerating-agents-connected-to-the-manager">Enumerating agents connected to the manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_1.html#lab-1i-deploy-agent-groups-and-agent-conf-files">Lab 1I - deploy agent groups and agent.conf files</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_1.html#mass-deployment-considerations">Mass Deployment Considerations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="session_2.html">Session 2</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="session_2.html#log-analysis">Log Analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_2.html#log-analysis-101">Log Analysis 101:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_2.html#how-does-log-analysis-work-in-wazuh">How does log analysis work in Wazuh?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_2.html#log-retention-time">Log Retention Time</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_2.html#lab-exercise-2a-explore-brute-force-attack">Lab Exercise 2A - explore brute force attack</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_2.html#alert-assessment">Alert Assessment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_2.html#lab-exercise-2b-assess-several-malicious-alerts">Lab Exercise 2B - Assess several malicious alerts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_2.html#lab-exercise-2c-looking-up-rules">Lab Exercise 2C - Looking up rules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="session_3.html">Session 3</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="session_3.html#rules-and-decoders">Rules and Decoders</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_3.html#the-wazuh-ruleset">The Wazuh Ruleset</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_3.html#the-wazuh-decoders">The Wazuh Decoders</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_3.html#what-are-decoders-and-what-do-they-do">What are decoders and what do they do?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_3.html#main-decoder-options">Main Decoder Options:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_3.html#simple-decoder-example">Simple Decoder Example:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_3.html#lab-exercise-3a-write-a-custom-decoder">Lab Exercise 3A - Write a custom decoder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_3.html#lab-exercise-3b-write-basic-custom-rules">Lab Exercise 3B - Write basic custom rules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_3.html#lab-exercise-3c-write-a-more-advanced-custom-rule">Lab Exercise 3C - Write a more advanced custom rule</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_3.html#lab-exercise-3d-wazuh-s-dynamic-json-decoder">Lab Exercise 3D - Wazuh’s Dynamic JSON Decoder</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_3.html#wazuh-rules">Wazuh Rules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_3.html#alert-levels-in-wazuh-rules">Alert-Levels in Wazuh Rules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_3.html#wazuh-rule-groups">Wazuh Rule Groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_3.html#writing-custom-rules">Writing custom rules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_3.html#lab-exercise-3e-modify-an-existing-rule">Lab Exercise 3E - Modify an existing rule</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_3.html#looking-at-rule-evaluation-order">Looking at rule evaluation order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="session_3.html#sibling-decoders">Sibling decoders</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="session_4.html">Session 4</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="session_4.html#file-integrity-monitoring">File Integrity Monitoring</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_4.html#lab-exercise-4a-customize-syscheck-and-trigger-various-fim-events">Lab Exercise 4A - Customize syscheck and trigger various FIM events</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_4.html#vulnerability-detection">Vulnerability Detection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_4.html#lab-exercise-4b-syscollector-and-vulnerability-detection">Lab Exercise 4B - Syscollector and Vulnerability-Detection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_4.html#rootkit-detection">Rootkit Detection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_4.html#how-can-wazuh-detect-rootkits">How can Wazuh detect rootkits?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_4.html#detecting-user-mode-rootkits-with-wazuh">Detecting User-Mode rootkits with Wazuh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_4.html#detecting-kernel-mode-rootkits-with-wazuh">Detecting Kernel-Mode rootkits with Wazuh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_4.html#lab-exercise-4c-rootkit-detection">Lab Exercise 4C - Rootkit Detection</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current show"><a class="current reference internal current-toc-node" href="#">Session 5</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#cdb-lists">CDB Lists</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lab-exercise-5a-distinguish-between-different-ssh-watch-list-values">Lab Exercise 5A - Distinguish between different ssh-watch-list values</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#active-response">Active Response</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#creating-custom-active-commands">Creating custom Active Commands:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-custom-active-response">Creating custom Active Response:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stateful-vs-stateless-command">Stateful vs stateless command:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lab-exercise-5b-deploy-and-test-linux-firewall-active-response">Lab Exercise 5B - Deploy and test Linux firewall active response</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="session_6.html">Session 6</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="session_6.html#osquery-integration-with-wazuh">Osquery Integration with Wazuh</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_6.html#lab-6a-set-up-osquery-across-two-agents">Lab 6A - Set up Osquery across two agents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_6.html#sysmon-integration-with-wazuh">Sysmon Integration with Wazuh</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_6.html#lab-6b-set-up-sysmon-on-windows-agent">Lab 6B- Set up Sysmon on Windows agent</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session_6.html#docker">Docker</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="session_6.html#lab-6c-monitoring-docker-activity">Lab 6C - Monitoring docker activity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session_6.html#cloudtrail">CloudTrail</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+  </div>
+</div>
+      <div id="central-column">
+          
+        
+
+        
+          <div class="breadcrumb-wrapper">
+                <ul id="breadcrumbs" role="navigation" aria-label="breadcrumbs navigation">
+      <li>
+        <a href="index.html">
+        
+          Training
+        
+        </a> <span class="breadcrumb-separator" aria-hidden="true"></span>
+      </li><li>Session 5</li>
+    </ul>
+          </div>
+        
+        
+        
+        <main role="main">
+        <div class="section" id="session-5">
+<h1>Session 5<a class="headerlink" href="#session-5" title="Permalink to this headline"> </a></h1>
+<div class="section" id="cdb-lists">
+<h2>CDB Lists<a class="headerlink" href="#cdb-lists" title="Permalink to this headline"> </a></h2>
+<p>CDB stands for “constant database”. This acts as a high performance on-disk associative array, mapping keys to values.
+They allow only two operations: creation and reading. After the initial creation (compilation) of the CDB list, you can’t add any more data to that file.</p>
+<p>Use cases:</p>
+<ul class="simple">
+<li><p>Users (black or white lists)</p></li>
+<li><p>IP address lookups</p></li>
+<li><p>Indexing a list of bad domains</p></li>
+</ul>
+<p>It’s also a convenient way to index databases and perform lookups on them.</p>
+<p>CDB lists need to be stored in the directory <code class="file docutils literal notranslate"><span class="pre">/var/ossec/etc/lists/</span></code> and they need to have a specific format.
+For example, file <code class="file docutils literal notranslate"><span class="pre">/var/ossec/etc/lists/suspicious</span></code> could contain entries like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">key1</span><span class="p">:</span><span class="n">value</span>
+<span class="n">key2</span><span class="p">:</span><span class="n">value</span>
+<span class="n">key3</span><span class="p">:</span><span class="n">value</span>
+</pre></div>
+</div>
+<p>Each key has to be unique and must be followed by a colon and an optional value.  The values between lines can be the same as long as the key is unique.</p>
+<p>We need to define it in the ossec.conf file first by adding the following entry to the <code class="docutils literal notranslate"><span class="pre">&lt;rule&gt;</span></code> section of the ossec.conf file.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">ruleset</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nb">list</span><span class="o">&gt;</span><span class="n">etc</span><span class="o">/</span><span class="n">lists</span><span class="o">/</span><span class="n">suspicious</span><span class="o">&lt;/</span><span class="nb">list</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">ruleset</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The last thing to do is to create new rules to trigger alerts whenever an event matches one of the entries in our new list.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">rule</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;100001&quot;</span> <span class="n">level</span><span class="o">=</span><span class="s2">&quot;10&quot;</span><span class="o">&gt;</span>
+           <span class="o">&lt;</span><span class="n">if_sid</span><span class="o">&gt;***</span><span class="n">SOME</span> <span class="n">RULE</span><span class="o">***&lt;/</span><span class="n">if_sid</span><span class="o">&gt;</span>
+                <span class="o">&lt;</span><span class="nb">list</span> <span class="n">field</span><span class="o">=</span><span class="s2">&quot;srcip&quot;</span> <span class="n">lookup</span><span class="o">=</span><span class="s2">&quot;address_match_key&quot;</span><span class="o">&gt;</span><span class="n">lists</span><span class="o">/</span><span class="n">suspicious</span><span class="o">&lt;/</span><span class="nb">list</span><span class="o">&gt;</span>
+           <span class="o">&lt;</span><span class="n">description</span><span class="o">&gt;</span><span class="n">Suspicious</span> <span class="n">IP</span> <span class="n">found</span><span class="o">&lt;/</span><span class="n">description</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">rules</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>This rule will always trigger if the source IP is found in our CDB “suspicious” list.</p>
+<p>Full documentation for all types of Wazuh CDB list lookups:</p>
+<p><a class="reference external" href="https://documentation.wazuh.com/current/user-manual/ruleset/cdb-list.html">https://documentation.wazuh.com/current/user-manual/ruleset/cdb-list.html</a>
+|</p>
+<div class="section" id="lab-exercise-5a-distinguish-between-different-ssh-watch-list-values">
+<h3>Lab Exercise 5A - Distinguish between different ssh-watch-list values<a class="headerlink" href="#lab-exercise-5a-distinguish-between-different-ssh-watch-list-values" title="Permalink to this headline"> </a></h3>
+<blockquote>
+<div><p>For sshd invalid user login attempts where the attacker’s IP is in our custom ssh-watch-list file, cause a higher priority rule to fire than the standard rule <code class="docutils literal notranslate"><span class="pre">5710</span></code> and classifies attacker IPs as “bad” or “terrible”.  Make sshd invalid user login attempts where the attacker’s IP is listed in our custom ssh-watch-list file with a value of “terrible”, cause an even higher priority rule to fire.</p>
+<p>Example log entries</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Jan</span> <span class="mi">19</span> <span class="mi">04</span><span class="p">:</span><span class="mi">17</span><span class="p">:</span><span class="mi">54</span> <span class="n">agent</span> <span class="n">sshd</span><span class="p">[</span><span class="mi">2365</span><span class="p">]:</span> <span class="n">Failed</span> <span class="n">password</span> <span class="k">for</span> <span class="n">invalid</span> <span class="n">user</span> <span class="n">blabla</span> <span class="kn">from</span> <span class="mf">1.2.3.4</span> <span class="n">port</span> <span class="mi">55969</span> <span class="n">ssh2</span>
+<span class="n">Jan</span> <span class="mi">19</span> <span class="mi">04</span><span class="p">:</span><span class="mi">17</span><span class="p">:</span><span class="mi">54</span> <span class="n">agent</span> <span class="n">sshd</span><span class="p">[</span><span class="mi">2365</span><span class="p">]:</span> <span class="n">Failed</span> <span class="n">password</span> <span class="k">for</span> <span class="n">invalid</span> <span class="n">user</span> <span class="n">root</span> <span class="kn">from</span> <span class="mf">99.99.99.99</span> <span class="n">port</span> <span class="mi">55969</span> <span class="n">ssh2</span>
+<span class="n">Jan</span> <span class="mi">19</span> <span class="mi">04</span><span class="p">:</span><span class="mi">17</span><span class="p">:</span><span class="mi">54</span> <span class="n">agent</span> <span class="n">sshd</span><span class="p">[</span><span class="mi">2365</span><span class="p">]:</span> <span class="n">Failed</span> <span class="n">password</span> <span class="k">for</span> <span class="n">invalid</span> <span class="n">user</span> <span class="n">admin</span> <span class="kn">from</span> <span class="mf">10.10.10.10</span> <span class="n">port</span> <span class="mi">55969</span> <span class="n">ssh2</span>
+<span class="n">Jan</span> <span class="mi">19</span> <span class="mi">04</span><span class="p">:</span><span class="mi">17</span><span class="p">:</span><span class="mi">54</span> <span class="n">agent</span> <span class="n">sshd</span><span class="p">[</span><span class="mi">2365</span><span class="p">]:</span> <span class="n">Failed</span> <span class="n">password</span> <span class="k">for</span> <span class="n">invalid</span> <span class="n">user</span> <span class="n">bill</span> <span class="kn">from</span> <span class="mf">12.12.14.14</span> <span class="n">port</span> <span class="mi">55969</span> <span class="n">ssh2</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Initial Wazuh alert pattern for any of the above:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">**</span> <span class="n">Alert</span> <span class="mf">1484799474.4188056</span><span class="p">:</span> <span class="o">-</span> <span class="n">syslog</span><span class="p">,</span><span class="n">sshd</span><span class="p">,</span><span class="n">invalid_login</span><span class="p">,</span><span class="n">authentication_failed</span><span class="p">,</span><span class="n">pci_dss_10</span><span class="mf">.2.4</span><span class="p">,</span><span class="n">pci_dss_10</span><span class="mf">.2.5</span><span class="p">,</span><span class="n">pci_dss_10</span><span class="mf">.6.1</span><span class="p">,</span>
+<span class="mi">2017</span> <span class="n">Jan</span> <span class="mi">19</span> <span class="mi">04</span><span class="p">:</span><span class="mi">17</span><span class="p">:</span><span class="mi">54</span> <span class="p">(</span><span class="n">linux</span><span class="o">-</span><span class="n">agent</span><span class="p">)</span> <span class="mf">10.0.0.20</span><span class="o">-&gt;/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">secure</span>
+<span class="n">Rule</span><span class="p">:</span> <span class="mi">5710</span> <span class="p">(</span><span class="n">level</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Attempt to login using a non-existent user&#39;</span>
+<span class="n">Src</span> <span class="n">IP</span><span class="p">:</span> <span class="mf">45.55.186.244</span>
+<span class="n">Jan</span> <span class="mi">19</span> <span class="mi">04</span><span class="p">:</span><span class="mi">17</span><span class="p">:</span><span class="mi">54</span> <span class="n">agent</span> <span class="n">sshd</span><span class="p">[</span><span class="mi">2365</span><span class="p">]:</span> <span class="n">Failed</span> <span class="n">password</span> <span class="k">for</span> <span class="n">invalid</span> <span class="n">user</span> <span class="n">blabla</span> <span class="kn">from</span> <span class="mf">55.55.186.244</span> <span class="n">port</span> <span class="mi">55969</span> <span class="n">ssh2</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>We want to make a special rule of higher severity fire if this rule <code class="docutils literal notranslate"><span class="pre">5710</span></code> is tripped by an attacker on our special list of IPs of concern (<code class="docutils literal notranslate"><span class="pre">ssh-watch-list</span></code>)</p>
+<p>On you PC, create a file named <code class="file docutils literal notranslate"><span class="pre">ssh-watch-list</span></code> which will be our CDB list (do not include a file extension such as .txt) and fill it with this content:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">1.2.3.4</span><span class="p">:</span><span class="n">bad</span>
+<span class="mf">55.55.186.244</span><span class="p">:</span><span class="n">bad</span>
+<span class="mf">2.2.2.2</span><span class="p">:</span><span class="n">terrible</span>
+<span class="mf">5.5.5.5</span><span class="p">:</span><span class="n">bad</span>
+<span class="mf">10.10.10.10</span><span class="p">:</span><span class="n">terrible</span>
+<span class="mf">23.32.23.32</span><span class="p">:</span><span class="n">bad</span>
+</pre></div>
+</div>
+<p>In your interface Navigate to Hamburger menu &gt; Server management &gt; CDB lists and click on the ‘Import files’ button. Drag and drop you CDB list file into the dialog box. You should see the <code class="file docutils literal notranslate"><span class="pre">ssh-watch-list</span></code> show up in the list after refreshing.</p>
+<p>Add to the <code class="docutils literal notranslate"><span class="pre">&lt;ruleset&gt;</span></code> section of the manager’s <code class="file docutils literal notranslate"><span class="pre">ossec.conf</span></code> file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="nb">list</span><span class="o">&gt;</span><span class="n">etc</span><span class="o">/</span><span class="n">lists</span><span class="o">/</span><span class="n">ssh</span><span class="o">-</span><span class="n">watch</span><span class="o">-</span><span class="nb">list</span><span class="o">&lt;/</span><span class="nb">list</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Add these rules to the <code class="file docutils literal notranslate"><span class="pre">local_rules.xml</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="o">&lt;</span><span class="n">rule</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;100112&quot;</span> <span class="n">level</span><span class="o">=</span><span class="s2">&quot;10&quot;</span><span class="o">&gt;</span>
+                <span class="o">&lt;</span><span class="n">if_sid</span><span class="o">&gt;</span><span class="mi">5710</span><span class="o">&lt;/</span><span class="n">if_sid</span><span class="o">&gt;</span>
+                <span class="o">&lt;</span><span class="nb">list</span> <span class="n">field</span><span class="o">=</span><span class="s2">&quot;srcip&quot;</span> <span class="n">lookup</span><span class="o">=</span><span class="s2">&quot;address_match_key&quot;</span><span class="o">&gt;</span><span class="n">etc</span><span class="o">/</span><span class="n">lists</span><span class="o">/</span><span class="n">ssh</span><span class="o">-</span><span class="n">watch</span><span class="o">-</span><span class="nb">list</span><span class="o">&lt;/</span><span class="nb">list</span><span class="o">&gt;</span>
+                <span class="o">&lt;</span><span class="n">description</span><span class="o">&gt;</span><span class="n">SSH</span> <span class="n">attacker</span> <span class="n">on</span> <span class="n">ssh</span><span class="o">-</span><span class="n">watch</span><span class="o">-</span><span class="nb">list</span> <span class="n">attempted</span> <span class="n">to</span> <span class="n">login</span> <span class="n">using</span> <span class="n">a</span> <span class="n">non</span><span class="o">-</span><span class="n">existent</span> <span class="n">user</span><span class="o">&lt;/</span><span class="n">description</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">rule</span><span class="o">&gt;</span>
+
+<span class="o">&lt;</span><span class="n">rule</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;100111&quot;</span> <span class="n">level</span><span class="o">=</span><span class="s2">&quot;15&quot;</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">if_sid</span><span class="o">&gt;</span><span class="mi">5710</span><span class="o">&lt;/</span><span class="n">if_sid</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="nb">list</span> <span class="n">field</span><span class="o">=</span><span class="s2">&quot;srcip&quot;</span> <span class="n">lookup</span><span class="o">=</span><span class="s2">&quot;match_key_value&quot;</span> <span class="n">check_value</span><span class="o">=</span><span class="s2">&quot;terrible&quot;</span><span class="o">&gt;</span><span class="n">etc</span><span class="o">/</span><span class="n">lists</span><span class="o">/</span><span class="n">ssh</span><span class="o">-</span><span class="n">watch</span><span class="o">-</span><span class="nb">list</span><span class="o">&lt;/</span><span class="nb">list</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">description</span><span class="o">&gt;</span><span class="n">A</span> <span class="n">truly</span> <span class="n">terrible</span> <span class="n">SSH</span> <span class="n">attacker</span> <span class="n">on</span> <span class="n">ssh</span><span class="o">-</span><span class="n">watch</span><span class="o">-</span><span class="nb">list</span> <span class="n">attempted</span> <span class="n">to</span> <span class="n">login</span> <span class="n">using</span> <span class="n">a</span> <span class="n">non</span><span class="o">-</span><span class="n">existent</span> <span class="n">user</span><span class="o">&lt;/</span><span class="n">description</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">rule</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Feed the example log entries into wazuh-logtest and observe that those involving a listed IP fire rule <code class="docutils literal notranslate"><span class="pre">100112</span></code> instead of rule <code class="docutils literal notranslate"><span class="pre">5710</span></code>,
+unless they have a value of “terrible”, in which case they fire the even more severe rule <code class="docutils literal notranslate"><span class="pre">100111</span></code>.</p>
+<p><strong>Also, to see a great blog on importing the OSINT list of malicious IPs into a CDB:</strong></p>
+<p><a class="reference external" href="https://wazuh.com/blog/cdb-lists">https://wazuh.com/blog/cdb-lists</a></p>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="active-response">
+<h2>Active Response<a class="headerlink" href="#active-response" title="Permalink to this headline"> </a></h2>
+<p>In order to reduce risk and contain damage, we need in our system an automated remediation to security violations and threats. A remediation solution can perform actions or alerts configurations to prevent the access to the service or network where the threat came from.</p>
+<p>This automated remediation is called “Active response” in Wazuh. Active response allows you to execute a script whenever a rule is matched by the ruleset. Any number of responses can be attached to any of the rules, but it is important to be careful.</p>
+<p>A bad implementation of the rules and responses, can be dangerous. An attacker could use the rules against you.</p>
+<p>By default the following active response scripts are already implemented with a default Wazuh installation:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">disable-account</span></code>: disables an account by setting “passwd -l” (Linux, Solaris, AIX only)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">firewall-drop</span></code>: adds an IP to the iptables deny list(Linux, Solaris, FreeBSD, AIX only)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">firewalld-drop</span></code>: adds an IP to firewalld drop list(Linux)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">host-deny</span></code>: adds an IP to the /etc/hosts.deny file (Linux, Solaris, FreeBSD, AIX only)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ip-customblock</span></code>: Custom Wazuh block, easily modifiable for custom response</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ipfw_mac</span></code>: firewall-drop response script created for the Mac OS firewall</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ipfw</span></code>: firewall-drop response script created for ipfw, the FreeBSD IP packet filter</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kaspersky`</span></code>: Run an on-demand AV scan with Kaspersky (when installed on the monitored endpoint).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pf</span></code>: firewall-drop response script created for pf, the BSD licensed stateful packet filter.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wazuh-slack</span></code>: in order to post modifications</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">restart-wazuh</span></code>: automatically restarts Wazuh when ossec.conf has been changed on UNIX systems</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">restart-wazuh.exe</span></code>: automatically restarts Wazuh when ossec.conf has been changed on Windows</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">route-null</span></code>: adds an IP to null route (only works on Linux and FreeBSD)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">route-null.exe</span></code>: adds an IP to null route</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">netsh.exe</span></code>: uses Windows “netsh ipsec” to block an IP - for Windows Server 2012</p></li>
+</ul>
+<p>When creating custom Active Response scripts one should be careful and should always test them before deploying them to production environments.
+These scripts are run as the root user, and thus perform any action an administrator can do.</p>
+<div class="section" id="creating-custom-active-commands">
+<h3>Creating custom Active Commands:<a class="headerlink" href="#creating-custom-active-commands" title="Permalink to this headline"> </a></h3>
+<p>The scripts need a way to be referenced by the ruleset to perform a particular active response. A <strong>command</strong> needs to be defined for this.
+Any executable placed in the agent’s <code class="docutils literal notranslate"><span class="pre">active-response/bin/</span></code> folder can be used as an Active Response, the <strong>execd</strong> module will provide information of the alert through standard input to the executable, so in order to use information from the event triggering the executable must be able to read information from StdIn.</p>
+<p>Finally, if the Active Response is intended to be stateful, that is, capable of running a secondary action after a given time, then when running it must write a stdout control message when executed providing the keys specific to the event. This is done so the agent will avoid executing the response multiple times while the secondary action is not been triggered.</p>
+<p>Active response commands are defined in the <code class="file docutils literal notranslate"><span class="pre">ossec.conf</span></code> file.</p>
+<p>Command Values:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 67%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Tags</p></th>
+<th class="head"><p>Values</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>name</p></td>
+<td><p>string</p></td>
+<td><p>This provides an identifier for the active response command</p></td>
+</tr>
+<tr class="row-odd"><td><p>executable</p></td>
+<td><p>filename</p></td>
+<td><p>Name of the executable to be run. This file must exist in the agents’ <code class="file docutils literal notranslate"><span class="pre">active-response/bin</span></code> folder.</p></td>
+</tr>
+<tr class="row-even"><td><p>extra_args</p></td>
+<td><p>string</p></td>
+<td><p>Additional arguments to be read by active-response scripts.</p></td>
+</tr>
+<tr class="row-odd"><td><p>timeout_allowed</p></td>
+<td><p>yes/no</p></td>
+<td><p>Specifies if the command has a secondary action to be taken after a given time. This is often used to undo the first action.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">command</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">reboot</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">executable</span><span class="o">&gt;</span><span class="n">reboot</span><span class="o">.</span><span class="n">sh</span><span class="o">&lt;/</span><span class="n">executable</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">timeout_allowed</span><span class="o">&gt;</span><span class="n">no</span><span class="o">&lt;/</span><span class="n">timeout_allowed</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">command</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>In this example, the command is called <code class="docutils literal notranslate"><span class="pre">reboot</span></code> and should execute the <code class="file docutils literal notranslate"><span class="pre">reboot.sh</span></code> script located at <code class="file docutils literal notranslate"><span class="pre">/var/ossec/active-response/bin</span></code>.
+It is not able to timeout and the script doesn’t expect any input. The script can be as simple as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/sh</span>
+<span class="n">reboot</span>
+</pre></div>
+</div>
+<p>This would reboot the endpoint when triggered.</p>
+<p>Let’s see a stateful example from the stock active responses:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">command</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">host</span><span class="o">-</span><span class="n">deny</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">executable</span><span class="o">&gt;</span><span class="n">host</span><span class="o">-</span><span class="n">deny</span><span class="o">&lt;/</span><span class="n">executable</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">timeout_allowed</span><span class="o">&gt;</span><span class="n">yes</span><span class="o">&lt;/</span><span class="n">timeout_allowed</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">command</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>In this case the command is called <strong>“host-deny”</strong>, and should execute the <strong>host-deny</strong>, the script needs the srcip and the command is able to timeout.</p>
+<p>While active responses can be written in any language, handling JSON can be tricky in Bash and interpreted languages like Python may not be able to run in all endpoints as they would depend on a local installation of the interpreter.</p>
+</div>
+<div class="section" id="creating-custom-active-response">
+<h3>Creating custom Active Response:<a class="headerlink" href="#creating-custom-active-response" title="Permalink to this headline"> </a></h3>
+<p>Now we need to bind the command to one or more rules or a specific severity level, which creates an active response. In the <strong>active response definition</strong>,
+it is declared when a command is going to be executed and where, meaning on which environment (Agent, Manager, Local, or everywhere).
+The following tags can be used for active responses:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 29%" />
+<col style="width: 57%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Tags</p></th>
+<th class="head"><p>Value</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>disable</p></td>
+<td><p>yes/no</p></td>
+<td><p>If set to yes it will disable active responses</p></td>
+</tr>
+<tr class="row-odd"><td><p>command</p></td>
+<td><p>Must reference a previously declared command</p></td>
+<td><p>Name of the command to be used</p></td>
+</tr>
+<tr class="row-even"><td><p>location</p></td>
+<td><p>local, server, defined-agent, all</p></td>
+<td><p>Endpoints on which the active response will be executed. <code class="docutils literal notranslate"><span class="pre">local</span></code> is the machine from which the event originated, <code class="docutils literal notranslate"><span class="pre">server</span></code> is the Wazuh manager, <code class="docutils literal notranslate"><span class="pre">all</span></code> is all agents (this excludes the manager).</p></td>
+</tr>
+<tr class="row-odd"><td><p>agent_id</p></td>
+<td><p>Numerical ID of agent</p></td>
+<td><p>When <code class="docutils literal notranslate"><span class="pre">defined-agent</span></code> is used in location,</p></td>
+</tr>
+<tr class="row-even"><td><p>level</p></td>
+<td><p>0-15</p></td>
+<td><p>Rule level threshold as a criteria to trigger active response</p></td>
+</tr>
+<tr class="row-odd"><td><p>rules_id</p></td>
+<td><p>comma-separated rule IDs</p></td>
+<td><p>Rules that will trigger the active response when matched</p></td>
+</tr>
+<tr class="row-even"><td><p>rules_group</p></td>
+<td><p>comma-separated rule group names</p></td>
+<td><p>Rule groups that will trigger the active response</p></td>
+</tr>
+<tr class="row-odd"><td><p>timeout</p></td>
+<td><p>Number</p></td>
+<td><p>Amount of time (in seconds) after initial active response is triggered before the secondary action is taken</p></td>
+</tr>
+<tr class="row-even"><td><p>repeated_offenders</p></td>
+<td><p>comma-separated numbers</p></td>
+<td><p>Amount of time (in minutes) that active response is increased for repeating offenders</p></td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">active</span><span class="o">-</span><span class="n">response</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">command</span><span class="o">&gt;</span><span class="n">reboot</span><span class="o">&lt;/</span><span class="n">command</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">location</span><span class="o">&gt;</span><span class="n">server</span><span class="o">&lt;/</span><span class="n">location</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">rules_id</span><span class="o">&gt;</span><span class="mi">105002</span><span class="o">&lt;/</span><span class="n">rules_id</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">active</span><span class="o">-</span><span class="n">response</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>In this case, the reboot command will be executed on the Wazuh manager everytime custom rule <code class="docutils literal notranslate"><span class="pre">105002</span></code> is fired.</p>
+<p>Another example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">active</span><span class="o">-</span><span class="n">response</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">command</span><span class="o">&gt;</span><span class="n">host</span><span class="o">-</span><span class="n">deny</span><span class="o">&lt;/</span><span class="n">command</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">location</span><span class="o">&gt;</span><span class="n">local</span><span class="o">&lt;/</span><span class="n">location</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">level</span><span class="o">&gt;</span><span class="mi">7</span><span class="o">&lt;/</span><span class="n">level</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">timeout</span><span class="o">&gt;</span><span class="mi">600</span><span class="o">&lt;/</span><span class="n">timeout</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">active</span><span class="o">-</span><span class="n">response</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>In this example the <strong>host-deny</strong> command will be executed on the agent that reported the rule-matching event, with rule levels equals or bigger than <code class="docutils literal notranslate"><span class="pre">7</span></code>.
+This response has 600 seconds for the timeout.</p>
+</div>
+<div class="section" id="stateful-vs-stateless-command">
+<h3>Stateful vs stateless command:<a class="headerlink" href="#stateful-vs-stateless-command" title="Permalink to this headline"> </a></h3>
+<p>It’s important to understand the difference between a command being stateful and a command being stateless. In our examples we saw one of each.</p>
+<p>A Stateful command is a command that has the capability to remove the applied action after a certain period of time.</p>
+<p>To configure a command like this, we need to set the timeout_allowed option in the command to yes, and then configure a timeout value in the
+active response to indicate how long to wait until the applied action is automatically reversed.</p>
+<p>A Stateless command is that command that doesn’t have the capability of removing the applied changes that the response applied.</p>
+<p>An example for a Stateful command is the host-deny command from above.</p>
+</div>
+<div class="section" id="lab-exercise-5b-deploy-and-test-linux-firewall-active-response">
+<h3>Lab Exercise 5B - Deploy and test Linux firewall active response<a class="headerlink" href="#lab-exercise-5b-deploy-and-test-linux-firewall-active-response" title="Permalink to this headline"> </a></h3>
+<p>Configure Wazuh to make you Linux agents firewall-block ssh brute force offenders.</p>
+<ol class="arabic simple">
+<li><p>On the manager, edit the <code class="file docutils literal notranslate"><span class="pre">ossec.conf</span></code> file, find the following comment:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;!-- Files to monitor (localfiles) --&gt;
+</pre></div>
+</div>
+<p>And above it add the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">active</span><span class="o">-</span><span class="n">response</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">command</span><span class="o">&gt;</span><span class="n">firewall</span><span class="o">-</span><span class="n">drop</span><span class="o">&lt;/</span><span class="n">command</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">location</span><span class="o">&gt;</span><span class="n">local</span><span class="o">&lt;/</span><span class="n">location</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">rules_id</span><span class="o">&gt;</span><span class="mi">5712</span><span class="o">&lt;/</span><span class="n">rules_id</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">timeout</span><span class="o">&gt;</span><span class="mi">120</span><span class="o">&lt;/</span><span class="n">timeout</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">active</span><span class="o">-</span><span class="n">response</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The command “firewall-drop” referenced above is already defined in ossec.conf on the manager here as seen here below.  <strong>You do not need to add it in</strong>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">command</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">firewall</span><span class="o">-</span><span class="n">drop</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">executable</span><span class="o">&gt;</span><span class="n">firewall</span><span class="o">-</span><span class="n">drop</span><span class="o">&lt;/</span><span class="n">executable</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">timeout_allowed</span><span class="o">&gt;</span><span class="n">yes</span><span class="o">&lt;/</span><span class="n">timeout_allowed</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">command</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>When invoked by an active response, this command will call the “/var/ossec/active-response/bin/firewall-drop” script on the agent,
+passing an IP number to it to be blocked via the local iptables firewall.  Then after a timeout period it will be called again to
+un-firewall the offending IP.  If you wish, take a moment to <a class="reference external" href="https://github.com/wazuh/wazuh/blob/master/src/active-response/firewalld-drop.c">examine the source of this script</a>.  It can serve as an excellent template for you to build your own custom active responses later.</p>
+<ol class="arabic simple" start="2">
+<li><p>Restart the Wazuh manager to apply this change.</p></li>
+<li><p>From your linux-agent, verify that you can ping the indexer agent:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ping indexerA6.lab.wazuh.info
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>perform an ssh dictionary attack against your indexer agent using hydra that was installed during exercise 2A as well as the password list created then:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>hydra -l badguy -P pass.list indexerA6.lab.wazuh.info ssh -I
+</pre></div>
+</div>
+<ol class="arabic simple" start="5">
+<li><p>verify that you have now lost connectivity to the indexer agent from the linux agent by performing another ping to it:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ping indexerA6.lab.wazuh.info
+</pre></div>
+</div>
+<ol class="arabic" start="6">
+<li><p>After the 120 second timeout passes, we should also be able to see the record of the active response being performed and then
+later reversed on your linux-agent:</p>
+<blockquote>
+<div><ul>
+<li><p>Inspect the AR log with Wazuh dashboard with this search:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">decoder</span><span class="o">.</span><span class="n">name</span><span class="p">:</span><span class="s2">&quot;ar_log_json&quot;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Confirm that your linux-agent is again able to reach your indexer system.</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ping indexerA6.lab.wazuh.info
+</pre></div>
+</div>
+<ol class="arabic simple" start="8">
+<li><p>Check Wazuh dashboard later today for active response activity (see step 6) and you will probably see real attackers in the wild being blocked by one or more of your Linux lab systems.</p></li>
+</ol>
+<p>Alternatively you may also configure the active response on Windows:</p>
+<ol class="arabic simple">
+<li><p>On the manager add the following configuration after the &lt;command&gt; section:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">active</span><span class="o">-</span><span class="n">response</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">command</span><span class="o">&gt;</span><span class="n">netsh</span><span class="o">&lt;/</span><span class="n">command</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">rules_group</span><span class="o">&gt;</span><span class="n">authentication_failures</span><span class="o">&lt;/</span><span class="n">rules_group</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">location</span><span class="o">&gt;</span><span class="nb">all</span><span class="o">&lt;/</span><span class="n">location</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">timeout</span><span class="o">&gt;</span><span class="mi">120</span><span class="o">&lt;/</span><span class="n">timeout</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">active</span><span class="o">-</span><span class="n">response</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Note that this will trigger the <cite>netsh</cite> command on all endpoints whenever an event of the <cite>authentication_failures</cite> group is observed. This will only be executed on endpoints that have this command (Windows) but it will be done even if the event is observed on a different endpoint.</p>
+<ol class="arabic simple" start="2">
+<li><p>Restart the Wazuh manager to apply this change by clicking on the restart button of the web interface.</p></li>
+<li><p>From the linux-agent, verify that you can connect to the Windows 3389 port:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>nc -tvz windows-agentA6.lab.wazuh.info <span class="m">3389</span>
+</pre></div>
+</div>
+<p>If successful you should see:</p>
+<div class="output highlight-bash notranslate"><div class="highlight"><pre><span></span> Connection to windows-agentA6.lab.wazuh.info <span class="m">3389</span> port <span class="o">[</span>tcp/*<span class="o">]</span> succeeded!
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>Given that the hydra RDP module has been reported to be unreliable we can verify the active response by attacking the indexer agent instead:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>hydra -l badguy -P pass.list indexerA6.lab.wazuh.info ssh -I
+</pre></div>
+</div>
+<ol class="arabic simple" start="5">
+<li><p>Verify that you have lost connectivity to the windows agent:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>nc -tvz windows-agentA6.lab.wazuh.info <span class="m">3389</span>
+</pre></div>
+</div>
+<p>After some time you should see the command time out:</p>
+<div class="output highlight-bash notranslate"><div class="highlight"><pre><span></span>  nc: connect to windows-agentA6.lab.wazuh.info port <span class="m">3389</span> <span class="o">(</span>tcp<span class="o">)</span> failed: Connection timed out
+</pre></div>
+</div>
+<p>Alternatively you may block your own IP by failing to log via RDP into Windows multiple times.</p>
+</div>
+</div>
+</div>
+
+        
+        
+    <div class="navigation-buttons" role="navigation" aria-label="previous/next navigation">
+      
+      <a href="session_4.html" title="Previous. Session 4">
+        <span class="chevron left" aria-hidden="true"></span>
+        Session 4
+      </a>
+      
+      
+      <a href="session_6.html" title="Next. Session 6">
+        Session 6
+        <span class="chevron right" aria-hidden="true"></span>
+      </a>
+      
+    </div>
+
+        
+        </main>
+      </div>
+      <footer>
+        
+  <div class="desktop-footer row">
+    
+    <div class="copyright col-12 col-sm-4 col-xl-3 order-sm-1">
+      &copy; 2025 &middot; Wazuh Inc.
+    </div>
+  </div>
+      </footer>
+      <div id="right-sidebar" class="sidebar">
+  <div class="sidebar-container">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+      
+    <nav id="local-toc" class="navbar d-none d-xl-block">
+      <span class="toc-title">On this page</span>
+      <ul class="navbar-nav">
+<li class="nav-item"><a class="reference internal nav-link" href="#">Session 5</a><ul class="navbar-nav">
+<li class="nav-item"><a class="reference internal nav-link" href="#cdb-lists">CDB Lists</a><ul class="navbar-nav">
+<li class="nav-item"><a class="reference internal nav-link" href="#lab-exercise-5a-distinguish-between-different-ssh-watch-list-values">Lab Exercise 5A - Distinguish between different ssh-watch-list values</a></li>
+</ul>
+</li>
+<li class="nav-item"><a class="reference internal nav-link" href="#active-response">Active Response</a><ul class="navbar-nav">
+<li class="nav-item"><a class="reference internal nav-link" href="#creating-custom-active-commands">Creating custom Active Commands:</a></li>
+<li class="nav-item"><a class="reference internal nav-link" href="#creating-custom-active-response">Creating custom Active Response:</a></li>
+<li class="nav-item"><a class="reference internal nav-link" href="#stateful-vs-stateless-command">Stateful vs stateless command:</a></li>
+<li class="nav-item"><a class="reference internal nav-link" href="#lab-exercise-5b-deploy-and-test-linux-firewall-active-response">Lab Exercise 5B - Deploy and test Linux firewall active response</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+    </nav>
+      
+    
+  </div>
+</div>
+      </div>
+    <script id="documentation_options" data-url_root="./" src="_static/js/documentation_options.js"></script>
+    <script>
+      const emptyTocNodes = JSON.parse('[]');
+    </script>
+        
+
+<script src="_static/js/jquery.js?ver=1749453341.2832716"></script><script src="_static/js/min/bootstrap.bundle.min.js?ver=1749453341.2832716"></script><script src="_static/js/underscore.js?ver=1749453341.2882714"></script><script src="_static/js/min/wazuh-documentation.min.js?ver=1749453341.2842715"></script><script src="_static/wazuh-doc-images/wazuh-light-box.js"></script>
+  <div id="wazuh-light-box-overlay" class="wazuh-light-box-overlay"></div><div id="wazuh-light-box" class="wazuh-light-box"><div class="wazuh-light-box-slides-container"><div class="wlb-loading"></div></div><button tabindex="0" class="wlb-close-button"><span class="wlb-close-button-content read-only">Close</span></button></div></body>
+</html>

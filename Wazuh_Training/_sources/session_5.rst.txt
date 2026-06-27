@@ -1,0 +1,223 @@
+##########
+Session 5
+##########
+
+CDB Lists
+*********
+
+CDB stands for “constant database”. This acts as a high performance on-disk associative array, mapping keys to values. 
+They allow only two operations: creation and reading. After the initial creation (compilation) of the CDB list, you can't add any more data to that file.
+
+Use cases:
+
+* Users (black or white lists)
+* IP address lookups
+* Indexing a list of bad domains
+
+It's also a convenient way to index databases and perform lookups on them.
+
+CDB lists need to be stored in the directory :file:`/var/ossec/etc/lists/` and they need to have a specific format.  
+For example, file :file:`/var/ossec/etc/lists/suspicious` could contain entries like this:
+
+.. code::
+
+        key1:value
+        key2:value
+        key3:value
+
+
+Each key has to be unique and must be followed by a colon and an optional value.  The values between lines can be the same as long as the key is unique.
+
+We need to define it in the ossec.conf file first by adding the following entry to the ``<rule>`` section of the ossec.conf file.
+
+.. code::
+
+        <ruleset>
+                <list>etc/lists/suspicious</list>
+        </ruleset>
+
+
+The last thing to do is to create new rules to trigger alerts whenever an event matches one of the entries in our new list.
+
+.. code::
+
+        <rule id="100001" level="10">
+                   <if_sid>***SOME RULE***</if_sid>
+                        <list field="srcip" lookup="address_match_key">lists/suspicious</list>
+                   <description>Suspicious IP found</description>
+        </rules>
+
+
+This rule will always trigger if the source IP is found in our CDB "suspicious" list.
+
+Full documentation for all types of Wazuh CDB list lookups:
+
+https://documentation.wazuh.com/current/user-manual/ruleset/cdb-list.html
+|
+
+Lab Exercise 5A - Distinguish between different ssh-watch-list values
+---------------------------------------------------------------------
+
+ .. include:: ./lab_rst/5b-ssh-watch-list.rst
+ 
+Active Response
+***************
+
+In order to reduce risk and contain damage, we need in our system an automated remediation to security violations and threats. A remediation solution can perform actions or alerts configurations to prevent the access to the service or network where the threat came from.
+
+This automated remediation is called “Active response” in Wazuh. Active response allows you to execute a script whenever a rule is matched by the ruleset. Any number of responses can be attached to any of the rules, but it is important to be careful.
+
+A bad implementation of the rules and responses, can be dangerous. An attacker could use the rules against you.
+
+By default the following active response scripts are already implemented with a default Wazuh installation:
+
+*       ``disable-account``: disables an account by setting “passwd -l” (Linux, Solaris, AIX only)
+*       ``firewall-drop``: adds an IP to the iptables deny list(Linux, Solaris, FreeBSD, AIX only)
+*       ``firewalld-drop``: adds an IP to firewalld drop list(Linux)
+*       ``host-deny``: adds an IP to the /etc/hosts.deny file (Linux, Solaris, FreeBSD, AIX only)
+*       ``ip-customblock``: Custom Wazuh block, easily modifiable for custom response
+*       ``ipfw_mac``: firewall-drop response script created for the Mac OS firewall
+*       ``ipfw``: firewall-drop response script created for ipfw, the FreeBSD IP packet filter
+*  ``kaspersky```: Run an on-demand AV scan with Kaspersky (when installed on the monitored endpoint).
+*       ``pf``: firewall-drop response script created for pf, the BSD licensed stateful packet filter.
+*       ``wazuh-slack``: in order to post modifications
+*       ``restart-wazuh``: automatically restarts Wazuh when ossec.conf has been changed on UNIX systems
+*       ``restart-wazuh.exe``: automatically restarts Wazuh when ossec.conf has been changed on Windows
+*       ``route-null``: adds an IP to null route (only works on Linux and FreeBSD)
+*       ``route-null.exe``: adds an IP to null route 
+*       ``netsh.exe``: uses Windows "netsh ipsec" to block an IP - for Windows Server 2012
+
+When creating custom Active Response scripts one should be careful and should always test them before deploying them to production environments. 
+These scripts are run as the root user, and thus perform any action an administrator can do.
+
+
+Creating custom Active Commands:
+--------------------------------
+
+The scripts need a way to be referenced by the ruleset to perform a particular active response. A **command** needs to be defined for this.
+Any executable placed in the agent's ``active-response/bin/`` folder can be used as an Active Response, the **execd** module will provide information of the alert through standard input to the executable, so in order to use information from the event triggering the executable must be able to read information from StdIn. 
+
+Finally, if the Active Response is intended to be stateful, that is, capable of running a secondary action after a given time, then when running it must write a stdout control message when executed providing the keys specific to the event. This is done so the agent will avoid executing the response multiple times while the secondary action is not been triggered.
+
+Active response commands are defined in the :file:`ossec.conf` file.
+
+Command Values:
+
+
+.. csv-table:: 
+   :header-rows: 1
+   :widths: 1 1 4
+
+   Tags,Values,Description
+   name,string,This provides an identifier for the active response command
+   executable,filename,Name of the executable to be run. This file must exist in the agents' :file:`active-response/bin` folder.
+   extra_args,string,Additional arguments to be read by active-response scripts.
+   timeout_allowed,yes/no,Specifies if the command has a secondary action to be taken after a given time. This is often used to undo the first action.
+
+Example:
+
+.. code::
+
+        <command>
+           <name>reboot</name>
+           <executable>reboot.sh</executable>
+           <timeout_allowed>no</timeout_allowed>
+        </command>
+
+|
+
+In this example, the command is called ``reboot`` and should execute the :file:`reboot.sh` script located at :file:`/var/ossec/active-response/bin`. 
+It is not able to timeout and the script doesn't expect any input. The script can be as simple as:
+
+.. code::
+
+   #!/bin/sh
+   reboot
+
+This would reboot the endpoint when triggered.
+
+Let's see a stateful example from the stock active responses:
+
+.. code::
+
+        <command>
+           <name>host-deny</name>
+           <executable>host-deny</executable>
+           <timeout_allowed>yes</timeout_allowed>
+        </command>
+
+
+In this case the command is called **“host-deny”**, and should execute the **host-deny**, the script needs the srcip and the command is able to timeout.
+
+While active responses can be written in any language, handling JSON can be tricky in Bash and interpreted languages like Python may not be able to run in all endpoints as they would depend on a local installation of the interpreter.
+
+Creating custom Active Response:
+--------------------------------
+
+Now we need to bind the command to one or more rules or a specific severity level, which creates an active response. In the **active response definition**, 
+it is declared when a command is going to be executed and where, meaning on which environment (Agent, Manager, Local, or everywhere).
+The following tags can be used for active responses:
+
+.. csv-table:: 
+   :header-rows: 1
+   :widths: 1 2 4
+
+   Tags, Value, Description
+   disable,yes/no,"If set to yes it will disable active responses"
+   command,Must reference a previously declared command,Name of the command to be used
+   location,"local, server, defined-agent, all",  "Endpoints on which the active response will be executed. ``local`` is the machine from which the event originated, ``server`` is the Wazuh manager, ``all`` is all agents (this excludes the manager)."
+   agent_id, Numerical ID of agent, "When ``defined-agent`` is used in location, "
+   level, 0-15, Rule level threshold as a criteria to trigger active response
+   rules_id,comma-separated rule IDs,Rules that will trigger the active response when matched
+   rules_group,comma-separated rule group names, Rule groups that will trigger the active response
+   timeout,Number, "Amount of time (in seconds) after initial active response is triggered before the secondary action is taken"
+   repeated_offenders,comma-separated numbers, "Amount of time (in minutes) that active response is increased for repeating offenders"
+
+Example:
+
+.. code::
+
+        <active-response>
+           <command>reboot</command>
+           <location>server</location>
+           <rules_id>105002</rules_id>
+        </active-response>
+
+
+In this case, the reboot command will be executed on the Wazuh manager everytime custom rule ``105002`` is fired.
+
+Another example:
+
+.. code::
+
+        <active-response>
+           <command>host-deny</command>
+           <location>local</location>
+           <level>7</level>
+           <timeout>600</timeout>
+        </active-response>
+
+
+In this example the **host-deny** command will be executed on the agent that reported the rule-matching event, with rule levels equals or bigger than ``7``. 
+This response has 600 seconds for the timeout.
+
+
+Stateful vs stateless command:
+------------------------------
+
+
+It's important to understand the difference between a command being stateful and a command being stateless. In our examples we saw one of each.
+
+A Stateful command is a command that has the capability to remove the applied action after a certain period of time.
+
+To configure a command like this, we need to set the timeout_allowed option in the command to yes, and then configure a timeout value in the 
+active response to indicate how long to wait until the applied action is automatically reversed.
+
+A Stateless command is that command that doesn't have the capability of removing the applied changes that the response applied.
+
+An example for a Stateful command is the host-deny command from above.
+
+Lab Exercise 5B - Deploy and test Linux firewall active response
+----------------------------------------------------------------
+
+.. include:: ./lab_rst/5c-DeployAR.rst

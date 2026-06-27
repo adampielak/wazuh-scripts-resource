@@ -1,0 +1,346 @@
+.. Wazuh for Security Engineers documentation master file, created by
+   sphinx-quickstart on Fri May 28 22:22:27 2021.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+.. _Deck3:
+
+=====================================
+Wazuh Training for Security Engineers
+=====================================
+=========
+CDB Lists
+=========
+
+
+Wazuh CDB Lists
+===============
+
+.. admonition:: Definition
+
+  The CDB (constant database) feature allows Wazuh to look up key values extracted from rule-matching log entries, to use as criteria in rules.
+
+* Classic types of CDB lists:
+        - Usernames.
+
+        - IP addresses.
+
+        - Domain names.
+
+        - File hashes.
+
+CDB Rule Example
+================
+
+* Here is an example of a custom rule that could be used for threat intel lookups of the queried domains in DNS requests sent to your DNS server.
+
+CDB rule:
+
+.. code::
+
+	<rule id="100334" level="10">
+		<!-- child rule of rule 100330 which matches the DNS query log from your 
+	corporate DNS server -->
+		<if_sid>100330</if_sid>
+		<list field="domain" lookup="match_key">lists/baddomains</list>
+		<description>DNS query for malicious domain!</description>
+	</rule>
+
+CDB Lists with Values
+=====================
+
+We are not limited to only checking fields for their presence or absence in a given list.  CDB Lists can contain both a key (the part to look up) and a value (the part to return). The looked up values can then be used as criteria in rules.
+
+* The possibilities are endless:
+
+  - Account names with department name.
+  
+    - Alert when user not in finance department logs into finance server.
+
+  - IP addresses with threat level.
+
+    - Take escalated action if a web connection is seen going to an IP with a threat reputation level of "critical".
+
+Lab Exercise
+============
+
+.. admonition:: Lab Exercise 5A: Advanced CDB IP Lookups
+  :class: admonition-definition
+  
+  :Lab Objective: Use a CDB list containing attacker IPs and attacker severity level values for a more granular ssh failure alert escalation.
+          
+          
+=====================
+Wazuh Active Response
+=====================
+
+          
+Active Response Flow
+====================
+
+.. image:: /_static/img/arflow.svg
+  :align: center
+
+Wazuh Active Response
+=====================
+
+.. admonition:: Definition
+
+  Active Response (AR) is an automated remediation to security violations and threats.
+
+• Configured primarily on the Wazuh Server in:
+
+	- /var/ossec/etc/ossec.conf
+
+• On agents, AR can be enabled or disabled in:
+
+    - /var/ossec/etc/ossec.conf
+
+• AR has its own log (on the server and the agents):
+
+    - /var/ossec/logs/active-responses.log
+
+• A number of useful AR scripts are included in Wazuh.
+
+• **Handle with care!**
+
+
+Wazuh Active Response
+=====================
+
+• An active response will invoke a command when an alert matches one of the following types of criteria:
+		- The alert's rule ID is specified in ``<rules_id>``. 
+
+		- Rule severity being at or above the level specified in ``<level>``.
+
+		- Alert's groups include one of the groups specified in ``<rules_group>``.
+
+• An active response has several parts:
+
+		- The criteria that triggers the response.
+
+		- The command that we want to execute as the response.
+
+		- The location(s) where to execute the command.
+
+		- The length of time until the action is optionally undone (like unblocking an attacking IP).
+
+
+
+Wazuh Active Responses
+======================
+
+• **firewall-drop:** adds an IP to the iptables deny list (Linux, Solaris, FreeBSD, and AIX only).
+
+• **firewalld-drop:** adds an IP to the iptables deny list via firewall-cmd (Redhat/CentOS Linux).
+
+• **netsh.exe:** blocks an IP with native Windows firewall (works on Windows).
+
+• **disable-account:** disables an account by setting "passwd -l" (Linux, Solaris, AIX only).
+
+• **wazuh-slack:** posts a message to a Slack channel.
+
+• **kaspersky:** runs an on-demand scan with Kaspersky AV.
+
+• More included, plus room for you to build your own!
+
+
+
+Uses for Active Response
+========================
+
+AR is more than just for reacting to attacks or abuse.  Use it wherever you want to take a custom action in response to events that trigger specific Wazuh rules.
+
+• Security countermeasures: block attacking IPs, disable abused account names, etc.
+
+• Custom alerting: collect and assemble detailed information for an email alert about a specific situation.
+
+• Recovery actions: respond to certain error logs with automated action to fix the problem.
+
+
+Commands Configuration
+======================
+
+Commands Configuration Example:
+
+.. code::
+
+	<command>
+		<name>firewall-drop</name>
+		<executable>firewall-drop</executable>
+		<timeout_allowed>yes</timeout_allowed>
+	</command>
+
+Response Configuration
+======================
+          
+Response Configuration example:
+
+.. code::
+
+	<active-response>
+		<command>firewall-drop</command>
+		<location>local</location>
+		<rules_id>5712</rules_id>
+		<timeout>600</timeout>
+	</active-response>
+
+
+Lab Exercise
+============
+
+.. admonition:: Lab Exercise 5B: Linux active response
+  :class: admonition-definition
+  
+  :Lab Objective: Set up Wazuh to have your Linux agents block ssh brute force attackers, and then test the setup.
+
+==================
+Wazuh Integrations
+==================
+
+
+Wazuh Integrations
+==================
+
+* Wazuh integrations are run exclusively on the Wazuh Servers.
+* They are not built to have a timeout or "undo" mechanism.
+* Simpler to code because all input is done via a temporary alert file.
+* Built in integrations include: Slack, Virustotal and PagerDuty.
+* Configuration includes a criteria for running and optional parameters.
+
+.. code::
+  
+	<integration>
+		<name> </name>
+		<hook_url> </hook_url> <!-- Required for Slack -->
+		<api_key> </api_key> <!-- Required for PagerDuty and VirusTotal -->
+		<!-- Optional filters -->
+		<rule_id> </rule_id>
+		<level> </level>
+		<group> </group>
+		<event_location> </event_location>
+	</integration>
+  
+===
+SCA
+===
+
+
+Security Configuration Assessment
+=================================
+
+• Continuous vs cyclical or episodic auditing.
+		- Assessment that is automated rather than manual.
+
+		- It produces very current results.
+
+		- It can be applied to all systems rather than a sample set.
+
+• Policy-based security compliance self-scans.
+        - There are numerous SCA policies available.
+
+        - Most SCA policies are aligned with CIS industry benchmarks.
+
+        - It uses a feature-rich and modern scanning engine.
+
+        - Policies can be centrally distributed.
+
+        - Custom policies can augment or replace stock policies.
+
+
+SCA Engine
+==========
+
+• Wazuh built the SCA scanner as a major refactor of the legacy OSSEC rootcheck policy scanning module, vastly improving it.
+
+• The SCA scanning engine can look for patterns in:
+
+        - Registry keys, values, and data.
+
+        - Text files.
+
+        - Directories.
+
+        - The list of running processes.
+
+        - The output of custom commands.
+
+        - Compound, regex, & numeric value comparisons supported.
+
+=======
+Osquery
+=======
+
+Lab Exercise
+============
+
+.. admonition:: Lab Exercise 6A: Osquery integration with Wazuh
+  :class: admonition-definition
+  
+  :Lab Objective: Configure Osquery on both Linux and Windows and manage it through Wazuh centralized configuration.
+          
+======
+Sysmon
+======
+
+Lab Exercise
+============
+
+.. admonition:: Lab Exercise 6B: Sysmon integration with Wazuh
+  :class: admonition-definition
+  
+  :Lab Objective: Configure Sysmon on your Windows machine to gain further security awareness over this endpoint.
+
+======
+Docker
+======
+
+Lab Exercise
+============
+
+.. admonition:: Lab Exercise 6C: Monitoring docker activity
+  :class: admonition-definition
+  
+  :Lab Objective: Install a docker server on the Indexer instance and monitor its activity with Wazuh.
+
+================
+Cloud Monitoring
+================
+
+Cloud Monitoring
+================
+
+
+  - Wazuh is capable of monitoring the accounts of cloud based services such as AWS, GCP, Azure, Office 365 and GitHub. 
+
+  - Privilege separation is highly encouraged, so a dedicated account with only the permissions needed to collect the logs should be created.
+
+  - Wazuh periodically collects the logs and analyzes them.
+
+  - Monitoring cloud based assets and security alerts is crucial.
+          
+=====================
+Wazuh Manager Cluster
+=====================
+
+Wazuh Cluster
+=============
+
+.. image:: /_static/img/wazuh_architecture.png
+  :align: center
+  :class: custom-width
+  :width: 900px
+
+=========
+Questions
+=========
+          
+============
+Certificates
+============
+
+          
+Share your Certificate!
+=======================
+
+   .. image:: /_static/img/certificate.png

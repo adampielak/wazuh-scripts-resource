@@ -1,0 +1,18 @@
+.. role:: raw-html(raw)  
+   :format: html
+
+In this exercise, we will generate a report based on the dashboard created in the previous exercise. First, we will create the report definition. To do this, navigate to *Main Menu > Explore > Reporting*. Click the *Create* button in the *Report Definitions* section.
+
+.. image:: images/new_report.gif  
+   :align: center
+   :alt: Generating a new report.
+
+Provide a descriptive name for the report. For the *Report Source*, select *Dashboard*, and choose the desired dashboard from the dropdown menu. For the *Time Range*, select *Last 7 Days*. Keep the *File Format* as *PDF*. In the next section, you can optionally set a header and footer. For deeper customization, such as adding company logos or copyright information for a cloud-based Wazuh platform, contact support, as there are specific image file format and size requirements.
+
+For now, keep the *Report Trigger* option set to *On Demand* and click the *Create* button. A new browser window will open, and the report will begin generating. The selected file type will be downloaded once the process is complete.
+
+Return to the *Reporting* menu, where the newly generated report should appear in the *Reports* section. It can be downloaded again if needed.
+
+Next, select the report definition from the previous step and click the *Edit* button. To set recurrence, select *Schedule* in the *Report Trigger* section. You can define a recurrence based on an interval and hour (using the timezone set in the Dashboard's advanced settings) or use cron syntax to specify a time (in which case you must specify a timezone).
+
+Since this is a weekly report, select the *By Interval* option for the *Frequency* and set it to every 7 days with the desired start time. Reports will be generated as scheduled and will appear in the *Reports* section, where they can be accessed at any time.

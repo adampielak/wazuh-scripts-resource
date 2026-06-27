@@ -1,0 +1,57 @@
+
+* Create linux and windows agent groups to prepare for agent registrations.
+
+The Wazuh Web UI allows you to manage agent-group memberships.  Use it now to create agent groups that will be referred to as part of registering your agents.
+Access the group management section of the Wazuh Web UI at **Agents management** :raw-html:`&rarr;` **Groups** and add "linux" and "windows" groups as follows:
+
+Click on "Add new group" in the upper right side and type in your new group name, then click "Save new group":
+
+   .. image:: images/newgroup.png
+      :align: center
+
+|
+
+A message will appear in the lower left corner indicating successful addition of the group and the new group will then appear in the list. This new group will start
+with a stub agent.conf file where you can later add configuration sections specific to this group.
+
+Install and Register Wazuh 4.3.8 Windows Agent via the MSI package
+
+Remote desktop into your Windows lab system.
+
+Open Windows PowerShell as administrator, and use it to download the Wazuh installer file. We are intentionally downloading a 
+somewhat older version of Wazuh so we can practice upgrading it in an upcoming lab.
+
+   .. code-block:: bash
+
+         Invoke-WebRequest -Uri https://packages.wazuh.com/4.x/windows/wazuh-agent-4.5.4-1.msi -OutFile wazuh-agent.msi
+
+First, ensure that the agent is not already installed, and then run the MSI installer, providing it with deployment variables telling it where to register, what password to use for registration, where to report in post-registration, and what agent group(s) to be membered into.  
+Note that the msi call below wraps across multiple lines, so make sure to copy that across as one line (or use the copy button on the top right).
+
+   .. code-block:: bash
+   
+         .\wazuh-agent.msi /q ADDRESS="manager%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info" WAZUH_MANAGER="manager%%LABLETTER%%%%LABNUMBER%%.lab.wazuh.info" WAZUH_REGISTRATION_PASSWORD="secret" WAZUH_AGENT_GROUP="windows"
+
+Then start the Wazuh agent service:
+
+.. code-block:: bash
+
+  NET START WazuhSvc
+
+Check the agent's state file to confirm it is now connected to the manager.  You should eventually see **status='connected'** in the output.
+
+   .. code-block:: bash
+
+     type 'C:\Program Files (x86)\ossec-agent\wazuh-agent.state'
+
+
+You should also be able to find your windows-agent listed in the Wazuh web UI and listed as Active.
+
+Lastly, open the Windows File Explorer and go to ``C:\\Program Files (x86)\\ossec-agent``
+Find and open the ``win32ui`` executable, it should look something like this:
+
+.. image:: images/win32ui.png
+   :align: center
+   :alt: Wazuh Agent Manager for Windows
+
+You may pin this program to the taskbar or create a desktop shortcut for ease of access. This simple interface allows for quick access to the service status, log and configuration files.
